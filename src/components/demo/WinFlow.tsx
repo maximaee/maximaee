@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -41,7 +41,7 @@ export function WinFlow({ sessionId }: Props) {
 
       if (cancelled) return;
       if (qErr || !data) {
-        setError("Sitzung nicht gefunden oder Konfigurationsfehler.");
+        setError("Sessie niet gevonden of configuratiefout.");
         setLoading(false);
         return;
       }
@@ -82,7 +82,7 @@ export function WinFlow({ sessionId }: Props) {
 
     setSaving(false);
     if (upErr) {
-      setError("Speichern fehlgeschlagen. Bitte versuchen Sie es erneut.");
+      setError("Opslaan mislukt. Probeer het opnieuw.");
       return;
     }
     try {
@@ -100,32 +100,32 @@ export function WinFlow({ sessionId }: Props) {
 
   if (!supabase) {
     return (
-      <SparShell title="Konfiguration" subtitle="Systemumgebung">
+      <DemoShell title="Konfiguration" subtitle="Systemumgebung">
         <ConfigMissing />
-      </SparShell>
+      </DemoShell>
     );
   }
 
   if (loading) {
     return (
-      <SparShell title="Willkommen" subtitle="Bitte einen Moment Geduld.">
+      <DemoShell title="Welkom" subtitle="Een ogenblik geduld alsjeblieft.">
         <div className="flex justify-center py-16">
-          <div className="size-12 animate-spin rounded-full border-4 border-spar-green border-t-transparent" />
+          <div className="size-12 animate-spin rounded-full border-4 border-brand-blue border-t-transparent" />
         </div>
-      </SparShell>
+      </DemoShell>
     );
   }
 
   if (error && amount === null) {
     return (
-      <SparShell title="Hinweis">
+      <DemoShell title="Let op">
         <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-center text-sm text-red-900">{error}</p>
-      </SparShell>
+      </DemoShell>
     );
   }
 
   return (
-    <SparShell>
+    <DemoShell>
       {showModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/35 p-4">
           <div
@@ -135,12 +135,12 @@ export function WinFlow({ sessionId }: Props) {
           >
             <div className="mb-4 flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-spar-green">{settings.profile_title_small}</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-brand-blue">{settings.profile_title_small}</p>
                 <h2 className="mt-1 text-xl font-bold text-zinc-900">{settings.profile_title_main}</h2>
               </div>
             </div>
 
-            <p className="text-4xl font-bold tabular-nums text-spar-red">
+            <p className="text-4xl font-bold tabular-nums text-brand-gold">
               {currency} {amount?.toLocaleString("de-AT")}
             </p>
             <p className="mt-2 text-sm text-zinc-600">
@@ -201,6 +201,6 @@ export function WinFlow({ sessionId }: Props) {
           </div>
         </div>
       ) : null}
-    </SparShell>
+    </DemoShell>
   );
 }

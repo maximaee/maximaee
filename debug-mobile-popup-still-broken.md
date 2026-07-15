@@ -14,7 +14,7 @@
 | ID | Hypothesis | Likelihood | Effort | Evidence |
 |----|------------|------------|--------|----------|
 | A | Overlay/kapsayici yukseklik hesaplamasi mobilde tasmaya neden oluyor | High | Low | Pending |
-| B | `SparShell` header ve `main` padding modal alanini bozuyor | High | Low | Pending |
+| B | `DemoShell` header ve `main` padding modal alanini bozuyor | High | Low | Pending |
 | C | `vh` / `dvh` / `visualViewport` farki popup acilisinda yanlis konum uretiyor | High | Medium | Pending |
 | D | Overlay scroll/focus davranisi popup icerigine erisimi bozuyor | Medium | Low | Pending |
 | E | Production CSS local ile farkli davraniyor | Medium | Medium | Pending |
@@ -34,7 +34,7 @@
 
 ## Verification Conclusion
 - **A Confirmed**: Mobil bozulmanın ana nedeni popup hizalayıcısının görünür viewport yerine daha büyük layout viewport üzerinde çalışması ve mobilde aşağı hizalamasıydı.
-- **B Rejected**: `SparShell` header ve `main` padding problemi tek başına ana kök neden değil.
+- **B Rejected**: `DemoShell` header ve `main` padding problemi tek başına ana kök neden değil.
 - **C Confirmed**: `visualViewport` ile layout viewport farkı popup yüksekliğini mobilde yanlış etkiliyor.
 - **D Partially confirmed**: Görsel bozulma nedeniyle erişim etkileniyordu; düzeltme sonrası focus ve CTA erişimi normale döndü.
 - **E Inconclusive**: Production farkı ayrıca yeniden doğrulanmalı; lokal kanıt kök nedeni netleştirdi.

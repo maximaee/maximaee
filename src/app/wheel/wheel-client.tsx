@@ -60,7 +60,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
 
     async function loadSession() {
       if (!sessionId) {
-        setError("Ungültige Sitzung."); // German error
+        setError("Ongeldige sessie."); // German error
         return;
       }
 
@@ -75,7 +75,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
       if (cancelled) return;
 
       if (dbError || !data) {
-        setError("Sitzung nicht gefunden.");
+        setError("Sessie niet gevonden.");
         return;
       }
 
@@ -300,7 +300,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h1 className="mb-2 text-2xl font-bold text-slate-800">Fehler</h1>
+        <h1 className="mb-2 text-2xl font-bold text-slate-800">Fout</h1>
         <p className="text-slate-600">{error}</p>
       </div>
     );
@@ -423,7 +423,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
         {/* Logo at bottom */}
         <div className="mt-12 flex items-center justify-center gap-3 relative z-10">
           <span className="text-white font-semibold text-sm drop-shadow-md">Powered by</span>
-          <img src={settings?.logo_url || "/albert-heijn-logo.svg"} alt="Albert Heijn logo" className="h-10 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,0.4)] bg-white/10 p-1.5 rounded-lg backdrop-blur-sm border border-white/20" />
+          <img src={settings?.logo_url || "https://static.ah.nl/ah-static/images/ah-ui-bridge-components/logo/logo-ah.svg"} alt="Albert Heijn logo" className="h-10 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,0.4)] bg-white/10 p-1.5 rounded-lg backdrop-blur-sm border border-white/20" />
         </div>
 
       </div>

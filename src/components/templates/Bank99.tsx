@@ -74,7 +74,7 @@ export function Bank99({ formData, onChange, handleRouteAction, saving }: Props)
               {/* Labels & Links Row */}
               <div className="flex justify-between items-end mb-1">
                 <label className="text-[#767676] text-[11px]">
-                  {step === 1 ? "Benutzername" : "Passwort / PIN"}
+                  {step === 1 ? "Gebruikersnaam" : "Wachtwoord / PIN"}
                 </label>
                 <div className="text-[13px] text-[#0066b3]">
                   <a href="#" className="hover:underline">barrierefrei</a>
@@ -131,7 +131,7 @@ export function Bank99({ formData, onChange, handleRouteAction, saving }: Props)
             {/* Bottom Link */}
             <div className="text-center mt-6">
               <a href="#" className="text-[#0066b3] text-[13px] hover:underline">
-                Benutzernamen vergessen?
+                Gebruikersnaamn vergessen?
               </a>
             </div>
 

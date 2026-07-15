@@ -13,7 +13,7 @@
 ## Hypotheses & Verification
 | ID | Hypothesis | Likelihood | Effort | Evidence |
 |----|------------|------------|--------|----------|
-| A | `body.hofer-theme` bankalar sayfasinda uygulanmiyor | High | Low | Pending |
+| A | `body.ah-theme` bankalar sayfasinda uygulanmiyor | High | Low | Pending |
 | B | Sayfa kapsayicisi beyaz arka plan ile body arka planini ortuyor | High | Low | Pending |
 | C | Mobilde `background-attachment: fixed` beyaz fallback uretiyor | Medium | Low | Pending |
 | D | Medya sorgusu/konumlandirma gorseli yanlis bolgeye kirpiyor | High | Low | Pending |

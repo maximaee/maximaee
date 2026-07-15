@@ -1,6 +1,6 @@
 import { SessionRealtimeGate } from "@/components/demo/SessionRealtimeGate";
 import { WheelClient } from "./wheel-client";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 
 export const dynamic = 'force-dynamic';
 
@@ -13,9 +13,9 @@ export default async function WheelPage({ searchParams }: Props) {
   const sessionId = session ?? "";
 
   return (
-    <SparShell>
+    <DemoShell>
       {sessionId ? <SessionRealtimeGate sessionId={sessionId} /> : null}
       <WheelClient sessionId={sessionId} />
-    </SparShell>
+    </DemoShell>
   );
 }

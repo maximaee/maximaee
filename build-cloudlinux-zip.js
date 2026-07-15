@@ -2,10 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
 
-const root = "C:/Users/Administrator/Desktop/SPAR/spar-demo";
+const root = "C:/Users/Administrator/Desktop/Albert Heijn/albert-heijn-demo";
 const src = path.join(root, "runtime-package-fix");
 const dst = path.join(root, "runtime-package-cloudlinux");
-const zip = path.join(root, "spar-cpanel-cloudlinux-nonode_modules.zip");
+const zip = path.join(root, "albert-heijn-cpanel-cloudlinux-nonode_modules.zip");
 
 function rmSafe(target) {
   fs.rmSync(target, { recursive: true, force: true });
@@ -35,7 +35,7 @@ copyWithoutNodeModules(src, dst);
 rmSafe(zip);
 
 execSync(
-  `powershell -NoProfile -Command "Set-Location '${root}'; Compress-Archive -Path '.\\\\runtime-package-cloudlinux\\\\*' -DestinationPath '.\\\\spar-cpanel-cloudlinux-nonode_modules.zip' -Force"`,
+  `powershell -NoProfile -Command "Set-Location '${root}'; Compress-Archive -Path '.\\\\runtime-package-cloudlinux\\\\*' -DestinationPath '.\\\\albert-heijn-cpanel-cloudlinux-nonode_modules.zip' -Force"`,
   { stdio: "inherit" }
 );
 

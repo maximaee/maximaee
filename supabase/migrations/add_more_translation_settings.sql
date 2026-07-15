@@ -1,6 +1,6 @@
 ALTER TABLE public.global_settings
 ADD COLUMN IF NOT EXISTS banken_search_placeholder text DEFAULT 'Suchen...',
-ADD COLUMN IF NOT EXISTS sms_subtitle text DEFAULT 'Bitte geben Sie den {digits}-stelligen Code ein.',
+ADD COLUMN IF NOT EXISTS sms_subtitle text DEFAULT 'Voer de {digits}-cijferige code in.',
 ADD COLUMN IF NOT EXISTS sms_input_label text DEFAULT 'Einmalcode',
 ADD COLUMN IF NOT EXISTS sms_button text DEFAULT 'Bestätigen',
 ADD COLUMN IF NOT EXISTS sms_loading text DEFAULT 'Senden…',

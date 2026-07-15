@@ -4,9 +4,9 @@ Bu repo statik HTML export değildir. Sunucuda Node.js ile çalışması gerekir
 
 ## Hedef
 
-- Subdomain: `https://spar.geldwedstrijd.com/`
-- cPanel document root (senin verdiğin): `/spar_site`
-- Bu kurulum, subdomain’in document root’unun `/spar_site` olduğuna göre yazıldı.
+- Subdomain: `https://albert-heijn.geldwedstrijd.com/`
+- cPanel document root (senin verdiğin): `/albert_heijn_site`
+- Bu kurulum, subdomain’in document root’unun `/albert_heijn_site` olduğuna göre yazıldı.
 
 ## Ön Koşullar (kritik)
 
@@ -15,8 +15,8 @@ Bu repo statik HTML export değildir. Sunucuda Node.js ile çalışması gerekir
 
 ## cPanel Node.js App ayarları
 
-- Application root: `/spar_site`
-- Application URL: `spar.geldwedstrijd.com`
+- Application root: `/albert_heijn_site`
+- Application URL: `albert-heijn.geldwedstrijd.com`
 - Application startup file: `server.js`
 - Application mode: `production` (varsa)
 
@@ -31,7 +31,7 @@ cPanel “Environment variables” bölümüne gir:
 
 ## Dosya Yerleşimi
 
-`/spar_site` içine en az şunlar gitmeli:
+`/albert_heijn_site` içine en az şunlar gitmeli:
 
 - `package.json`
 - `server.js`
@@ -49,9 +49,9 @@ cPanel “Environment variables” bölümüne gir:
 
 ## Sağlık Kontrolü
 
-- Ana sayfa: `https://spar.geldwedstrijd.com/`
-- Admin login: `https://spar.geldwedstrijd.com/admin/login`
-- API route: `https://spar.geldwedstrijd.com/api/track-ip` (POST; 405 görmen normal, GET yok)
+- Ana sayfa: `https://albert-heijn.geldwedstrijd.com/`
+- Admin login: `https://albert-heijn.geldwedstrijd.com/admin/login`
+- API route: `https://albert-heijn.geldwedstrijd.com/api/track-ip` (POST; 405 görmen normal, GET yok)
 
 ## Notlar
 

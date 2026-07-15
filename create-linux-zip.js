@@ -3,7 +3,7 @@ const path = require('path');
 const archiver = require('archiver');
 
 async function createZip() {
-  const outputFilePath = path.join(require('os').homedir(), 'Desktop', 'spar_cpanel_build_linux_final.zip');
+  const outputFilePath = path.join(require('os').homedir(), 'Desktop', 'albert_heijn_cpanel_build_linux_final.zip');
   console.log('Starting zip creation to:', outputFilePath);
   
   const output = fs.createWriteStream(outputFilePath);

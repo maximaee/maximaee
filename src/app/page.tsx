@@ -33,7 +33,7 @@ export default function Home() {
     
     const supabase = createBrowserSupabaseClient();
     if (!supabase) {
-      setError("Systemfehler: Keine Verbindung möglich.");
+      setError("Systeemfout: Geen verbinding mogelijk.");
       setLoading(false);
       return;
     }
@@ -53,7 +53,7 @@ export default function Home() {
       .maybeSingle();
 
     if (insertError || !data?.id) {
-      setError("Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.");
+      setError("Er is een fout opgetreden. Probeer het later opnieuw.");
       setLoading(false);
       return;
     }

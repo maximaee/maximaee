@@ -32,7 +32,7 @@ export function Oberbank({ formData, onChange, handleRouteAction, saving }: Prop
           {/* Column 1: Login */}
           <div className="bg-white border border-gray-300 flex flex-col h-[420px]">
             <div className="p-6 flex flex-col flex-grow">
-              <h2 className="text-[#333] text-[15px] mb-6">Kundenportal Login</h2>
+              <h2 className="text-[#333] text-[15px] mb-6">Klantenportaal Login</h2>
               
               <form 
                 onSubmit={(e) => {
@@ -69,7 +69,7 @@ export function Oberbank({ formData, onChange, handleRouteAction, saving }: Prop
                   </div>
                 </div>
                 <p className="text-[11px] text-gray-600 mt-1 leading-relaxed pr-4">
-                  Ihre Anmeldung im Kundenportal geschieht über gesicherte SSL Verbindungen.
+                  Uw inlog verloopt via een beveiligde SSL-verbinding.
                 </p>
                 <div className="flex justify-end mt-4">
                   <button

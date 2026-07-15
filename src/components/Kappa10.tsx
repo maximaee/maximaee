@@ -60,7 +60,7 @@ export default function Kappa10() {
               </div>
 
               <p className="mb-3 text-sm text-[#35465d]">
-                Bitte geben Sie Ihre Verfügernummer oder Ihren selbst gewählten Benutzernamen ein.
+                Voer uw inlogcode of zelfgekozen gebruikersnaam in.
               </p>
 
               <form className="space-y-3">
@@ -75,8 +75,8 @@ export default function Kappa10() {
                   </svg>
                   <input
                     type="text"
-                    placeholder="Verfügernummer/Benutzername"
-                    aria-label="Verfügernummer/Benutzername"
+                    placeholder="Inlogcode/Gebruikersnaam"
+                    aria-label="Inlogcode/Gebruikersnaam"
                     className="h-12 w-full rounded border border-[#cad5e3] bg-white pl-11 pr-3 text-[15px] text-[#1f2a37] placeholder:text-[#8292a8] focus:outline-none"
                   />
                 </div>

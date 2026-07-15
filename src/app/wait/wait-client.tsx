@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
 import type { SessionStatus, SessionStep } from "@/types/session";
@@ -24,7 +24,7 @@ export function WaitClient({ sessionId }: Props) {
   const { settings } = useSettings();
   const [messageIndex, setMessageIndex] = useState(0);
 
-  // Yazıları periyodik olarak değiştir
+  // YazÄ±larÄ± periyodik olarak deÄŸiÅŸtir
   useEffect(() => {
     const messageTimer = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % MESSAGES.length);

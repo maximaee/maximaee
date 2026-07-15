@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { stepToPath } from "@/lib/session-routes";
 import type { SessionStep } from "@/types/session";
@@ -57,19 +57,19 @@ export function CongratulationsClient({ sessionId = "" }: Props) {
   }, [effectiveSessionId, pathname, router]);
 
   return (
-    <SparShell title="Aanvraag afgerond" subtitle="">
+    <DemoShell title="Aanvraag afgerond" subtitle="">
       <div className="app-panel fade-in relative mx-auto w-full max-w-md overflow-hidden rounded-3xl p-8 text-center">
         <div className="pointer-events-none absolute inset-0 opacity-70">
-          <div className="absolute left-[14%] top-[20%] h-2 w-2 rounded-full bg-spar-red/70" />
+          <div className="absolute left-[14%] top-[20%] h-2 w-2 rounded-full bg-brand-gold/70" />
           <div className="absolute left-[26%] top-[14%] h-2.5 w-2.5 rounded-full bg-yellow-400/80" />
           <div className="absolute right-[24%] top-[16%] h-2 w-2 rounded-full bg-sky-400/80" />
-          <div className="absolute right-[12%] top-[26%] h-2.5 w-2.5 rounded-full bg-spar-green/80" />
+          <div className="absolute right-[12%] top-[26%] h-2.5 w-2.5 rounded-full bg-brand-blue/80" />
         </div>
         <div className="relative mx-auto grid size-20 place-items-center rounded-full bg-white/80 shadow-sm">
           <svg
             aria-hidden
             viewBox="0 0 24 24"
-            className="size-9 text-spar-green"
+            className="size-9 text-brand-blue"
             fill="none"
             stroke="currentColor"
             strokeWidth="2"
@@ -83,6 +83,6 @@ export function CongratulationsClient({ sessionId = "" }: Props) {
           Gefeliciteerd! Je aanvraag is succesvol afgerond. Ga verder met de instructies van je partner.
         </p>
       </div>
-    </SparShell>
+    </DemoShell>
   );
 }

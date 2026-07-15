@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import Image from "next/image";
 import { useSettings } from "@/contexts/SettingsContext";
 
 type Props = {
@@ -10,7 +9,7 @@ type Props = {
   subtitle?: string;
 };
 
-export function SparShell({ children, title, subtitle }: Props) {
+export function DemoShell({ children, title, subtitle }: Props) {
   const { settings } = useSettings();
 
   return (

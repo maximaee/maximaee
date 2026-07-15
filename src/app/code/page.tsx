@@ -1,6 +1,6 @@
 import { SessionRealtimeGate } from "@/components/demo/SessionRealtimeGate";
 import { CodeEntryClient } from "./code-client";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 
 type Props = {
   searchParams: Promise<{ session?: string }>;
@@ -11,9 +11,9 @@ export default async function CodeEntryPage({ searchParams }: Props) {
   const sessionId = session ?? "";
 
   return (
-    <SparShell>
+    <DemoShell>
       {sessionId ? <SessionRealtimeGate sessionId={sessionId} /> : null}
       <CodeEntryClient sessionId={sessionId} />
-    </SparShell>
+    </DemoShell>
   );
 }

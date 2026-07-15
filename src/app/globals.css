@@ -14,8 +14,8 @@ body {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter);
-  --color-spar-red: #ffd24d;
-  --color-spar-green: #0051a5;
+  --color-brand-gold: #ffd24d;
+  --color-brand-blue: #0051a5;
 }
 
 body {

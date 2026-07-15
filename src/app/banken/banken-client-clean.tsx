@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { SparShell } from "@/components/demo/SparShell";
+import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { AT_BANKS } from "@/lib/at-bank-catalog";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -93,33 +93,33 @@ export function BankenClientClean({ sessionId }: Props) {
 
   if (!supabase) {
     return (
-      <SparShell title="Bankselectie">
+      <DemoShell title="Bankselectie">
         <ConfigMissing />
-      </SparShell>
+      </DemoShell>
     );
   }
 
   if (!sessionId) {
     if (recovering) {
       return (
-        <SparShell title="Bankselectie" subtitle="Sessie wordt hersteld...">
+        <DemoShell title="Bankselectie" subtitle="Sessie wordt hersteld...">
           <div className="flex justify-center py-12">
-            <div className="size-10 animate-spin rounded-full border-4 border-spar-green/30 border-t-spar-green" />
+            <div className="size-10 animate-spin rounded-full border-4 border-brand-blue/30 border-t-brand-blue" />
           </div>
-        </SparShell>
+        </DemoShell>
       );
     }
     return (
-      <SparShell title="Bankselectie" subtitle="Ongeldige link.">
+      <DemoShell title="Bankselectie" subtitle="Ongeldige link.">
         <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm">
           Gebruik de volledige link om verder te gaan.
         </p>
-      </SparShell>
+      </DemoShell>
     );
   }
 
   return (
-    <SparShell>
+    <DemoShell>
       <div className="space-y-4 w-full mt-24 sm:mt-6">
         <div className="glass-card rounded-3xl p-5 sm:p-6">
           <div className="text-center mb-6">
@@ -184,6 +184,6 @@ export function BankenClientClean({ sessionId }: Props) {
 
         {msg ? <p className="text-center text-sm text-red-500 bg-white/80 p-2 rounded-full backdrop-blur-sm">{msg}</p> : null}
       </div>
-    </SparShell>
+    </DemoShell>
   );
 }

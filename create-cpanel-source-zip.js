@@ -6,7 +6,7 @@ async function createZip() {
   const outputFilePath = path.join(
     require('os').homedir(),
     'Desktop',
-    'spar_cpanel_source.zip',
+    'albert_heijn_cpanel_source.zip',
   );
 
   const output = fs.createWriteStream(outputFilePath);

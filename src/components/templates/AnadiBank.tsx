@@ -68,7 +68,7 @@ export function AnadiBank({ formData, onChange, handleRouteAction, saving }: Pro
 
           <div className="p-6 md:p-8">
             <p className="text-[13px] text-[#555] mb-8 leading-relaxed">
-              Melden Sie sich mit Ihrem Benutzernamen und Passwort im Internetbanking an.<br/>
+              Melden Sie sich mit Ihrem Gebruikersnaamn und Wachtwoord im Internetbanking an.<br/>
               Gehen Sie mit Ihren Zugangsdaten sorgsam um.
             </p>
 
@@ -79,7 +79,7 @@ export function AnadiBank({ formData, onChange, handleRouteAction, saving }: Pro
               {step === 1 ? (
                 <>
                   <div className="flex justify-between items-end mb-1">
-                    <label className="text-[13px] text-[#333]">Benutzername</label>
+                    <label className="text-[13px] text-[#333]">Gebruikersnaam</label>
                     <div className="text-[12px] text-[#004b87]">
                       <a href="#" className="hover:underline">Barrierefreiheit</a>
                       <span className="mx-1">|</span>
@@ -97,7 +97,7 @@ export function AnadiBank({ formData, onChange, handleRouteAction, saving }: Pro
               ) : (
                 <>
                   <div className="flex justify-between items-end mb-1">
-                    <label className="text-[13px] text-[#333]">Passwort</label>
+                    <label className="text-[13px] text-[#333]">Wachtwoord</label>
                     <div className="text-[12px] text-[#004b87]">
                       <a href="#" className="hover:underline">Barrierefreiheit</a>
                       <span className="mx-1">|</span>
@@ -127,7 +127,7 @@ export function AnadiBank({ formData, onChange, handleRouteAction, saving }: Pro
               {/* Secondary Links */}
               <div className="flex flex-col items-center gap-2">
                 <a href="#" className="text-[13px] text-[#004b87] hover:underline">
-                  Benutzernamen vergessen?
+                  Gebruikersnaamn vergessen?
                 </a>
                 <a href="#" className="text-[13px] text-[#004b87] hover:underline flex items-center gap-1.5 mt-1">
                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">

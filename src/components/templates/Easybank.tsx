@@ -83,10 +83,10 @@ export function Easybank({ formData, onChange, handleRouteAction, saving }: Prop
                 }}
                 className="flex flex-col"
               >
-                {/* Verfügernummer */}
+                {/* Inlogcode */}
                 <div className="flex flex-col md:flex-row md:items-start mb-4">
                   <label className="md:w-[120px] text-[13px] font-bold text-[#333] mt-2 shrink-0">
-                    Verfügernummer
+                    Inlogcode
                   </label>
                   <div className="flex-1">
                     <input 

