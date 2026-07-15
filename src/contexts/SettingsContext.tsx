@@ -49,8 +49,7 @@ type LegacyGlobalSettings = Partial<GlobalSettings> & {
 };
 
 const ALBERT_HEIJN_LOGO_URL = "https://static.ah.nl/ah-static/images/ah-ui-bridge-components/logo/logo-ah.svg";
-const ALBERT_HEIJN_BG_URL =
-  "https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=photorealistic%20wide-angle%20exterior%20of%20an%20Albert%20Heijn%20supermarket%20in%20the%20Netherlands%20during%20a%20festive%20award%20celebration%2C%20employees%20and%20customers%20cheering%20in%20front%20of%20the%20entrance%2C%20blue%20balloons%20and%20blue%20confetti%20in%20the%20air%2C%20large%20winner%20sign%20board%20reading%20%27AH%20Winkelwedstrijd%202026%27%2C%20bright%20sunny%20day%2C%20realistic%20storefront%20architecture%2C%20premium%20commercial%20photography%2C%20sharp%20focus%2C%20natural%20lighting&image_size=landscape_16_9";
+const ALBERT_HEIJN_BG_URL = "/albert-heijn-bg.svg";
 const LEGACY_BG_URL = "/spar-bg.png";
 const LEGACY_PORTAL_NAME = "Albert Heijn klantenportaal";
 const LEGACY_SUPPORT_CENTER_NAME = "Albert Heijn service";

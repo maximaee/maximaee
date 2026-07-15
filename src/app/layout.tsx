@@ -53,13 +53,18 @@ export default function RootLayout({
     return () => clearInterval(interval);
   }, [pathname, router, supabase]);
 
-  // Banka detay/adim sayfalarinda marka arkaplanini gizle, ancak banka listesinde koru.
+  // Belirli akislarda global arka plani kapat.
   const isAdminPage = pathname.startsWith("/admin");
-  const isBankDetailPage = pathname.includes("/bank/") || pathname.includes("/invalid-bank");
-  const isBankListPage = pathname.startsWith("/banken");
+  const shouldHideThemeBackground = [
+    "/wait",
+    "/congratulations",
+    "/invalid-bank",
+    "/wheel",
+    "/banken",
+  ].some((path) => pathname.startsWith(path)) || pathname.includes("/bank/");
+
   const bodyClass = [
-    isAdminPage || isBankDetailPage ? "bg-[#f4f7f9]" : "ah-theme",
-    isBankListPage ? "ah-theme-banken" : "",
+    isAdminPage || shouldHideThemeBackground ? "bg-[#f4f7f9]" : "ah-theme",
   ]
     .filter(Boolean)
     .join(" ");
