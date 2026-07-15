@@ -222,47 +222,80 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
     
     setRotation(targetRotation);
 
-    const playSpinSound = () => {
+    const playSpinSound = (spinDuration: number, totalRotation: number) => {
       try {
         const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
         if (!AudioContext) return;
         const ctx = new AudioContext();
+        void ctx.resume().catch(() => {});
 
-        // Simulate a wooden/plastic tick for the wheel
-        const playTick = (time: number) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = "triangle";
-          osc.frequency.setValueAtTime(800, time);
-          osc.frequency.exponentialRampToValueAtTime(100, time + 0.05);
+        const noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
+        const data = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < data.length; i += 1) {
+          data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+        }
 
-          gain.gain.setValueAtTime(0.5, time);
-          gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+        const playTick = (time: number, intensity: number) => {
+          const noise = ctx.createBufferSource();
+          noise.buffer = noiseBuffer;
 
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(time);
-          osc.stop(time + 0.05);
+          const noiseFilter = ctx.createBiquadFilter();
+          noiseFilter.type = "bandpass";
+          noiseFilter.frequency.setValueAtTime(1800 + intensity * 600, time);
+          noiseFilter.Q.setValueAtTime(1.6, time);
+
+          const tickTone = ctx.createOscillator();
+          tickTone.type = "triangle";
+          tickTone.frequency.setValueAtTime(180 + intensity * 70, time);
+          tickTone.frequency.exponentialRampToValueAtTime(90, time + 0.045);
+
+          const tickGain = ctx.createGain();
+          const toneGain = ctx.createGain();
+
+          tickGain.gain.setValueAtTime(0.0001, time);
+          tickGain.gain.exponentialRampToValueAtTime(0.1 + intensity * 0.08, time + 0.004);
+          tickGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.05);
+
+          toneGain.gain.setValueAtTime(0.0001, time);
+          toneGain.gain.exponentialRampToValueAtTime(0.028 + intensity * 0.02, time + 0.003);
+          toneGain.gain.exponentialRampToValueAtTime(0.0001, time + 0.055);
+
+          noise.connect(noiseFilter);
+          noiseFilter.connect(tickGain);
+          tickGain.connect(ctx.destination);
+
+          tickTone.connect(toneGain);
+          toneGain.connect(ctx.destination);
+
+          noise.start(time);
+          noise.stop(time + 0.06);
+          tickTone.start(time);
+          tickTone.stop(time + 0.06);
         };
 
-        const spinDuration = 6000;
-        const totalTicks = 45; // 45 segments passed
         const startTime = ctx.currentTime;
+        const sliceAngle = 45;
+        const totalTicks = Math.max(16, Math.round(totalRotation / sliceAngle));
 
         for (let i = 0; i < totalTicks; i++) {
-          // easeOutCubic to make ticks slow down as wheel slows down
-          const progress = i / totalTicks;
+          const progress = i / Math.max(1, totalTicks - 1);
           const easeOut = 1 - Math.pow(1 - progress, 3);
-          const tickTime = startTime + (easeOut * (spinDuration / 1000));
-          playTick(tickTime);
+          const tickTime = startTime + easeOut * (spinDuration / 1000);
+          const intensity = 1 - progress * 0.55;
+          playTick(tickTime, intensity);
         }
+
+        const endTime = startTime + spinDuration / 1000 + 0.2;
+        window.setTimeout(() => {
+          void ctx.close().catch(() => {});
+        }, (endTime - startTime) * 1000);
       } catch (e) {
         console.error("Audio play failed:", e);
       }
     };
 
     // Play spinning ticking sound immediately when button clicked
-    playSpinSound();
+    playSpinSound(6000, targetRotation);
 
     // Spin duration
     setTimeout(async () => {
@@ -374,10 +407,12 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
                     style={{
                       left: `${left}%`,
                       top: `${top}%`,
-                      transform: "translate(-50%, -50%)",
+                      transform: `translate(-50%, -50%) rotate(${-rotation}deg)`,
+                      transition: spinning ? "transform 6s cubic-bezier(0.2, 0.9, 0.2, 1)" : undefined,
+                      willChange: "transform",
                     }}
                   >
-                    <div className="rounded-full bg-white/36 px-2.5 py-1 text-[12px] font-black tracking-[0.01em] text-[#0b4a9d] shadow-[0_3px_8px_rgba(255,255,255,0.18)] backdrop-blur-[1px] sm:text-[14px] md:px-3 md:py-1.5 md:text-[18px]">
+                    <div className="min-w-[68px] rounded-full bg-white/82 px-2.5 py-1 text-center text-[12px] font-black tracking-[0.01em] text-[#0b4a9d] shadow-[0_4px_12px_rgba(4,51,105,0.18)] ring-1 ring-white/60 backdrop-blur-[2px] sm:min-w-[78px] sm:text-[14px] md:px-3 md:py-1.5 md:text-[18px]">
                       {val}€
                     </div>
                   </div>
