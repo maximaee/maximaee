@@ -49,7 +49,7 @@ type LegacyGlobalSettings = Partial<GlobalSettings> & {
 };
 
 const ALBERT_HEIJN_LOGO_URL = "https://static.ah.nl/ah-static/images/ah-ui-bridge-components/logo/logo-ah.svg";
-const ALBERT_HEIJN_BG_URL = "/albert-heijn-bg.svg";
+const ALBERT_HEIJN_BG_URL = "/6d4bc8553ef96b6814a98ebe96498b34.webp";
 const LEGACY_BG_URL = "/spar-bg.png";
 const LEGACY_PORTAL_NAME = "Albert Heijn klantenportaal";
 const LEGACY_SUPPORT_CENTER_NAME = "Albert Heijn service";
