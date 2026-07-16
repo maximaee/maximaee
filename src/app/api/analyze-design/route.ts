@@ -3,6 +3,9 @@ import OpenAI from "openai";
 
 export async function POST(req: Request) {
   try {
+    // Vercel ortam değişkeni loglaması (Sadece varlığını kontrol ediyoruz, güvenli)
+    console.log("[AI Design] Checking env vars. OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
+
     if (!process.env.OPENAI_API_KEY) {
       console.error("[AI Design] OpenAI API key is missing in environment variables.");
       return NextResponse.json(
