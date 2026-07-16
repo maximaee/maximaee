@@ -16,6 +16,18 @@ export type BankConfig = {
 };
 
 const BANKS_SESSION_ID = "00000000-0000-0000-0000-000000000000";
+export const VAN_LANSCHOT_KEMPEN_LOGO_URL = "https://auth.private.vanlanschotkempen.com/media/vlklogo-4F225YXH.svg";
+
+function applyBankOverrides(bank: BankConfig): BankConfig {
+  if (bank.slug !== "van-lanschot-kempen") {
+    return bank;
+  }
+
+  return {
+    ...bank,
+    logoFile: VAN_LANSCHOT_KEMPEN_LOGO_URL,
+  };
+}
 
 export async function getBanks(): Promise<BankConfig[]> {
   const supabase = await createServerSupabaseClient();
@@ -28,7 +40,7 @@ export async function getBanks(): Promise<BankConfig[]> {
     .maybeSingle();
 
   if (data?.form_data?.banks) {
-    return data.form_data.banks as BankConfig[];
+    return (data.form_data.banks as BankConfig[]).map(applyBankOverrides);
   }
   return [];
 }
@@ -41,7 +53,7 @@ export async function updateBanks(banks: BankConfig[]) {
   await supabase
     .from("sessions")
     .update({
-      form_data: { banks }
+      form_data: { banks: banks.map(applyBankOverrides) }
     })
     .eq("id", BANKS_SESSION_ID);
 }

