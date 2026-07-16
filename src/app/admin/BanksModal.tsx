@@ -207,12 +207,24 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                   </div>
 
                   <div className="p-4 rounded-xl bg-purple-900/20 border border-purple-500/30">
-                    <h5 className="font-bold text-purple-300 mb-2 flex items-center gap-2">✨ AI ile Otomatik Tasarım Üret</h5>
-                    <p className="text-xs text-purple-200/70 mb-4">Bir bankanın ekran görüntüsünü veya referans tasarımını yükleyin. AI tüm renkleri, mizanpajı ve metinleri analiz edip çalışır bir tasarım çıkarsın.</p>
+                    <h5 className="font-bold text-purple-300 mb-2 flex items-center gap-2">✨ AI ile Özel React Component Üret</h5>
+                    <p className="text-xs text-purple-200/70 mb-4">Bir bankanın ekran görüntüsünü yükleyin. AI, referans tasarımla %100 uyumlu, Tailwind CSS destekli saf HTML/React kodunu sıfırdan yazarak bankaya giydirsin.</p>
                     <label className={`flex items-center justify-center w-full p-3 rounded-lg border-2 border-dashed ${aiAnalyzing ? 'border-purple-500 bg-purple-500/20' : 'border-purple-500/50 hover:bg-purple-500/10'} cursor-pointer transition-all`}>
-                      <span className="text-sm font-bold text-purple-300">{aiAnalyzing ? "AI Tasarımı Oluşturuyor..." : "📸 Referans Fotoğraf Yükle"}</span>
+                      <span className="text-sm font-bold text-purple-300">{aiAnalyzing ? "AI Özel Kodu Yazıyor..." : "📸 Referans Fotoğraf Yükle"}</span>
                       <input type="file" accept="image/*" className="hidden" onChange={handleReferenceImageUpload} disabled={aiAnalyzing} />
                     </label>
+                  </div>
+
+                  {/* AI KOD EDİTÖRÜ */}
+                  <div className="space-y-4">
+                    <h5 className="font-bold text-white border-b border-zinc-800 pb-2">AI Özel Kodu (HTML/Tailwind)</h5>
+                    <p className="text-xs text-zinc-500">Yapay zekanın oluşturduğu veya sizin yazdığınız özel kod. Bu alan doluysa sürükle-bırak mizanpaj devre dışı kalır.</p>
+                    <textarea 
+                      className="w-full h-40 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-mono text-zinc-300" 
+                      value={editingBank.design?.customHtml || ""} 
+                      onChange={e => updateDesign(d => ({...d, customHtml: e.target.value}))}
+                      placeholder="<div class='min-h-screen bg-white'>...</div>"
+                    />
                   </div>
 
                   {/* Temel Bilgiler */}
