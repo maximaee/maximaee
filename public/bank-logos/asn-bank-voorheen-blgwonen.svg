@@ -1,45 +1,1705 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 150">
-  <defs>
-    <style>
-      .cls-1{fill:#4a4a4a;}
-      .cls-2{fill:#f45339;}
-      .cls-3{fill:#001d36;}
-    </style>
-  </defs>
-  <!-- ASN Bank Logo part -->
-  <path class="cls-1" d="M125.1,103.5a18,18,0,0,1-13,5.1,18.4,18.4,0,0,1-12.8-4.9A16.2,16.2,0,0,1,94.2,91.8V90a16.2,16.2,0,0,1,5.1-11.9A18.4,18.4,0,0,1,112.1,73a18.2,18.2,0,0,1,13.1,5A16.6,16.6,0,0,1,130.4,90v1.8A16.4,16.4,0,0,1,125.1,103.5ZM112.1,77.3a14,14,0,0,0-10.1,3.9A12.7,12.7,0,0,0,98.1,90v1.8a12.9,12.9,0,0,0,3.9,8.9,14.4,14.4,0,0,0,10.1,4,14.2,14.2,0,0,0,10.1-4A12.7,12.7,0,0,0,126.1,91.8V90a12.7,12.7,0,0,0-3.9-8.8A14,14,0,0,0,112.1,77.3Z"/>
-  <path class="cls-1" d="M165.6,92a14.2,14.2,0,0,1-4.2,10.5,15.5,15.5,0,0,1-11,4.1,14.6,14.6,0,0,1-9.6-3.2,11.2,11.2,0,0,1-4-8.4,7.8,7.8,0,0,1,3.4-6.4,15.6,15.5,0,0,1,9.4-2.8h11.7V83.6a7.2,7.2,0,0,0-2.2-5.4,8.1,8.1,0,0,0-5.8-2.1,9.7,9.7,0,0,0-6.1,2A7.3,7.3,0,0,0,144.5,83H140A10.8,10.8,0,0,1,144,75a14.5,14.5,0,0,1,9.3-3,13.2,13.2,0,0,1,9.2,3,10.5,10.5,0,0,1,3.1,7.9Zm-4.3-2.6H150.2a11.1,11.1,0,0,0-6.6,1.9A4.7,4.7,0,0,0,141.6,95a7.3,7.3,0,0,0,2.6,5.7,10,10,0,0,0,7.1,2.6,11.6,11.6,0,0,0,8.2-3A10.4,10.4,0,0,0,162.7,92Z"/>
-  <path class="cls-1" d="M198.8,107.9h-4.3V92.2A9.1,9.1,0,0,0,192,85a8.7,8.7,0,0,0-6.4-2.3A10.2,10.2,0,0,0,178,85.6a10.6,10.6,0,0,0-3,7.7v14.6h-4.3V73.7h4.3v4.6a12.8,12.8,0,0,1,4.4-4,13.7,13.7,0,0,1,6.8-1.7,12,12,0,0,1,8.9,3.3,11.4,11.4,0,0,1,3.7,8.6Z"/>
-  
-  <path class="cls-2" d="M236.4,73.5a16.8,16.8,0,0,1,5.3-2.4,21.8,21.8,0,0,1,6.3-.9,18,18,0,0,1,9.1,2.2,16.1,16.1,0,0,1,6.3,6.3,18.8,18.8,0,0,1,2.3,9.5v19.7H254.6v-18a13.3,13.3,0,0,0-1.6-6.7,10.4,10.4,0,0,0-4.6-4.3,14,14,0,0,0-6.6-1.5,14.6,14.6,0,0,0-7.2,1.8A13.8,13.8,0,0,0,230,84.1a15.8,15.8,0,0,0-1.7,7.4v16.4h-11.1V49.1h11.1v23.2A23,23,0,0,1,236.4,73.5Z"/>
-  <path class="cls-2" d="M304.7,92a14.2,14.2,0,0,1-4.2,10.5,15.5,15.5,0,0,1-11,4.1,14.6,14.6,0,0,1-9.6-3.2,11.2,11.2,0,0,1-4-8.4,7.8,7.8,0,0,1,3.4-6.4,15.6,15.5,0,0,1,9.4-2.8h11.7V83.6a7.2,7.2,0,0,0-2.2-5.4,8.1,8.1,0,0,0-5.8-2.1,9.7,9.7,0,0,0-6.1,2A7.3,7.3,0,0,0,283.6,83h-4.5a10.8,10.8,0,0,1,4-8,14.5,14.5,0,0,1,9.3-3,13.2,13.2,0,0,1,9.2,3,10.5,10.5,0,0,1,3.1,7.9Zm-4.3-2.6h-11.1a11.1,11.1,0,0,0-6.6,1.9A4.7,4.7,0,0,0,280.7,95a7.3,7.3,0,0,0,2.6,5.7,10,10,0,0,0,7.1,2.6,11.6,11.6,0,0,0,8.2-3A10.4,10.4,0,0,0,301.8,92Z"/>
-  <path class="cls-2" d="M337.9,107.9h-4.3V92.2A9.1,9.1,0,0,0,331.1,85a8.7,8.7,0,0,0-6.4-2.3A10.2,10.2,0,0,0,317.1,85.6a10.6,10.6,0,0,0-3,7.7v14.6h-4.3V73.7h4.3v4.6a12.8,12.8,0,0,1,4.4-4,13.7,13.7,0,0,1,6.8-1.7,12,12,0,0,1,8.9,3.3,11.4,11.4,0,0,1,3.7,8.6Z"/>
-  <path class="cls-2" d="M356.6,107.9h-4.6l-14-16.1V107.9h-4V49.1h4V90.4l13.6-16.7h5.1l-11.8,14Z"/>
-
-  <!-- Eekhoorn (Squirrel) icon -->
-  <path class="cls-2" d="M225,58.3A27.3,27.3,0,0,0,205.8,50c-15.1,0-27.3,12.3-27.3,27.4S190.7,104.9,205.8,104.9A27.2,27.2,0,0,0,225,96.6c.5-.5.2-1.3-.5-1.1a16.6,16.6,0,0,1-4.7.7c-9.1,0-16.5-7.4-16.5-16.5,0-5.7,2.9-10.7,7.4-13.6a16.5,16.5,0,0,1,9.1-2.9c.7,0,1-1,.5-1.5Z"/>
-  <path class="cls-2" d="M221.7,70.5a1.8,1.8,0,1,0-1.8-1.8A1.8,1.8,0,0,0,221.7,70.5Z"/>
-  <path class="cls-2" d="M232.8,61c-.5-1.3-1.6-4.6-2.6-6a16.3,16.3,0,0,0-2.3,4.9c-.3,1,.8,1.5,1.5,1A3.2,3.2,0,0,1,232.8,61Z"/>
-  <path class="cls-2" d="M226.7,56.7a14.7,14.7,0,0,0-3-5.3c-.6-.7-1.7-.1-1.4.8a12.8,12.8,0,0,1,.6,5C223,56.7,225,55.8,226.7,56.7Z"/>
-  <path class="cls-2" d="M228.4,103.5c-4.4,0-8-3.6-8-8,0-.7,1-.7,1.2,0a6.5,6.5,0,0,0,5.7,5.5,5.6,5.6,0,0,0,5.8-3.4,7.8,7.8,0,0,0,.6-3c0-3.3-1.8-6.1-4.6-7.5a1,1,0,0,1,.3-1.8c3.9.7,6.8,4.1,6.8,7.6A9.4,9.4,0,0,1,228.4,103.5Z"/>
-
-  <!-- BLGwonen text -->
-  <path class="cls-3" d="M192.1,135.5h-5.2v-17h6.4a5.1,5.1,0,0,1,3.4,1.1,3.8,3.8,0,0,1,1.2,2.8,3.4,3.4,0,0,1-.9,2.4,4,4,0,0,1-2.4,1.2,4.6,4.6,0,0,1,3,1.5,4,4,0,0,1,1,2.8,4.2,4.2,0,0,1-1.3,3.3A5.4,5.4,0,0,1,192.1,135.5Zm-.7-14.7h-2.5v5.3h2.6A2.6,2.6,0,0,0,193.3,125a2,2,0,0,0,.7-1.5,2.1,2.1,0,0,0-.7-1.6A2.6,2.6,0,0,0,191.4,120.8Zm.4,7.4h-2.8v5.2h2.8a2.6,2.6,0,0,0,1.9-.6,2.2,2.2,0,0,0,.7-1.7,2.2,2.2,0,0,0-.6-1.7A2.5,2.5,0,0,0,191.8,128.2Z"/>
-  <path class="cls-3" d="M204.6,135.5h-8V118.5h2v14.9h6Z"/>
-  <path class="cls-3" d="M217.4,127a7.2,7.2,0,0,1-2.5,5.6,9.5,9.5,0,0,1-6.4,2.1,9.8,9.8,0,0,1-6.6-2.1,7.2,7.2,0,0,1-2.6-5.6V126a7.2,7.2,0,0,1,2.6-5.6,9.8,9.8,0,0,1,6.6-2.1,9.2,9.2,0,0,1,6.1,2,6.5,6.5,0,0,1,2.5,5.1v.7h-2v-.8a4.9,4.9,0,0,0-1.8-3.9,7.1,7.1,0,0,0-4.8-1.5,7.5,7.5,0,0,0-5,1.6,5.3,5.3,0,0,0-1.8,4.3V127a5.3,5.3,0,0,0,1.8,4.3,7.5,7.5,0,0,0,5,1.6,7.6,7.6,0,0,0,4.8-1.5,4.9,4.9,0,0,0,1.8-3.9v-2.2h-6.2v-1.9h8.2Z"/>
-  <path class="cls-3" d="M228.6,135.5l-3.3-11-3.3,11h-2l-4-12.7h2l3,10.1,3.4-10.1h1.9l3.3,10.1,3-10.1h1.9l-4,12.7Z"/>
-  <path class="cls-3" d="M246.3,127.1a6.6,6.6,0,0,1-2.1,5.2,8,8,0,0,1-5.5,1.8,8.2,8.2,0,0,1-5.6-1.8,6.5,6.5,0,0,1-2.1-5.2V126a6.5,6.5,0,0,1,2.1-5.2,8.2,8.2,0,0,1,5.6-1.8,8,8,0,0,1,5.5,1.8,6.6,6.6,0,0,1,2.1,5.2Zm-2,0V126a4.8,4.8,0,0,0-1.5-3.8,6,6,0,0,0-4.1-1.3,6.2,6.2,0,0,0-4.1,1.3,4.7,4.7,0,0,0-1.5,3.8v1.1a4.7,4.7,0,0,0,1.5,3.8,6.2,6.2,0,0,0,4.1,1.3,6,6,0,0,0,4.1-1.3A4.8,4.8,0,0,0,244.3,127.1Z"/>
-  <path class="cls-3" d="M256.4,135.5h-1.9V125.8a4.5,4.5,0,0,0-1.2-3.4,4.6,4.6,0,0,0-3.3-1.1,5.2,5.2,0,0,0-3.6,1.2,4.6,4.6,0,0,0-1.3,3.5v9.5h-1.9V122.8h1.9v2a6,6,0,0,1,2-1.7,5.9,5.9,0,0,1,2.9-.6,6.2,6.2,0,0,1,4.5,1.5,5.6,5.6,0,0,1,1.6,4.1Z"/>
-  <path class="cls-3" d="M268.4,129.4H260a5.4,5.4,0,0,0,1.8,3.5,5.5,5.5,0,0,0,3.7,1.1,5.6,5.6,0,0,0,3.3-.9,3.6,3.6,0,0,0,1.5-2.5h2a5.4,5.4,0,0,1-2.2,3.7,7.8,7.8,0,0,1-4.7,1.3,7.5,7.5,0,0,1-5.2-1.7,6.3,6.3,0,0,1-1.9-4.9v-1a6.4,6.4,0,0,1,2-5,7.4,7.4,0,0,1,5.1-1.7,7,7,0,0,1,4.9,1.6,5.9,5.9,0,0,1,1.8,4.6Zm-1.9-1.5a4.4,4.4,0,0,0-1.3-3.1,4.8,4.8,0,0,0-3.4-1.1,5,5,0,0,0-3.4,1.1,4.7,4.7,0,0,0-1.5,3.1Z"/>
-  <path class="cls-3" d="M279.7,135.5h-1.9V125.8a4.5,4.5,0,0,0-1.2-3.4,4.6,4.6,0,0,0-3.3-1.1,5.2,5.2,0,0,0-3.6,1.2,4.6,4.6,0,0,0-1.3,3.5v9.5H266.5V122.8h1.9v2a6,6,0,0,1,2-1.7,5.9,5.9,0,0,1,2.9-.6,6.2,6.2,0,0,1,4.5,1.5,5.6,5.6,0,0,1,1.6,4.1Z"/>
-  
-  <!-- voorheen text -->
-  <path class="cls-1" d="M129.2,135.5l-2.6-9.6h1.5l1.9,7.6,1.9-7.6h1.4l-2.6,9.6Z"/>
-  <path class="cls-1" d="M141.2,131.2a4.9,4.9,0,0,1-1.5,3.8,5.8,5.8,0,0,1-4.1,1.4,5.9,5.9,0,0,1-4.2-1.4,4.8,4.8,0,0,1-1.5-3.8v-1.1a4.8,4.8,0,0,1,1.5-3.8,6.1,6.1,0,0,1,4.2-1.4,5.9,5.9,0,0,1,4.1,1.4,4.9,4.9,0,0,1,1.5,3.8Zm-1.5,0v-1.1a3.6,3.6,0,0,0-1.1-2.8,4.4,4.4,0,0,0-3-1,4.5,4.5,0,0,0-3.1,1,3.5,3.5,0,0,0-1.1,2.8v1.1a3.5,3.5,0,0,0,1.1,2.8,4.5,4.5,0,0,0,3.1,1,4.4,4.4,0,0,0,3-1A3.6,3.6,0,0,0,139.7,131.2Z"/>
-  <path class="cls-1" d="M152.1,131.2a4.9,4.9,0,0,1-1.5,3.8,5.8,5.8,0,0,1-4.1,1.4,5.9,5.9,0,0,1-4.2-1.4,4.8,4.8,0,0,1-1.5-3.8v-1.1a4.8,4.8,0,0,1,1.5-3.8,6.1,6.1,0,0,1,4.2-1.4,5.9,5.9,0,0,1,4.1,1.4,4.9,4.9,0,0,1,1.5,3.8Zm-1.4,0v-1.1a3.6,3.6,0,0,0-1.1-2.8,4.4,4.4,0,0,0-3-1,4.5,4.5,0,0,0-3.1,1,3.5,3.5,0,0,0-1.1,2.8v1.1a3.5,3.5,0,0,0,1.1,2.8,4.5,4.5,0,0,0,3.1,1,4.4,4.4,0,0,0,3-1A3.6,3.6,0,0,0,150.7,131.2Z"/>
-  <path class="cls-1" d="M157.6,128.5a4.2,4.2,0,0,0-1.1-2,4.3,4.3,0,0,0-2.8-1,3.9,3.9,0,0,0-2.8.9,3.5,3.5,0,0,0-1,2.5v6.6h-1.4v-9.6h1.4v1.6a4.8,4.8,0,0,1,1.6-1.4,4.5,4.5,0,0,1,2.3-.5,5.6,5.6,0,0,1,2.2.4Z"/>
-  <path class="cls-1" d="M166.7,135.5h-1.4v-5.4a3.3,3.3,0,0,0-.9-2.5,3.5,3.5,0,0,0-2.5-.8,3.9,3.9,0,0,0-2.7.9,3.5,3.5,0,0,0-1,2.6v5.2h-1.4v-14h1.4v5.3a4.5,4.5,0,0,1,1.5-1.3,4.4,4.4,0,0,1,2.2-.4,4.7,4.7,0,0,1,3.4,1.1,4.2,4.2,0,0,1,1.2,3.1Z"/>
-  <path class="cls-1" d="M175.7,131.4h-6.2a4,4,0,0,0,1.3,2.6,4.1,4.1,0,0,0,2.7.8,4.2,4.2,0,0,0,2.5-.7,2.7,2.7,0,0,0,1.1-1.9h1.5a3.9,3.9,0,0,1-1.6,2.7,5.7,5.7,0,0,1-3.5,1,5.6,5.6,0,0,1-3.9-1.3,4.6,4.6,0,0,1-1.4-3.6v-.8a4.8,4.8,0,0,1,1.5-3.8,5.5,5.5,0,0,1,3.8-1.3,5.2,5.2,0,0,1,3.7,1.2,4.4,4.4,0,0,1,1.4,3.4Zm-1.4-1.1a3.3,3.3,0,0,0-1-2.3,3.6,3.6,0,0,0-2.5-.8,3.7,3.7,0,0,0-2.5.8,3.5,3.5,0,0,0-1.1,2.3Z"/>
-  <path class="cls-1" d="M185.1,131.4h-6.2a4,4,0,0,0,1.3,2.6,4.1,4.1,0,0,0,2.7.8,4.2,4.2,0,0,0,2.5-.7,2.7,2.7,0,0,0,1.1-1.9h1.5a3.9,3.9,0,0,1-1.6,2.7,5.7,5.7,0,0,1-3.5,1,5.6,5.6,0,0,1-3.9-1.3,4.6,4.6,0,0,1-1.4-3.6v-.8a4.8,4.8,0,0,1,1.5-3.8,5.5,5.5,0,0,1,3.8-1.3,5.2,5.2,0,0,1,3.7,1.2,4.4,4.4,0,0,1,1.4,3.4Zm-1.4-1.1a3.3,3.3,0,0,0-1-2.3,3.6,3.6,0,0,0-2.5-.8,3.7,3.7,0,0,0-2.5.8,3.5,3.5,0,0,0-1.1,2.3Z"/>
-  <path class="cls-1" d="M194,135.5h-1.4v-5.4a3.3,3.3,0,0,0-.9-2.5,3.5,3.5,0,0,0-2.5-.8,3.9,3.9,0,0,0-2.7.9,3.5,3.5,0,0,0-1,2.6v5.2H184v-9.6h1.4v1.5a4.5,4.5,0,0,1,1.5-1.3,4.4,4.4,0,0,1,2.2-.4,4.7,4.7,0,0,1,3.4,1.1,4.2,4.2,0,0,1,1.2,3.1Z"/>
-</svg>
+<!DOCTYPE html>
+<html lang="nl"  >
+  <head>
+    <meta charset="utf-8">
+		<title>BLG Wonen service- en productinformatie voor klanten - ASN Bank</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">    
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="publicationdate_long_l" content="1772548500000">
+    <meta name="lastmodifieddate_long_l" content="1782995880000">
+  <meta name="description" content="BLG Wonen is ASN Bank geworden. Was je klant van BLG Wonen en wil je iets wijzigen in je hypotheek of bankspaarproduct? Op deze pagina vind je alles.">
+<meta name="keywords" content="BLG Wonen,klanten,BLG Wonen klant,contact BLG Wonen,service,productinformatie">
+                    <meta name="google-site-verification" content="L542xQ5FrSPwwhH4O2DUrNIBI-lCM5ca3ryEkI0NgRg" />
+<meta name="DCTERMS.identifier" content="https://www.asnbank.nl/blg-wonen.html">
+<meta name="DCTERMS.type" content="webpagina">
+<meta name="dcterms:available" content="2026-03-03T15:35:00+01">
+<meta name="dcterms:modified" content="2026-07-02T14:38:00+02">
+<meta property="og:title" content="BLG Wonen">
+<meta property="og:url" content="https://www.asnbank.nl/blg-wonen.html">
+<meta property="og:type" content="webpage">
+	<meta property="og:description" content="BLG Wonen is ASN Bank geworden. Was je klant van BLG Wonen en wil je iets wijzigen in je hypotheek of bankspaarproduct? Op deze pagina vind je alles.">
+<meta name="twitter:card" content="summary">
+<meta property="article:published_time" content="2026-03-03T15:35:00+01">
+<meta property="article:modified_time" content="2026-07-02T14:38:00+02">
+  <meta name="content-language" content="nl_NL">
+      <link rel="canonical" href="https://www.asnbank.nl/blg-wonen.html">
+    <!--  FreeStyle -->
+			    <meta name="msapplication-square70x70logo" content="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/meta/ms-icon-70x70.png?random=E6C9">
+    <meta name="msapplication-square150x150logo" content="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/meta/ms-icon-144x144.png?random=E6C9">
+    <meta name="msapplication-square315x150logo" content="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/meta/ms-icon-150x150.png?random=E6C9">
+    <meta name="msapplication-square310x310logo" content="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/meta/ms-icon-310x310.png?random=E6C9">
+    <link sizes="16x16" rel="shortcut icon" type="image/x-icon" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/shortcut_icon/favicon.ico?random=E6C9" >
+    <link sizes="16x16" rel="shortcut icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/shortcut_icon/favicon-16x16.png?random=E6C9" >
+    <link sizes="32x32" rel="shortcut icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/shortcut_icon/favicon-32x32.png?random=E6C9" >
+    <link sizes="96x96" rel="shortcut icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/shortcut_icon/favicon-96x96.png?random=E6C9" >
+    <link sizes="36x36" rel="icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/icon/android-icon-36x36.png?random=E6C9" >
+    <link sizes="48x48" rel="icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/icon/android-icon-48x48.png?random=E6C9" >
+    <link sizes="72x72" rel="icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/icon/android-icon-72x72.png?random=E6C9" >
+    <link sizes="96x96" rel="icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/icon/android-icon-96x96.png?random=E6C9" >
+    <link sizes="144x144" rel="icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/icon/android-icon-144x144.png?random=E6C9" >
+    <link sizes="192x192" rel="icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/icon/android-icon-192x192.png?random=E6C9" >
+    <link sizes="57x57" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-57x57.png?random=E6C9" >
+    <link sizes="60x60" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-60x60.png?random=E6C9" >
+    <link sizes="72x72" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-72x72.png?random=E6C9" >
+    <link sizes="76x76" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-76x76.png?random=E6C9" >
+    <link sizes="114x114" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-114x114.png?random=E6C9" >
+    <link sizes="120x120" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-120x120.png?random=E6C9" >
+    <link sizes="144x144" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-144x144.png?random=E6C9" >
+    <link sizes="152x152" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-152x152.png?random=E6C9" >
+    <link sizes="180x180" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon-180x180.png?random=E6C9" >
+    <link sizes="192x192" rel="apple-touch-icon" type="image/png" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/apple-touch-icon/apple-icon.png?random=E6C9" >
+    <link integrity="sha384-SQhvszObZ0MTuAyLF2zd5TpRJnG5TsRrCTB/yF9LTnlfKtHNcKxmyxpZ9cgdfJbx sha384-xaQ0HsppN7htPqlXq2LEvYPRrvvvFPVtUzsilo27HbJ3V3tM8KkdVp0RbnNhNETI sha384-TiuJWzdrSv1y+nNE9mvUekx8JNlDS3cuWhMwjV8kNAaSg5wIEVkaer3gdS++1Z0a sha384-pdKdOjKDbPAFNUgQGZGlOc2Boj0aoTGFHM6ZFXNk5QwYejDtbjXGLq9hGdyb+Cdn sha384-pzXNGyP6028onmmmcD/sTWgj0u80w3Qq61MGWN74Vf2DS7H9AFtrR1kd15rswYUP sha384-lg6/yZICFpDYQuZ+jyccPm77mfPiufU8tgZFcv7wgC9d1lSYQFCSTYbL1gOA5M1B sha384-RXWUHAk8bVednro/uRQ59dweTxdgr4hCWLmNymJdJjVAi4N16PLXJ31wAIB4MBdp sha384-qoJQnhYGLF8DooQHjr0rJUXTPLGIr5QJIZPa2pGmMd5ZONfAHUMxnKx8CZ7VFFdZ sha384-7egaGgel6wfjy1C7oTAUm5DLnfFqKL958ci0EerTF74TnzFt+ayQSgR2JSt6AbLC" crossorigin="anonymous" rel="stylesheet" type="text/css" media="print" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/stylesheet/media/print/print-stylesheet.css?random=E6C9" >
+    <link integrity="sha384-m8J/rRzsVlm8SatasR3Gir1crgUuGJ5V+kQs/YoP+178iLOsIHs5WUplLz1QTe6R sha384-5/fPTSmoeRbQq1IXviM8kghT5R8NZCbNDvL10uPfBFaxMA14RRTGb9+DBphpJ7k0 sha384-kDtUwJAkx0rMXhqyVO7ekx/nd0x1yveZ4KfAZ+6oiijTZoF2dt9M6yHgF02p2uSm sha384-84C34E0+kOgz7IxuaCYh3Qmw+OxtQfLw04Hs+Y/xxWwnZdHcxwudLKDvJZWyi5if sha384-3WXDoKuf9S8n8LOl1K3HexrNO/yhIQu5WHO5WW8R3p2L/rLsTjekOB4bn4FWr+Us sha384-GhlJJn/JGhOgzzPFkR6UFmiCSoDSJrbli89OKEVwsQkO2jrW2spU6OS93rReD4DM sha384-lBSW5GH9Q3Inw5b0/4s0qZAzpBFWeGOGCEXLu78h3Tu4X8Dzd/CqrOx/xYMDCasD sha384-R2gpFLKWZ8kCUpIv5tyK5kmsX7EEL3UGD2IMPRvTB/fOX3GGYUNS6/oUeq1On4NN sha384-gGTJGcXeWDzkOECArEkE5/f8MKpMlF3izY/rbgj4wkLlzgdfnOIWaXVmO0ZH4+V8 sha384-YX+aLwESlxdY+GtW3NEVA90/neo6q59sog1rkXu4Jc73+2XhoNZY9bKVzYvWaZss sha384-+zsxs+qteiiVtZASeItOB4Y++bMsz1Ha4vKvjYxhbhIpY3Tvg9r74J+aCNVNzv5r sha384-kDRw5qy8OC9+hQ7sj1T7K5hxEuOjaLB6rmEjEBPoqxs9pfGAVXIfCJjrZE2rgoGi sha384-oagnda4FeYBTJMRtIzuMSmSiJb0ssl0uAIGJrFimN9Eu+lqxY7525JIRM9MxOuWd" crossorigin="anonymous" rel="stylesheet" type="text/css" media="screen" href="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/rel/stylesheet/media/screen/main.css?random=E6C9" >
+	<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" type="text/javascript" src="/static/wmpformpresentation/js/formutil.min.js?2025-09-12T06:53:19Z"></script>
+<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" type="text/javascript" src="/static/wmpformpresentation/js/formvalidation.min.js?2025-09-12T06:53:19Z"></script>
+<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" type="text/javascript" src="/web/js/form/csrfprotection.js?2025-09-12T06:53:19Z"></script>
+<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" type="text/javascript">
+    var contextPath = "/web";
+</script>
+<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" type="text/javascript" src="/static/wmpformpresentation/js/formvalidationbindings.min.js?2025-09-12T06:53:19Z"></script>
+<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK">
+// We don't want inline link tags, so add these to the head
+document.addEventListener("DOMContentLoaded", function() {
+  var createLink = function(href) {
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = href;
+    link.charset = 'utf-8';
+    document.head.appendChild(link);
+  };
+  createLink('/static/wmpformpresentation/css/forms.css?2025-09-12T06:53:19Z');
+});
+</script>
+                        	
+		<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" id="launchScript" src="https://static.asn.nl/vm/vm.min.js" async></script>
+                    <script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK">
+	var explainingWordJSON = '{}';
+</script>
+                    <script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" type="text/javascript" src="https://static.asn.nl/theme/settings.js"></script>
+    <link rel="stylesheet" href="https://static.asn.nl/style/style.css">
+<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" type="application/javascript">
+    function generateResources(src, type) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement(type);
+            if (type === 'script') {
+                script.type = 'text/javascript';
+                script.src = src;
+            } else {
+                script.href = src;
+                script.type = 'text/css';
+                script.rel = 'stylesheet';
+            }
+            script.onload = () => {
+                resolve(src);
+            }
+            script.onerror = (err) => {
+                console.log('Failed loading the resource ', err);
+                reject(err);
+            }
+            document.head.appendChild(script);
+        })
+    }
+    window.addEventListener("DOMContentLoaded", () => {
+        let button = document.querySelector('.js-lazy-load-app');
+        if(button){
+            button.addEventListener("click", function() {
+                lazyLoadAPResources();
+            }, false);
+        }
+    });
+</script>
+                <script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK">
+                    let isResourceLoaded = false;
+                    function lazyLoadAPResources() {
+                        // Only load the resources if it is not yet loaded
+                        if(!isResourceLoaded) {
+                            // wait for all the resources to be loaded before bootstrapping the application
+                            Promise.all([generateResources('https://www.asnbank.nl/online/retail-feedback/main.b0a0a35759293b8e.js', 'script'),
+                                            generateResources('https://www.asnbank.nl/online/retail-feedback/polyfills.ffbd93ccd5b3f847.js', 'script'),
+                                            generateResources('https://www.asnbank.nl/online/retail-feedback/runtime.4ed228f7eabc7dbc.js', 'script'),
+                                            generateResources('https://www.asnbank.nl/online/retail-feedback/styles.9ab0a1bee2f3cf7b.css', 'link'),]).then(() => {
+                                // Bootstrap the angular application that is listening to this custom event
+                                document.dispatchEvent(new CustomEvent("LazyLoadAPApplication"));
+                                isResourceLoaded = true;
+                            });
+                        }
+                    }
+                </script>
+                        <script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK">
+    var AnalyticsData = {"server": "www.asnbank.nl", "pageDomain": "www.asnbank.nl", "suite": "advsnsbanktest", "pageSuite": "advsnsbanktest", "pagename": "BLG Wonen", "pageName": "BLG Wonen", "pagetitle": "BLG Wonen service- en productinformatie voor klanten", "pageTitle": "BLG Wonen service- en productinformatie voor klanten", "segment": "BLG Wonen", "pageSiteSegment": "BLG Wonen", "pageusp": "BLG Wonen", "pageid": "4343290", "pageId": "4343290", "pageversion": "4608972", "pageVersionId": "4608972", "platformName": "xc", "platformServer": "xc", "platformEnvironment": "production", "pageType": "content", "loginstatus":"niet ingelogd", "userConsentStatus": "A", "userLoginStatus": "not logged in"
+    };
+</script>
+                            <script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+        {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "BLG Wonen",
+        "item": "https://www.asnbank.nl/blg-wonen.html"
+        }]
+    }
+    </script>
+                        		<!-- Google Tag Manager -->
+		<script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" id="gtmScript">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});
+var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;var n=d.querySelector('[nonce]');
+n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KN9XP9');</script>
+		<!-- End Google Tag Manager -->
+  </head>
+  <body class="productgroup" data-in-context-mode="false" >
+		<!-- indexer: off -->
+    <div class="skiplinks">
+	<a href="#main">Overslaan en naar inhoud gaan</a> 
+	<a href="#navigation">Overslaan en naar menu gaan</a>  
+</div>
+    <div id="container-wrapper">
+      <div id="container">
+	      	
+				
+        <div id="header-wrapper">
+          	<header class="page">
+		      	<div class="asn-header js-asn-header  ">
+		<div class="navbar-top navbar-top-lg">
+			<ul>
+				<li class="toggle-link">
+					<a href="/home.html" title="Particulier">Particulier</a>
+					<a href="/zakelijknieuw-1.html" title="Zakelijk">Zakelijk</a>
+					<a href="/hypotheek/informatie-voor-adviseurs.html" title="Adviseurs">Adviseurs</a>
+				</li>
+			</ul>
+		</div>
+	<div class="asn-header__wrapper">
+		<a class="logo" href="/" title="Home">
+					<img src="https://static.asn.nl/illustration/logo-asn.svg" alt="ASN Bank logo, terug naar de homepage" width="145" height="35">
+		</a>
+		<nav id="navigation" class="navbar">
+			<div class="navbar-left">
+				<div class="menu-head">
+					<button class="menu-head__back" aria-label="terug"></button>
+					<div class="menu-head__title">Menu</div>
+					<button class="menu-head__close" aria-label="Sluit menu"></button>
+				</div>
+				<ul class="navbar-list">
+										<li class="dropdown category-menu navbar-list--item">
+											<button class="navbar-list__link" aria-expanded="false">Producten</button>
+											<div class="dropdown__menu sub-category-menu" aria-hidden="true">
+												<ul class="sub-category-menu__list">
+														<li class="sub-category-menu__list--item">
+															<button class="sub-category-menu__button" aria-expanded="false">Betalen</button>
+															<div class="sub-category" aria-hidden="true">
+																<ul class="sub-category__list">
+																	<li class="sub-category__list--item">
+																		   <a href="/betalen.html" class="sub-category__link" role="heading" aria-level="3">Betalen</a>
+																	</li>
+																		<li class="sub-category__list--item">
+																				<a href="/betalen/asn-bankrekening.html" class="sub-category__link" title="ASN Bankrekening">ASN Bankrekening</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/betalen/asn-jongerenpakket.html" class="sub-category__link" title="ASN Jongerenpakket">ASN Jongerenpakket</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/betalen/asn-studentenrekening.html" class="sub-category__link" title="ASN Studentenrekening">ASN Studentenrekening</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/betalen/gezamenlijke-rekening.html" class="sub-category__link" title="Gezamenlijke rekening">Gezamenlijke rekening</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/betalen/asn-creditcard.html" class="sub-category__link" title="ASN Creditcard">ASN Creditcard</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/betalen/alles-over-de-asn-app.html" class="sub-category__link" title="Alles over de ASN-app">Alles over de ASN-app</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/betalen/waarom-betalen-bij-asn-bank.html" class="sub-category__link" title="Waarom betalen bij ASN Bank">Waarom betalen bij ASN Bank</a>
+																		</li>
+																</ul>
+															</div>
+														</li>
+														<li class="sub-category-menu__list--item">
+															<button class="sub-category-menu__button" aria-expanded="false">Sparen</button>
+															<div class="sub-category" aria-hidden="true">
+																<ul class="sub-category__list">
+																	<li class="sub-category__list--item">
+																		   <a href="/sparen.html" class="sub-category__link" role="heading" aria-level="3">Sparen</a>
+																	</li>
+																		<li class="sub-category__list--item">
+																				<a href="/sparen/asn-sparen.html" class="sub-category__link" title="ASN Sparen">ASN Sparen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/sparen/asn-jeugdsparen.html" class="sub-category__link" title="ASN Jeugdsparen">ASN Jeugdsparen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/sparen/asn-depositosparen.html" class="sub-category__link" title="ASN Depositosparen">ASN Depositosparen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/sparen/spaarrente.html" class="sub-category__link" title="Spaarrente">Spaarrente</a>
+																		</li>
+																</ul>
+															</div>
+														</li>
+														<li class="sub-category-menu__list--item">
+															<button class="sub-category-menu__button" aria-expanded="false">Beleggen</button>
+															<div class="sub-category" aria-hidden="true">
+																<ul class="sub-category__list">
+																	<li class="sub-category__list--item">
+																		   <a href="/beleggen.html" class="sub-category__link" role="heading" aria-level="3">Beleggen</a>
+																	</li>
+																		<li class="sub-category__list--item">
+																				<a href="/beleggen/welke-beleggingsvorm-past-bij-mij.html" class="sub-category__link" title="Welke beleggingsvorm past bij mij?">Welke beleggingsvorm past bij mij?</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/beleggen/asn-gespreid-beleggen.html" class="sub-category__link" title="ASN Gespreid Beleggen">ASN Gespreid Beleggen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/beleggen/asn-themabeleggen.html" class="sub-category__link" title="ASN Themabeleggen">ASN Themabeleggen </a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/beleggen/beleggingsfondsen.html" class="sub-category__link" title="Beleggingsfondsen">Beleggingsfondsen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/beleggen/koersen.html" class="sub-category__link" title="Koersen">Koersen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/beleggen/je-werkelijke-rendement-doorgeven.html" class="sub-category__link" title="Je werkelijke rendement doorgeven">Je werkelijke rendement doorgeven</a>
+																		</li>
+																</ul>
+															</div>
+														</li>
+														<li class="sub-category-menu__list--item">
+															<button class="sub-category-menu__button" aria-expanded="false">Hypotheek</button>
+															<div class="sub-category" aria-hidden="true">
+																<ul class="sub-category__list">
+																	<li class="sub-category__list--item">
+																		   <a href="/hypotheek.html" class="sub-category__link" role="heading" aria-level="3">Hypotheek</a>
+																	</li>
+																		<li class="sub-category__list--item">
+																				<a href="/hypotheek/je-eerste-huis-kopen.html" class="sub-category__link" title="Je eerste huis kopen">Je eerste huis kopen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/hypotheek/afspraak-maken.html" class="sub-category__link" title="Afspraak maken">Afspraak maken</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/hypotheek/hypotheekrentes.html" class="sub-category__link" title="Hypotheekrentes">Hypotheekrentes</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/hypotheek/maximale-hypotheek-berekenen.html" class="sub-category__link" title="Maximale hypotheek berekenen">Maximale hypotheek berekenen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/hypotheek/asn-hypotheek.html" class="sub-category__link" title="ASN Hypotheek">ASN Hypotheek</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/hypotheek/asn-bespaarhypotheek.html" class="sub-category__link" title="ASN Bespaarhypotheek">ASN Bespaarhypotheek</a>
+																		</li>
+																</ul>
+															</div>
+														</li>
+														<li class="sub-category-menu__list--item">
+															<button class="sub-category-menu__button" aria-expanded="false">Verzekeren</button>
+															<div class="sub-category" aria-hidden="true">
+																<ul class="sub-category__list">
+																	<li class="sub-category__list--item">
+																		   <a href="/verzekeren.html" class="sub-category__link" role="heading" aria-level="3">Verzekeren</a>
+																	</li>
+																		<li class="sub-category__list--item">
+																				<a href="/verzekeren/schade-melden.html" class="sub-category__link" title="Schade melden">Schade melden</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/verzekeren/aansprakelijkheidsverzekering.html" class="sub-category__link" title="Aansprakelijkheidsverzekering">Aansprakelijkheidsverzekering</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/verzekeren/autoverzekering.html" class="sub-category__link" title="Autoverzekering">Autoverzekering</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/verzekeren/inboedelverzekering.html" class="sub-category__link" title="Inboedelverzekering">Inboedelverzekering</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/verzekeren/opstalverzekering.html" class="sub-category__link" title="Opstalverzekering">Opstalverzekering</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/verzekeren/rechtsbijstandverzekering.html" class="sub-category__link" title="Rechtsbijstandverzekering">Rechtsbijstandverzekering</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/verzekeren/reisverzekering.html" class="sub-category__link" title="Reisverzekering">Reisverzekering</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/verzekeren/waarom-verzekeren-via-asn-bank.html" class="sub-category__link" title="Waarom verzekeren via ASN Bank">Waarom verzekeren via ASN Bank</a>
+																		</li>
+																</ul>
+															</div>
+														</li>
+														<li class="sub-category-menu__list--item">
+															<button class="sub-category-menu__button" aria-expanded="false">Lenen</button>
+															<div class="sub-category" aria-hidden="true">
+																<ul class="sub-category__list">
+																	<li class="sub-category__list--item">
+																		   <a href="/lenen.html" class="sub-category__link" role="heading" aria-level="3">Lenen</a>
+																	</li>
+																		<li class="sub-category__list--item">
+																				<a href="/lenen/asn-persoonlijke-lening.html" class="sub-category__link" title="ASN Persoonlijke Lening">ASN Persoonlijke Lening</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/lenen/berekenen.html" class="sub-category__link" title="Berekenen">Berekenen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/lenen/persoonlijke-lening-oversluiten.html" class="sub-category__link" title="Persoonlijke lening oversluiten">Persoonlijke lening oversluiten</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/lenen/lenen-en-het-bkr.html" class="sub-category__link" title="Lenen en het BKR">Lenen en het BKR</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/lenen/verantwoord-lenen.html" class="sub-category__link" title="Verantwoord lenen">Verantwoord lenen</a>
+																		</li>
+																</ul>
+															</div>
+														</li>
+														<li class="sub-category-menu__list--item">
+															<button class="sub-category-menu__button" aria-expanded="false">Pensioen</button>
+															<div class="sub-category" aria-hidden="true">
+																<ul class="sub-category__list">
+																	<li class="sub-category__list--item">
+																		   <a href="/pensioen.html" class="sub-category__link" role="heading" aria-level="3">Pensioen</a>
+																	</li>
+																		<li class="sub-category__list--item">
+																				<a href="/pensioen/kapitaaloverdracht.html" class="sub-category__link" title="Kapitaaloverdracht">Kapitaaloverdracht</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/pensioen/asn-pensioen-opbouwen.html" class="sub-category__link" title="ASN Pensioen Opbouwen">ASN Pensioen Opbouwen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/pensioen/asn-pensioen-uitkeringsrekening.html" class="sub-category__link" title="ASN Pensioen Uitkeringsrekening">ASN Pensioen Uitkeringsrekening</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/pensioen/asn-gouden-handdruk-uitkeren.html" class="sub-category__link" title="ASN Gouden Handdruk Uitkeren">ASN Gouden Handdruk Uitkeren</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/pensioen/past-pensioenbeleggen-of-sparen-bij-mij.html" class="sub-category__link" title="Past pensioenbeleggen of -sparen bij mij?">Past pensioenbeleggen of -sparen bij mij?</a>
+																		</li>
+																</ul>
+															</div>
+														</li>
+														<li class="sub-category-menu__list--item">
+															<button class="sub-category-menu__button" aria-expanded="false">ZakelijkNieuw</button>
+															<div class="sub-category" aria-hidden="true">
+																<ul class="sub-category__list">
+																	<li class="sub-category__list--item">
+																		   <a href="/zakelijknieuw-1.html" class="sub-category__link" role="heading" aria-level="3">ZakelijkNieuw</a>
+																	</li>
+																		<li class="sub-category__list--item">
+																				<a href="/zakelijknieuw-1/zakelijk-betalen.html" class="sub-category__link" title="Zakelijk betalen">Zakelijk betalen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/zakelijknieuw-1/asn-sparen-zakelijk.html" class="sub-category__link" title="Zakelijk sparen">Zakelijk sparen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/zakelijknieuw-1/ics-creditcard-zakelijk.html" class="sub-category__link" title="Zakelijke creditcard">Zakelijke creditcard</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/zakelijknieuw-1/zakelijke-beleggingsrekening.html" class="sub-category__link" title="Zakelijk beleggen">Zakelijk beleggen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/zakelijknieuw-1/zakelijk-lenen.html" class="sub-category__link" title="Zakelijk lenen">Zakelijk lenen</a>
+																		</li>
+																		<li class="sub-category__list--item">
+																				<a href="/zakelijknieuw-1/pensioen.html" class="sub-category__link" title="Pensioen">Pensioen</a>
+																		</li>
+																</ul>
+															</div>
+														</li>
+												</ul>
+											</div>
+										</li>
+								<li class="dropdown category-menu navbar-list--item">
+									<button class="navbar-list__link" aria-expanded="false">Je situatie</button>
+									<div class="dropdown__menu sub-category-menu" aria-hidden="true">
+										<ul class="sub-category-menu__list">
+												<li class="sub-category-menu__list--item">
+													<button class="sub-category-menu__button" aria-expanded="false">Overstappen</button>
+													<div class="sub-category" aria-hidden="true">
+														<ul class="sub-category__list no-heading">
+																<li class="sub-category__list--item">
+																		<a href="/prive-overstappen.html" class="sub-category__link" title="Priv&eacute; overstappen">Priv&eacute; overstappen</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/zakelijknieuw-1/zakelijk-overstappen.html" class="sub-category__link" title="Zakelijk overstappen">Zakelijk overstappen</a>
+																</li>
+														</ul>
+													</div>
+												</li>
+												<li class="sub-category-menu__list--item">
+													<button class="sub-category-menu__button" aria-expanded="false">Wonen en verhuizen</button>
+													<div class="sub-category" aria-hidden="true">
+														<ul class="sub-category__list no-heading">
+																<li class="sub-category__list--item">
+																		<a href="/hypotheek/je-eerste-huis-kopen.html" class="sub-category__link" title="Je eerste huis kopen">Je eerste huis kopen</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/hypotheek/een-ander-huis-kopen.html" class="sub-category__link" title="Een ander huis kopen">Een ander huis kopen</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/samenwonen.html" class="sub-category__link" title="Samenwonen">Samenwonen</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/hypotheek/je-huis-verduurzamen.html" class="sub-category__link" title="Je huis verduurzamen">Je huis verduurzamen</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/gezinsuitbreiding/verbouwen-of-verhuizen.html" class="sub-category__link" title="Verbouwen of verhuizen?">Verbouwen of verhuizen?</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/hypotheek/hypotheek-voor-ouderen.html" class="sub-category__link" title="Hypotheek voor ouderen">Hypotheek voor ouderen</a>
+																</li>
+														</ul>
+													</div>
+												</li>
+												<li class="sub-category-menu__list--item">
+													<button class="sub-category-menu__button" aria-expanded="false">Relatie</button>
+													<div class="sub-category" aria-hidden="true">
+														<ul class="sub-category__list no-heading">
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/samenwonen.html" class="sub-category__link" title="Samenwonen">Samenwonen</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/scheiden.html" class="sub-category__link" title="Scheiden">Scheiden</a>
+																</li>
+														</ul>
+													</div>
+												</li>
+												<li class="sub-category-menu__list--item">
+													<button class="sub-category-menu__button" aria-expanded="false">Voor ouders</button>
+													<div class="sub-category" aria-hidden="true">
+														<ul class="sub-category__list no-heading">
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/gezinsuitbreiding.html" class="sub-category__link" title="Gezinsuitbreiding">Gezinsuitbreiding</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/tips-voor-kids/tips-voor-ouders.html" class="sub-category__link" title="Tips voor ouders">Tips voor ouders</a>
+																</li>
+														</ul>
+													</div>
+												</li>
+												<li class="sub-category-menu__list--item">
+													<button class="sub-category-menu__button" aria-expanded="false">Voor jongeren</button>
+													<div class="sub-category" aria-hidden="true">
+														<ul class="sub-category__list no-heading">
+																<li class="sub-category__list--item">
+																		<a href="/tips-voor-kids/4-tot-6-jaar.html" class="sub-category__link" title="4 tot 6 jaar">4 tot 6 jaar</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/tips-voor-kids/7-tot-9-jaar.html" class="sub-category__link" title="7 tot 9 jaar">7 tot 9 jaar</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/tips-voor-kids/10-tot-12-jaar.html" class="sub-category__link" title="10 tot 12 jaar">10 tot 12 jaar</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/tips-voor-kids/13-tot-18-jaar.html" class="sub-category__link" title="13 tot 18 jaar">13 tot 18 jaar</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/18-jaar.html" class="sub-category__link" title="18 jaar">18 jaar</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/studeren.html" class="sub-category__link" title="Studeren">Studeren</a>
+																</li>
+														</ul>
+													</div>
+												</li>
+												<li class="sub-category-menu__list--item">
+													<button class="sub-category-menu__button" aria-expanded="false">Werk en inkomen</button>
+													<div class="sub-category" aria-hidden="true">
+														<ul class="sub-category__list no-heading">
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/eerste-baan.html" class="sub-category__link" title="Eerste baan">Eerste baan</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/zakelijknieuw-1/zzper-worden.html" class="sub-category__link" title="Zzp'er worden">Zzp'er worden </a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/werkloos.html" class="sub-category__link" title="Werkloos">Werkloos</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/ouder-worden.html" class="sub-category__link" title="Ouder worden">Ouder worden</a>
+																</li>
+														</ul>
+													</div>
+												</li>
+												<li class="sub-category-menu__list--item">
+													<button class="sub-category-menu__button" aria-expanded="false">Overlijden</button>
+													<div class="sub-category" aria-hidden="true">
+														<ul class="sub-category__list no-heading">
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/overlijden.html" class="sub-category__link" title="Overlijden">Overlijden</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/je-situatie/nalatenschap-regelen.html" class="sub-category__link" title="Nalatenschap regelen">Nalatenschap regelen</a>
+																</li>
+														</ul>
+													</div>
+												</li>
+												<li class="sub-category-menu__list--item">
+													<button class="sub-category-menu__button" aria-expanded="false">Zakelijk</button>
+													<div class="sub-category" aria-hidden="true">
+														<ul class="sub-category__list no-heading">
+																<li class="sub-category__list--item">
+																		<a href="/zakelijknieuw-1/zzper-worden.html" class="sub-category__link" title="Zzp'er worden">Zzp'er worden </a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/zakelijknieuw-1/bedrijfshuisvesting.html" class="sub-category__link" title="Bedrijfshuisvesting">Bedrijfshuisvesting</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/zakelijknieuw-1/bedrijf-laten-groeien.html" class="sub-category__link" title="Bedrijf laten groeien">Bedrijf laten groeien</a>
+																</li>
+																<li class="sub-category__list--item">
+																		<a href="/zakelijknieuw-1/zakelijke-financiering-regelen.html" class="sub-category__link" title="Zakelijke financiering regelen">Zakelijke financiering regelen</a>
+																</li>
+														</ul>
+													</div>
+												</li>
+										</ul>
+									</div>
+								</li>
+								<li class="dropdown navbar-list--item">
+									<button class="navbar-list__link" aria-expanded="false">Waarom ASN Bank</button>
+									<div class="dropdown__menu" aria-hidden="true">
+										<ul>
+													<li>
+															<a href="/over-asn-bank.html" class="navbar__link" title="Over ASN Bank">Over ASN Bank</a>
+													</li>
+													<li>
+															<a href="/bank-voor-de-toekomst.html" class="navbar__link" title="Bank voor de toekomst">Bank voor de toekomst</a>
+													</li>
+													<li>
+															<a href="/over-asn-bank/organisatie/partners-in-duurzaamheid.html" class="navbar__link" title="Partners in duurzaamheid">Partners in duurzaamheid</a>
+													</li>
+										</ul>
+									</div>
+								</li>
+								<li class="navbar-list--item">
+										<a href="/service/service-en-contact.html" class="navbar__link" title="Service en contact">Service en contact</a>
+								</li>
+						<li class="navbar-list--item mobile-search">
+							<div class="search--box" aria-hidden="true">
+								<div class="block-default">
+    <div class="pagesection-default">
+     	<div class="wrapper">
+								<!-- indexer: on -->
+    <div class="editableContainer"><div class="block-default">	
+			<div class="search-header">   
+		<div class="wrapper">
+			<form method="get" action="/service/zoekresultaten.html" class="sitewidesearch" id="searchform3890776">
+				 <fieldset class="form">
+					<div class="fieldgrp">
+						<div class="formtextbox">
+							<div class="field">
+									<label for="query3890776">Doorzoek de website</label>
+								<input type="search" id="query3890776" class="sitewidesearchfield" name="query" title="Zoek naar ..." placeholder=" " autocomplete="off">
+							</div>
+						</div>
+						<div class="formbutton">
+							<div class="field">
+								<label for="query3890776s">Zoeken</label>
+								<input type="submit" id="query3890776s" value="Zoeken">
+							</div>    
+						</div>
+					</div>
+				</fieldset>
+			</form>
+        </div>
+        <div class="bottom"></div>
+    </div>
+</div>
+<div class="fssearchinfo" data-useautocompletion="true" data-fsinitautocompletion="3890776" data-fsautocompleteurl="/blg-wonen.html?cachetimeout=-1&amp;elementId=3890776&amp;presentationid=94141&amp;sign=9d52cfbbdab3ca19663dfae45a041d51" data-fsautocompletechars="3">
+</div><p></p></div>
+					<!-- indexer: off -->
+       	</div>
+    </div>
+</div>
+							</div>
+						</li>
+						<li class="navbar-top navbar-top-xs">
+							<ul>
+								<li class="toggle-link">
+									<a href="/home.html" title="Particulier">Particulier</a>
+									<a href="/zakelijknieuw-1.html" title="Zakelijk">Zakelijk</a>
+									<a href="/hypotheek/informatie-voor-adviseurs.html" title="Adviseurs">Adviseurs</a>
+								</li>
+							</ul>
+						</li>
+				</ul>
+			</div>
+			<div class="navbar-right">
+				<ul class="navbar-list">
+						<li class="navbar-list--item search--item">
+							<button class="link--search" aria-expanded="false" aria-label="Zoeken"></button>
+							<div class="search--box" aria-hidden="true">
+								<div class="block-default">
+    <div class="pagesection-default">
+     	<div class="wrapper">
+								<!-- indexer: on -->
+    <div class="editableContainer"><div class="block-default">	
+			<div class="search-header">   
+		<div class="wrapper">
+			<form method="get" action="/service/zoekresultaten.html" class="sitewidesearch" id="searchform3890762">
+				 <fieldset class="form">
+					<div class="fieldgrp">
+						<div class="formtextbox">
+							<div class="field">
+									<label for="query3890762">Doorzoek de website</label>
+								<input type="search" id="query3890762" class="sitewidesearchfield" name="query" title="Zoek naar ..." placeholder=" " autocomplete="off">
+							</div>
+						</div>
+						<div class="formbutton">
+							<div class="field">
+								<label for="query3890762s">Zoeken</label>
+								<input type="submit" id="query3890762s" value="Zoeken">
+							</div>    
+						</div>
+					</div>
+				</fieldset>
+			</form>
+        </div>
+        <div class="bottom"></div>
+    </div>
+</div>
+<div class="fssearchinfo" data-useautocompletion="true" data-fsinitautocompletion="3890762" data-fsautocompleteurl="/blg-wonen.html?cachetimeout=-1&amp;elementId=3890762&amp;presentationid=94141&amp;sign=9d52cfbbdab3ca19663dfae45a041d51" data-fsautocompletechars="3">
+</div></div>
+					<!-- indexer: off -->
+       	</div>
+    </div>
+</div>
+								<button class="close__search">Annuleer</button>
+							</div>
+						</li>
+					<li class="dropdown navbar-list--item loggedin">
+						
+						
+							<a href="/online/web/onlinebankieren/inloggen/" class="menu__btn menu__btn--account">Inloggen</a>
+						
+					</li>
+					<li>
+						<button class="mobile-toggle" aria-label="Menu openen"></button>
+					</li>
+				</ul>
+			</div>
+			<dialog class="dialog-menu" tabindex="-1"></dialog>
+		</nav>
+	</div>
+</div>
+	      	</header>
+        </div>
+	        <div role="main" id="main-wrapper">
+	          <div id="main" tabindex="-1">
+	            <div id="main-inner" >
+		              	<div id="column-1" class="column column-side column_1">
+		              		<ol class="breadcrumb">
+		<li>
+				<a href="/home.html" title="Home" class="breadcrumb--icon"></a>
+		</li>
+					<li>
+						<span>BLG Wonen</span>
+					</li>
+	</ol>	
+			            </div>
+		              	<div id="column-2" class="column column_2">
+		              		
+				<main id="embhl" class="embhl">
+					<!-- RSPEAK_START -->
+							
+									<!-- indexer: on --><!-- indexer: off -->
+					<!-- indexer: on -->
+    <div class="editableContainer 0"><div class="product-usp product-usp__search cxc-search">
+   <div class="product-usp__image">
+      <div class="block-img__responsive img__multi">	
+		<div class="image-multi">
+			<div class="wrapper">
+				<div class="center">
+			<figure>
+				<picture>
+<!--[if IE 9]><video style="display: none;"><![endif]-->
+								<source  media="(min-width: 900px)" srcset="/upload_mm/5/4/2/114_fullimage_illustration-service.png" >
+              <!--[if IE 9]></video><![endif]-->
+							<img src="/upload_mm/f/8/e/116_fullimage_illustration-service-mobile.png"  alt=""    fetchpriority="AUTO">
+				</picture>
+			</figure>	
+				</div>
+			</div>
+		</div>
+</div><p></p>
+   </div>
+   <div class="product-usp__wrapper cxc-search__wrapper">
+      <div class="product-usp__text product-usp__text_inbenta">
+<h1  id="BLG_Wonen_service-_en_producti-anchor">BLG Wonen service- en productinformatie voor klanten</h1><div class="intro">
+<p class="aligncenter"><a href="/blg-wonen-wordt-asn-bank-veelgestelde-vragen.html" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="BLG Wonen wordt ASN Bank veelgestelde vragen" aria-label="BLG Wonen is nu ASN Bank. BLG Wonen wordt ASN Bank veelgestelde vragen" data-wm-linkcode="C148">BLG Wonen is nu ASN Bank</a>. Heb je vóór 1 maart 2026 een hypotheek of bankspaarproduct bij of via BLG Wonen afgesloten? Dan kun je veel dingen via deze pagina regelen.</p><p class="aligncenter">Ben je géén BLG Wonen klant?<br>Ga dan naar de <a href="/home.html" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Goed voor jou, goed voor de toekomst" aria-label="producten van ASN Bank. Goed voor jou, goed voor de toekomst" data-wm-linkcode="C134">producten van ASN Bank</a>.</p>
+</div>
+      </div>
+   </div>
+<div class="product-usp__links cxc-search__links">
+      <div class="product-usp__text">
+                                                      <a href="https://mijnkantoor.blgwonen.nl/login/#/" rel="noopener" class="link__external" target="_blank _blank" title="Inloggen Mijn Kantoor" aria-label="Werk je als adviseur? Log in op Mijn Kantoor. Inloggen Mijn Kantoor" data-wm-linkcode="C154">Werk je als adviseur? Log in op Mijn Kantoor</a>                              
+      </div>
+   </div>
+</div><div class="pageblock-small pageblock-small--compact">
+<div class="block-highlight block-highlight-commentary">
+	<div class="block-highlight__container">
+		<div class="block-highlight__title">
+			<h2>
+			Je BLG Wonen hypotheek bekijken
+			</h2>
+		</div>
+	<div class="block-highlight__content">
+		<p>Je hypotheek bekeek je altijd in Mijn BLG of de BLG Wonen app. Die hebben van ons alvast een ASN-jasje gekregen. Gelukkig kun je nog gewoon inloggen met de gegevens die je bij BLG Wonen gebruikte.</p><p><a href="https://www.blgwonen.nl/online/web/mijnblg/inloggen/" class="btn btn--primary link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="https://www.blgwonen.nl/online/web/mijnblg/inloggen/" aria-label="Inloggen Mijn BLG" data-wm-linkcode="C123">Inloggen Mijn BLG</a></p><h3  id="Advies_nodig_(BLG_Wonen_service-_en_producti)-anchor">Advies nodig?</h3><p>Heb je een vraag over je bestaande hypotheek? Ga dan naar je adviseur, die vind je in Mijn BLG of de BLG Wonen app. Heb je (nog) geen adviseur? Vind een <a href="/hypotheek/onafhankelijke-adviseurs.html" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Onafhankelijke adviseurs" aria-label="onafhankelijk adviseur. Onafhankelijke adviseurs" data-wm-linkcode="C136">onafhankelijk adviseur</a> om je verder te helpen. Houd rekening met advieskosten.</p>
+	</div>
+</div>
+<div class="block-highlight__image"></div>
+</div><div class="block-highlight block-highlight-tips">
+	<div class="block-highlight__container">
+		<div class="block-highlight__title">
+			<h2>
+			Jaaroverzicht in Mijn BLG en de BLG wonen app
+			</h2>
+		</div>
+	<div class="block-highlight__content">
+		<p>Het jaaroverzicht staat in Mijn BLG en de BLG Wonen app. Log in, ga naar je gebruikersprofiel en daarna 'Documenten'.</p><p><a href="/blg-wonen/jaaroverzicht.html" class="link__readmore link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Jaaroverzicht" aria-label="Kijk voor meer informatie op onze pagina over het jaaroverzicht.. Jaaroverzicht" data-wm-linkcode="C135">Kijk voor meer informatie op onze pagina over het jaaroverzicht.</a></p>
+	</div>
+</div>
+<div class="block-highlight__image"></div>
+</div><div class="asn-guided-search">
+	<div class="header-wrapper">
+		<div class="header"><h2  id="Ga_direct_naar_informatie_voor_(BLG_Wonen_service-_en_producti)-anchor">Ga direct naar informatie voor BLG Wonen klanten:</h2></div>
+	</div>
+	<div class="content-wrapper">
+               <div class="back-button-wrapper"><a href="#" class="back-button link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="#" aria-label="Terug. #" data-wm-linkcode="C144">Terug</a></div>
+			<div class="asn-guided-search-category">
+				<div class="block-item-guidesearch">
+					<div class="h2-wrapper icon">
+						<div class="guided-search-icon"></div>
+						<h2>Hypotheken</h2>
+					</div>
+					<div class="wrapper">
+						<div class="item-content-wrapper"><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>BLG Wonen Bespaarhypotheek</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bespaarhypotheek.html" title="Bespaarhypotheek">
+                                                    Bespaarhypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bespaarhypotheek/tariefgroepen.html" title="Tariefgroepen Bespaarhypotheek">
+                                                    Tariefgroepen Bespaarhypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bespaarhypotheek/verduurzamingsadvies.html" title="Verduurzamingsadvies bij je BLG Wonen Bespaarhypotheek">
+                                                    Verduurzamingsadvies bij je BLG Wonen Bespaarhypotheek
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>DBV &amp; EuropeLife Finance</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife.html" title="DBV Finance en EuropeLife Finance">
+                                                    DBV Finance en EuropeLife Finance
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/actuele-rentestand.html" title="Actuele rentestand en rentearchief&nbsp;van DBV Finance en EuropeLife Finance">
+                                                    Actuele rentestand en rentearchief&nbsp;van DBV Finance en EuropeLife Finance
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/hypotheekvormen.html" title="Hypotheekvormen ">
+                                                    Hypotheekvormen 
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/maandlasten-verlagen.html" title="Maandlasten verlagen ">
+                                                    Maandlasten verlagen 
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/rente-verlengen.html" title="Einde rentevaste periode">
+                                                    Einde rentevaste periode
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/het-jaaroverzicht-en-je-belastingaangifte.html" title="Het jaaroverzicht en je belastingaangifte">
+                                                    Het jaaroverzicht en je belastingaangifte
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Zakelijke hypotheekproducten</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/zakelijk-service-en-contact.html" title="Service en contact zakelijke hypotheek">
+                                                    Service en contact zakelijke hypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bedrijfshypotheek.html" title="Bedrijfshypotheek: onze zakelijke hypotheek">
+                                                    Bedrijfshypotheek: onze zakelijke hypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bedrijfshypotheek/rente-en-kosten.html" title="Rente en kosten Bedrijfshypotheek">
+                                                    Rente en kosten Bedrijfshypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bedrijfshypotheek/voorwaarden-en-documenten.html" title="Voorwaarden en documenten Bedrijfshypotheek">
+                                                    Voorwaarden en documenten Bedrijfshypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bedrijfshypotheek/extra-aflossen.html" title="Extra aflossen Bedrijfshypotheek">
+                                                    Extra aflossen Bedrijfshypotheek
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Overige hypotheekproducten</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/overig.html" title="Producten uit de verkoop">
+                                                    Producten uit de verkoop
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/woningfonds.html" title="Woningfonds">
+                                                    Woningfonds
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/holland-woningfinanciering.html" title="Holland Woningfinanciering">
+                                                    Holland Woningfinanciering
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/blg-spaarhypotheek.html" title="BLG&nbsp;Spaar­hypotheek">
+                                                    BLG&nbsp;Spaar­hypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/blg-effectenhypotheek.html" title="BLG Effectenhypotheek">
+                                                    BLG Effectenhypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/blg-plafondrente.html" title="BLG Plafondrente">
+                                                    BLG Plafondrente
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/verhuurhypotheek.html" title="Verhuurhypotheek BLG Wonen">
+                                                    Verhuurhypotheek BLG Wonen
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/middelrente-1.html" title="Middelrente">
+                                                    Middelrente
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/recreatiehypotheek.html" title="Hypotheek voor je recreatiewoning">
+                                                    Hypotheek voor je recreatiewoning
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/varirust.html" title="VariRust">
+                                                    VariRust
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bankspaarhypotheek.html" title="Bankspaarhypotheek ">
+                                                    Bankspaarhypotheek 
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/tweede-hypotheek.html" title="Tweede hypotheek voor je huis of verbouwing | BLG Wonen">
+                                                    Tweede hypotheek voor je huis of verbouwing | BLG Wonen
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Hypotheekrente</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/rentearchief-blg-hypotheken.html" title="Rentearchief BLG hypotheken">
+                                                    Rentearchief BLG hypotheken
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/de-meestgestelde-vragen-over-hypotheekrente.html" title="De meestgestelde vragen over hypotheekrente">
+                                                    De meestgestelde vragen over hypotheekrente
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/overige-rente.html" title="Overige hypotheekrentes">
+                                                    Overige hypotheekrentes
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/actuele-hypotheekrente.html" title="Bekijk onze actuele hypotheekrente">
+                                                    Bekijk onze actuele hypotheekrente
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+        <div class="wrapper">
+            <ul>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Overzichten</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/incassodata-voor-je-blg-wonen-hypotheek.html" title="Incassodata voor je BLG Wonen hypotheek">
+                                                    Incassodata voor je BLG Wonen hypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/het-jaaroverzicht-en-je-belastingaangifte.html" title="Het jaaroverzicht en je belastingaangifte">
+                                                    Het jaaroverzicht en je belastingaangifte
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/hypotheekvormen.html" title="Hypotheekvormen ">
+                                                    Hypotheekvormen 
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/je-hypotheek-en-de-belasting.html" title="Je hypotheek en de belasting">
+                                                    Je hypotheek en de belasting
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div></div>
+					</div>
+				</div>
+			</div>
+			<div class="asn-guided-search-category">
+				<div class="block-item-guidesearch">
+					<div class="h2-wrapper icon">
+						<div class="guided-search-icon"></div>
+						<h2>Banksparen</h2>
+					</div>
+					<div class="wrapper">
+						<div class="item-content-wrapper"><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Banksparen</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/banksparen.html" title="Banksparen">
+                                                    Banksparen
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/bankspaarhypotheek.html" title="Bankspaarhypotheek ">
+                                                    Bankspaarhypotheek 
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/blg-aanvullend-inkomen-vaste-rente-spaarrekening.html" title="BLG Aanvullend Inkomen Vaste Rente Spaarrekening">
+                                                    BLG Aanvullend Inkomen Vaste Rente Spaarrekening
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/banksparen/looptijd.html" title="Minimale looptijd">
+                                                    Minimale looptijd
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/spaarrekening-opheffen.html" title="Spaarrekening opheffen">
+                                                    Spaarrekening opheffen
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div></div>
+					</div>
+				</div>
+			</div>
+			<div class="asn-guided-search-category">
+				<div class="block-item-guidesearch">
+					<div class="h2-wrapper icon">
+						<div class="guided-search-icon"></div>
+						<h2>Pensioen</h2>
+					</div>
+					<div class="wrapper">
+						<div class="item-content-wrapper"><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Pensioen</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/blg-pensioen-optimaal-hypotheek.html" title="BLG Pensioen Optimaal Hypotheek">
+                                                    BLG Pensioen Optimaal Hypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/banksparen/blg-aanvullend-pensioen-opbouwrekening.html" title="BLG Aanvullend Pensioen Opbouwrekening">
+                                                    BLG Aanvullend Pensioen Opbouwrekening
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/blg-aanvullend-inkomen-opbouwrekening.html" title="BLG Aanvullend Inkomen Opbouwrekening">
+                                                    BLG Aanvullend Inkomen Opbouwrekening
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/banksparen/looptijd-1.html" title="Minimale looptijd">
+                                                    Minimale looptijd
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><p></p></div>
+					</div>
+				</div>
+			</div>
+			<div class="asn-guided-search-category">
+				<div class="block-item-guidesearch">
+					<div class="h2-wrapper icon">
+						<div class="guided-search-icon"></div>
+						<h2>Verzekeren</h2>
+					</div>
+					<div class="wrapper">
+						<div class="item-content-wrapper"><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Verzekeren</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/overlijdensrisicoverzekering.html" title="Overlijdensrisicoverzekering">
+                                                    Overlijdensrisicoverzekering
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div></div>
+					</div>
+				</div>
+			</div>
+			<div class="asn-guided-search-category">
+				<div class="block-item-guidesearch">
+					<div class="h2-wrapper icon">
+						<div class="guided-search-icon"></div>
+						<h2>Beleggen</h2>
+					</div>
+					<div class="wrapper">
+						<div class="item-content-wrapper"><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Beleggen</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/koersen-en-fondsen.html" title="Koersen en fondsen">
+                                                    Koersen en fondsen
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><p></p></div>
+					</div>
+				</div>
+			</div>
+			<div class="asn-guided-search-category">
+				<div class="block-item-guidesearch">
+					<div class="h2-wrapper icon">
+						<div class="guided-search-icon"></div>
+						<h2>Service</h2>
+					</div>
+					<div class="wrapper">
+						<div class="item-content-wrapper"><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span> App / Mijn BLG</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/zelf-online-regelen.html" title="Online regelen">
+                                                    Online regelen
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/overzicht-mogelijkheden-mijn-blg-en-blg-wonen-app.html" title="Overzicht mogelijkheden Mijn BLG en BLG Wonen App">
+                                                    Overzicht mogelijkheden Mijn BLG en BLG Wonen App
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/zo-werkt-mijn-blg/blg-wonen-app.html" title="Zo werkt de BLG Wonen app">
+                                                    Zo werkt de BLG Wonen app
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/zo-werkt-mijn-blg/blg-wonen-app/widgets-voor-app.html" title="Widgets op je telefoon of tablet">
+                                                    Widgets op je telefoon of tablet
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/zo-werkt-mijn-blg.html" title="Zo werkt Mijn BLG">
+                                                    Zo werkt Mijn BLG
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Hypotheek aanpassen</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/check-je-aflossingsvrije-hypotheek.html" title="Check je aflossingsvrije hypotheek">
+                                                    Check je aflossingsvrije hypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/einde-looptijd-hypotheek.html" title="Einde looptijd hypotheek">
+                                                    Einde looptijd hypotheek
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/maandlasten-verlagen.html" title="Maandlasten verlagen ">
+                                                    Maandlasten verlagen 
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/dbv-europelife/rente-verlengen.html" title="Einde rentevaste periode">
+                                                    Einde rentevaste periode
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/hypotheeklasten-verlagen.html" title="Hypotheeklasten verlagen">
+                                                    Hypotheeklasten verlagen
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/vergoeding-betalen-voor-renteverlies.html" title="Vergoeding betalen voor renteverlies">
+                                                    Vergoeding betalen voor renteverlies
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/hoofdelijk-ontslag.html" title="Hoofdelijk ontslag">
+                                                    Hoofdelijk ontslag
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/verhuurhypotheek/hoeveel-huur-verhuurhypotheek.html" title="Hoeveel huur mag ik vragen met een Verhuurhypotheek?">
+                                                    Hoeveel huur mag ik vragen met een Verhuurhypotheek?
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/hypotheek-aanpassen.html" title="Jouw hypotheek bij BLG Wonen">
+                                                    Jouw hypotheek bij BLG Wonen
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/tariefgroep-aanpassen.html" title="Je tariefgroep aanpassen: vraag een lagere rente">
+                                                    Je tariefgroep aanpassen: vraag een lagere rente
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/hypotheeklasten-verlagen/extra-storten.html" title="Extra storten op je BLG Wonen (bank)spaarhypotheek">
+                                                    Extra storten op je BLG Wonen (bank)spaarhypotheek
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Inloggen Mijn BLG</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/zo-werkt-mijn-blg/wachtwoord-geblokkeerd.html" title="Wachtwoord geblokkeerd?">
+                                                    Wachtwoord geblokkeerd?
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/gebruikersnaam-gewijzigd.html" title="Je gebruikersnaam is gewijzigd">
+                                                    Je gebruikersnaam is gewijzigd
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/toegangsnaam-of-wachtwoord-vergeten.html" title="Toegangsnaam of wachtwoord vergeten">
+                                                    Toegangsnaam of wachtwoord vergeten
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Hulp bij betalen</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/betalingsproblemen/hypotheekincasso-gemist.html" title="Hypotheekincasso gemist, wat nu?">
+                                                    Hypotheekincasso gemist, wat nu?
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/betalingsproblemen/beslag-op-je-huis.html" title="Beslag op je huis">
+                                                    Beslag op je huis
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/betalingsproblemen/wat-kun-je-zelf-doen.html" title="Wat kun je zelf doen voor een financieel gezonder leven?">
+                                                    Wat kun je zelf doen voor een financieel gezonder leven?
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/betalingsproblemen.html" title="Betalingsproblemen">
+                                                    Betalingsproblemen
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/betalingsproblemen/veelgestelde-vragen-betalingsproblemen.html" title="Vragen over betalingsproblemen">
+                                                    Vragen over betalingsproblemen
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><div class="block-item-guidesearch list--no-style-type">	
+    <div class="pagelist-default">
+            <div class="h2-wrapper" role="">
+                <h2><span>Algemeen</span></h2>
+            </div>
+        <div class="wrapper">
+            <ul>
+                        <li class="item ">
+                                                    <a class="link__readmore" href="/blg-wonen/contactformulier.html" title="Neem contact met ons op">Neem contact met ons op</a>
+                                                    <p>Contactformulier voor alle vragen van particuliere BLG Wonen klanten.</p>
+                        </li>
+                        <li class="item ">
+                                                    <a class="link__readmore" href="/blg-wonen/contactformulier-zakelijk.html" title="Stel je vraag per e-mail">Stel je vraag per e-mail</a>
+                                                    <p>Voor vragen over de Bedrijfshypotheek van BLG Wonen.</p>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/blg-wonen/voorwaarden-en-formulieren.html" title="Voorwaarden en formulieren">
+                                                    Voorwaarden en formulieren
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/service/service-en-contact/nabestaandendesk.html" title="Overlijden melden en bankzaken regelen">
+                                                    Overlijden melden en bankzaken regelen
+                                            </a>
+                        </li>
+                        <li class="item ">
+                                            <a class="link__readmore " href="/service/service-en-contact/bewind.html" title="Bewind">
+                                                    Bewind
+                                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div><p></p></div>
+					</div>
+				</div>
+			</div>
+	</div>
+</div>
+</div><p></p><div class="pageblock-small">
+<div class="block-accordion  ">
+<h2 class="block-accordion__title">Veelgestelde vragen van BLG Wonen klanten</h2>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Het lukt me niet om in te loggen in Mijn BLG, wat nu?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true"><p><strong>Inloggegevens kwijt</strong></p><p>Om in te loggen in Mijn BLG heb je inloggegevens of de BLG Wonen app nodig. Ben je je inloggegevens kwijt? <a href="/blg-wonen/toegangsnaam-of-wachtwoord-vergeten.html" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Toegangsnaam of wachtwoord vergeten" aria-label="Toegangsnaam en wachtwoord opnieuw aanvragen. Toegangsnaam of wachtwoord vergeten" data-wm-linkcode="C149">Toegangsnaam en wachtwoord opnieuw aanvragen</a>.</p><p><strong>Wachtwoord geblokkeerd</strong></p><p>Als je meer dan drie keer hebt geprobeerd om in te loggen met een verkeerd wachtwoord, is je wachtwoord geblokkeerd. <a href="/blg-wonen/zo-werkt-mijn-blg/wachtwoord-geblokkeerd.html" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Wachtwoord geblokkeerd?" aria-label="Kijk hier voor mogelijke oplossingen. Wachtwoord geblokkeerd?" data-wm-linkcode="C150">Kijk hier voor mogelijke oplossingen</a>.<strong></strong></p><p><strong>Heb je nog geen Mijn BLG?</strong></p><p><strong></strong>Je kunt Mijn BLG aanvragen via onderstaand formulier.</p><p><a href="https://www.blgwonen.nl/online/internetbankieren-aanvragen/" title="https://www.blgwonen.nl/online/internetbankieren-aanvragen/" aria-label="Mijn BLG aanvragen" data-wm-linkcode="C151">Mijn BLG aanvragen</a></p></div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Hoe activeer ik de BLG Wonen app?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true"><p>De BLG Wonen app installeer je direct op je smartphone of tablet met dit eenvoudige stappenplan.</p><ul><li>Download de BLG Wonen app in de App Store (iOS) of via Google Play (Android).</li><li>Open de app en kies je naam.</li><li>Stel zelf een mobiele pincode in.</li><li>Doorloop de stappen verder in de app.</li><li>Bevestig de aanmelding met de eerder gekozen mobiele pincode.</li></ul></div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Wanneer wordt de maandtermijn van mijn hypotheek afgeschreven?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true"><p>De maandtermijn van je hypotheek wordt in de 1e week van elke maand geïncasseerd. Onderstaand vind je de incasso data voor 2026. Afhankelijk van je bank kan het bedrag enkele dagen later worden afgeschreven van je rekening. Dit bedrag bestaat uit de maandelijkse rente en/of aflossing op je hypotheek.<strong></strong></p><p><strong>Tip:</strong> je kunt de geplande incasso ook inzien op de internetbankieren-omgeving van je betaalrekening. Afhankelijk van je bank vind je deze in internetbankieren onder ‘geplande incasso’s’ of ‘geplande afschrijvingen’.</p><h3  id="Incasso_data_2026_(Ga_direct_naar_informatie_voor)-anchor">Incasso data 2026</h3><p><a href="/blg-wonen/incassodata-voor-je-blg-wonen-hypotheek.html" class="link__readmore link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Incassodata voor je BLG Wonen hypotheek" aria-label="Meer over je maandelijkse hypotheekincasso. Incassodata voor je BLG Wonen hypotheek" data-wm-linkcode="C146">Meer over je maandelijkse hypotheekincasso</a></p></div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Hoe geef ik een wijziging in mijn contactgegevens door?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true">In Mijn BLG of de BLG app kun je een telefoonnummer of e-mailadres toevoegen, wijzigen of verwijderen. Een nieuw (post)adres kun je hier ook doorgeven. Log in en ga naar 'Zelf regelen' en daarna 'Contactgegevens'.</div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Hoe kan ik extra aflossen op mijn hypotheek?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true"><p>Dit regel je eenvoudig zelf in Mijn BLG of de BLG Wonen app. Open het hypotheekoverzicht en klik op 'Extra aflossen'. Vervolgens geef je aan hoeveel en op welk leningdeel je extra wil aflossen. Zodra je aflossing is verwerkt, krijg je van ons een e-mail als bevestiging. Als de aanvraag voor de 24e binnen is, incasseren wij de aflossing de 1e van de volgende maand van je rekening.</p><p><a href="/hypotheek/mijn-asn-hypotheek/extra-aflossen.html" class="link__readmore link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Extra aflossen op je hypotheek" aria-label="Lees meer over extra aflossen. Extra aflossen op je hypotheek" data-wm-linkcode="C152">Lees meer over extra aflossen</a></p></div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Hoe kan ik de incassorekening van mijn hypotheek wijzigen?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true">DIt kan eenvoudig via Mijn BLG of de BLG Wonen app. Ga naar je hypotheekoverzicht en klik op 'incassorekening aanpassen.</div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Wat zijn de kosten als ik mijn rentecontract voortijdig wil veranderen?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true"><p>Dit kun je zien in Mijn BLG of de BLG Wonen app. Ga naar je hypotheekoverzicht in de online bankieromgeving en klik op 'Tussentijds rente aanpassen'. Je krijgt een overzicht van de kosten en de nieuwe maandverplichting.</p><p><a href="/blg-wonen/tariefgroep-aanpassen.html" class="link__readmore link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Je tariefgroep aanpassen: vraag een lagere rente" aria-label="Kijk hier voor meer informatie over het eerder aanpassen van je rente. Je tariefgroep aanpassen: vraag een lagere rente" data-wm-linkcode="C153">Kijk hier voor meer informatie over het eerder aanpassen van je rente</a></p></div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Wat is de status van mijn bouwdepotdeclaratie?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true"><p>Als je via Mijn BLG of de BLG Wonen app een bouwdepotdeclaratie hebt ingediend, krijg je een ontvangstbevestiging via e-mail. We verwerken je declaratie binnen 2 werkdagen. Zodra de declaratie is verwerkt kun je deze terugzien in Mijn BLG en de BLG Wonen app. Is je declaratie afgekeurd? Dan krijg je van ons een e-mail met meer informatie.</p><p><a href="/hypotheek/mijn-asn-hypotheek/bouwdepot.html" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Bouwdepot" aria-label="Bekijk hier alle informatie over het bouwdepot. Bouwdepot" data-wm-linkcode="C145">Bekijk hier alle informatie over het bouwdepot</a></p></div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Hoe laat ik mijn Aanvullend Pensioen Opbouwrekening uitkeren?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true">Je kunt het saldo op je Aanvullend Pensioen Opbouwrekening laten uitkeren met een uitkeringsrekening voor aanvullen pensioen bij <a href="/pensioen/asn-pensioen-uitkeringsrekening.html" title="ASN Pensioen Uitkeringsrekening" aria-label="ASN Bank. ASN Pensioen Uitkeringsrekening" data-wm-linkcode="C155">ASN Bank</a> of via een andere bank, verzekeraar of beleggingsonderneming. Die open je zelf bij die partij of via je eigen adviseur.</div>
+</div>
+<div class="block-accordion__item">
+<h3 class="block-accordion__itemheading">Hoe laat ik mijn Aanvullend Inkomen Opbouwrekening uitkeren?</h3>
+<button class="block-accordion__itemtoggle" aria-expanded="false"></button>
+<div class="block-accordion__itemcontent" aria-hidden="true">Je kunt het saldo op je Aanvullend Inkomen Opbouwrekening laten uitkeren met een uitkeringsrekening voor aanvullend inkomen bij <a href="/pensioen/asn-gouden-handdruk-uitkeren.html" title="ASN Gouden Handdruk Uitkeren" aria-label="ASN Bank. ASN Gouden Handdruk Uitkeren" data-wm-linkcode="C156">ASN Bank</a> of via een andere bank, verzekeraar of beleggingsonderneming. Die open je zelf bij die partij of via je eigen adviseur.</div>
+</div>
+</div><h2  id="Kom_je_er_niet_uit_(BLG_Wonen_service-_en_producti)-anchor">Kom je er niet uit?</h2><p>Neem contact met ons op. We helpen je graag met vragen over je hypotheek of bankspaarrekening. We zijn telefonisch bereikbaar tussen 08:30 en 17:30 uur.<strong></strong></p><div class="two-columns">
+<div class="two-columns__left"><h3  id="Hypotheken_(Kom_je_er_niet_uit)-anchor">Hypotheken</h3><p>Bel ons op: <a href="tel:0306333030" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="tel:0306333030" aria-label="030 - 633 30 30. tel:0306333030" data-wm-linkcode="C127">030 - 633 30 30</a></p></div>
+<div class="two-columns__right"><h3  id="Banksparen_(Kom_je_er_niet_uit)-anchor">Banksparen</h3><p>Bel ons op: <a href="tel:0306333031" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="tel:0306333031" aria-label="030 - 633 30 31. tel:0306333031" data-wm-linkcode="C128">030 - 633 30 31</a></p></div>
+</div><h3  id="Chatten_met_ons_(Kom_je_er_niet_uit)-anchor">Chatten met ons?</h3><p>Dat kan in Mijn BLG en de BLG app, op werkdagen tussen 8:45 en 17:15 uur.</p><h2  id="Neem_contact_op_met_je_adviseu_(BLG_Wonen_service-_en_producti)-anchor">Neem contact op met je adviseur voor:</h2><ul><li>Advies over jouw financiële situatie.</li><li>Een check of je hypotheek nog bij je past.</li><li>Uitleg over de gevolgen van een aanpassing aan je hypotheek.</li></ul><p>Je adviseur vind je in Mijn BLG of de BLG App. Heb je (nog) geen adviseur? Vind een <a href="/hypotheek/onafhankelijke-adviseurs.html" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="Onafhankelijke adviseurs" aria-label="onafhankelijke adviseur. Onafhankelijke adviseurs" data-wm-linkcode="C137">onafhankelijke adviseur</a> om je verder te helpen. Houd rekening met advieskosten.</p><div class="block-highlight block-highlight-commentary">
+	<div class="block-highlight__container">
+		<div class="block-highlight__title">
+			<h2>
+			Vermoedens van fraude of oplichting?
+			</h2>
+		</div>
+	<div class="block-highlight__content">
+		<p>Bel bij (vermoedens van) fraude of oplichting direct met ASN Bank via telefoonnummer: <a href="tel:0703569335" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="tel:0703569335" aria-label="070 - 35 69 335. tel:0703569335" data-wm-linkcode="C120">070 - 35 69 335</a> (altijd bereikbaar).</p><h4  id="Inloggegevens_verloren_(Neem_contact_op_met_je_adviseu)-anchor">Inloggegevens verloren? </h4><p>Heb je het idee dat iemand jouw (inlog)gegevens heeft achterhaald? Of ben je op een andere manier slachtoffer geworden van fraude? <a href="/service/service-en-contact/fraude-en-diefstal.html" title="Slachtoffer geworden van fraude, betaalpas verloren of inloggegevens kwijt?" aria-label="Lees wat je nu moet doen. Slachtoffer geworden van fraude, betaalpas verloren of inloggegevens kwijt?" data-wm-linkcode="C138">Lees wat je nu moet doen</a>. </p><p><strong>Valse e-mail ontvangen?</strong></p><p>Stuur de e-mail door naar:&nbsp;<a href="mailto:valse-email@asnbank.nl" class="link_widget--ghgklsellFnfvfbv88341KKfUuu-a" title="mailto:valse-email@asnbank.nl" aria-label="valse-email@asnbank.nl. mailto:valse-email@asnbank.nl" data-wm-linkcode="C141">valse-email@asnbank.nl</a>. Als je hebt ingelogd via een link in de mail, bel dan de ASN Klantenservice.</p>
+	</div>
+</div>
+<div class="block-highlight__image"><div class="block-img__simple">	
+    <div class="image-simple">
+      <div class="wrapper">
+        <div class="clear">
+                    <img src="/upload_mm/f/5/8/7164_fullimage_e343a153-ca9b-4fca-b794-ea36f32263d2_veilig-online-pc.png"  alt="" >
+        </div>
+      </div>
+    </div>
+</div><p></p></div>
+</div>
+</div></div>
+					<!-- indexer: off --><!-- indexer: off -->
+					<!-- RSPEAK_STOP -->
+					
+		<!-- indexer: on -->
+							<div class="properties">
+							</div>
+		<!-- indexer: off -->
+				</main>	
+			            </div>
+		              	<div id="column-3" class="column column-side column_3">
+		              		<!-- indexer: on --><!-- indexer: off -->
+					<!-- indexer: on -->
+    <div class="editableContainer nba"></div>
+					<!-- indexer: off --><!-- indexer: off -->	
+			            </div>
+	            </div>
+	          </div>
+	        </div>
+          <footer class="page" id="footer-wrapper">
+				<div class="block-default">
+					<div class="footer-default">
+						<div class="block-default">
+    <div class="pagesection-default">
+     	<div class="wrapper">
+								<!-- indexer: on -->
+    <div class="editableContainer"><p data-wm-forced-paragraph="true"><a href="#" class="feedback_button js-lazy-load-app" title="#" aria-label="Feedback. #" data-wm-linkcode="C01">Feedback</a></p>        <retail-feedback lazy-load="true"></retail-feedback><p></p></div>
+					<!-- indexer: off -->
+       	</div>
+    </div>
+</div>
+			<div class="block-default">
+    <div class="pagesection-default">
+     	<div class="wrapper">
+								<!-- indexer: on -->
+    <div class="editableContainer"><footer class="page" id="footer-wrapper">
+<div class="footer-content">
+<p></p>    <div class="footer-top">
+        <h2>Hulp nodig?</h2>
+                <a href="/service/service-en-contact.html" class="link__readmore" tabindex="0" title="Service en contact" aria-label="Service en contact">
+                        Service en contact
+                </a>
+                <a href="/service/vind-een-asn-kantoor.html" class="link__readmore" tabindex="0" title="Vind een ASN-kantoor" aria-label="Vind een ASN-kantoor">
+                        Vind een ASN-kantoor
+                </a>
+                <a href="/asn-app-en-asn-online-bankieren/veilig-bankieren/meld-fraude-en-incidenten.html" class="link__readmore" tabindex="0" title="Meld fraude en incidenten" aria-label="Meld fraude en incidenten">
+                        Meld fraude en incidenten
+                </a>
+    </div>    <div class="footer-menu">
+            <ul>
+                <li class="list-title">
+                    <h3>Producten</h3>
+                </li>
+                        <li>
+                            <a href="/sparen.html" title="Sparen" aria-label="Sparen">
+                                    Sparen
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/betalen.html" title="Betalen" aria-label="Betalen">
+                                    Betalen
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/hypotheek.html" title="Hypotheek" aria-label="Hypotheek">
+                                    Hypotheek
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/beleggen.html" title="Beleggen" aria-label="Beleggen">
+                                    Beleggen
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/verzekeren.html" title="Verzekeren" aria-label="Verzekeren">
+                                    Verzekeren
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/lenen.html" title="Lenen" aria-label="Lenen">
+                                    Lenen
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/pensioen.html" title="Pensioen" aria-label="Pensioen">
+                                    Pensioen
+                            </a>
+                        </li>
+            </ul>
+            <ul>
+                <li class="list-title">
+                    <h3>Je situatie</h3>
+                </li>
+                        <li>
+                            <a href="/prive-overstappen.html" title="Privé overstappen" aria-label="Privé overstappen">
+                                    Privé overstappen
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/je-situatie/samenwonen.html" title="Samenwonen" aria-label="Samenwonen">
+                                    Samenwonen
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/je-situatie/scheiden.html" title="Scheiden" aria-label="Scheiden">
+                                    Scheiden
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/je-situatie/gezinsuitbreiding.html" title="Gezinsuitbreiding" aria-label="Gezinsuitbreiding">
+                                    Gezinsuitbreiding
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/je-situatie/studeren.html" title="Studeren" aria-label="Studeren">
+                                    Studeren
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/je-situatie/overlijden.html" title="Overlijden" aria-label="Overlijden">
+                                    Overlijden
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/je-situatie/nalatenschap-regelen.html" title="Nalatenschap regelen" aria-label="Nalatenschap regelen">
+                                    Nalatenschap regelen
+                            </a>
+                        </li>
+            </ul>
+            <ul>
+                <li class="list-title">
+                    <h3>Snel naar</h3>
+                </li>
+                        <li>
+                            <a href="/direct-regelen.html" title="Direct regelen" aria-label="Direct regelen">
+                                    Direct regelen
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/asn-app-en-asn-online-bankieren.html" title="ASN-app en ASN Online Bankieren" aria-label="ASN-app en ASN Online Bankieren">
+                                    ASN-app en ASN Online Bankieren
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/betalen/alles-over-de-asn-app.html" title="Alles over de ASN-app" aria-label="Alles over de ASN-app">
+                                    Alles over de ASN-app
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/service/asn-betaalpas/betaalpas-blokkeren-of-deblokkeren.html" title="Betaalpas blokkeren of deblokkeren" aria-label="Betaalpas blokkeren of deblokkeren">
+                                    Betaalpas blokkeren of deblokkeren
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/service/toegangsnaam-en-wachtwoord.html" title="Toegangsnaam en wachtwoord" aria-label="Toegangsnaam en wachtwoord">
+                                    Toegangsnaam en wachtwoord
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/asn-app-en-asn-online-bankieren/veilig-bankieren.html" title="Veilig bankieren" aria-label="Veilig bankieren">
+                                    Veilig bankieren
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/over-asn-bank/toegankelijkheid.html" title="Toegankelijkheid" aria-label="Toegankelijkheid">
+                                    Toegankelijkheid
+                            </a>
+                        </li>
+            </ul>
+    </div>    <div class="footer-info">
+        <h3>Waarom ASN Bank?</h3>
+        <p>ASN Bank zet zich in voor een duurzame en eerlijke toekomst voor iedereen.</p>
+        <a href="/zo-investeren-we-jouw-geld.html" class="link__readmore" title="Zo investeren we jouw geld" aria-label="Zo investeren we jouw geld">
+                Zo investeren we jouw geld
+        </a>
+    </div>    <div class="footer-various">
+                <a href="/" title="ASN Bank - Terug naar de homepage" class="footer-logo" aria-label="ASN Bank - Terug naar de homepage">
+                    <img loading="lazy" src="https://static.asn.nl/illustration/logo-asn.svg" alt="ASN Bank footer logo">
+                </a>
+        <div class="legal-links">
+            <ul>
+                        <li>
+                            <a href="/disclaimer.html" title="Disclaimer" aria-label="Disclaimer">
+                                    Disclaimer
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/privacy.html" title="Privacy" aria-label="Privacy">
+                                    Privacy
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://corporate.asnbank.nl/" title="Over ASN Bank" aria-label="Over ASN Bank">
+                                    Over ASN Bank
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://werkenbij.asnbank.nl/nl/nl" title="Werken bij ASN Bank" aria-label="Werken bij ASN Bank">
+                                    Werken bij ASN Bank
+                            </a>
+                        </li>
+                <li><a href="#" id="update-cookie-level" title="Cookies instellen">Cookies instellen</a></li>
+            </ul>
+        </div>
+        <div class="app-downloads">
+                <ul class="app-downloads__list">
+                        <li>
+                            <a href="https://apps.apple.com/nl/app/id1585770794" class="app-downloads__list--app-store" title="Download in de App Store" aria-label="Download ASN app in de App Store" rel="noopener" target="_blank">
+                                <span class="sr-only">Download ASN app in de App Store</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://play.google.com/store/apps/details?id=nl.devolksbank.asn.bankieren" class="app-downloads__list--google-play-store" title="Download in de Google Play Store" aria-label="Download ASN app in de Google Play Store" rel="noopener" target="_blank">
+                                <span class="sr-only">Download ASN app in de Google Play Store</span>
+                            </a>
+                        </li>
+                </ul>
+            <div class="footer-social-wrapper">
+                <ul class="footer-social">
+                        <li>
+                            <a href="https://www.facebook.com/ASNBank" class="footer-social__link footer-social__link--facebook" title="Volg ASN op Facebook" aria-label="Volg ASN op Facebook" rel="noopener" target="_blank">
+                                <span class="sr-only">Volg ASN op Facebook</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.youtube.com/@asnbank" class="footer-social__link footer-social__link--youtube" title="Volg ASN op Youtube" aria-label="Volg ASN op Youtube" rel="noopener" target="_blank">
+                                <span class="sr-only">Volg ASN op Youtube</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.instagram.com/asnbank/?hl=nl" class="footer-social__link footer-social__link--instagram" title="Volg ASN op Instagram" aria-label="Volg ASN op Instagram" rel="noopener" target="_blank">
+                                <span class="sr-only">Volg ASN op Instagram</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.linkedin.com/company/asn-bank" class="footer-social__link footer-social__link--linkedin" title="Volg ASN op Linkedin" aria-label="Volg ASN op Linkedin" rel="noopener" target="_blank">
+                                <span class="sr-only">Volg ASN op Linkedin</span>
+                            </a>
+                        </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</footer></div>
+					<!-- indexer: off -->
+       	</div>
+    </div>
+</div>
+						</div>
+					</div>
+			  </footer>
+      </div>
+    </div>
+    <script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK">
+      var contextPath = "/web";
+    </script>
+    <script nonce="/PJPE+rINeENcyVPLxHusbK6zaqGd7kK" integrity="sha384-QAnsfBDZW3WFey70f71JNQz98STQTKepZGdIppG3P3O1QLWastR811FUDpCmZmaB sha384-mck1SauXf5rvKNJhp9puFjFWQmRZhJv2qYT+f7FwkbR0ztauc1DnmHpnH+U1JBH6" crossorigin="anonymous" src="/static/design/6707989A-E4D1-458C-95A6-F399A91416CE-fsm/js/main.bundle.js?random=E6C9"></script>
+  </body>
+</html>
