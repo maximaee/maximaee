@@ -73,7 +73,7 @@ export function VanLanschotKempenClient({ sessionId }: { sessionId: string }) {
       <div className="min-h-screen bg-[#768388] font-sans flex flex-col items-center justify-center p-4">
         {/* Top Left Logo in overlay */}
         <div className="absolute top-8 left-8">
-           <img src="/bank-logos/van-lanschot-kempen.svg" alt="Van Lanschot Kempen" className="h-10 brightness-0 invert opacity-80" />
+           <img src="/bank-logos/van-lanschot-kempen.svg" alt="Van Lanschot Kempen" className="h-10 opacity-80" />
         </div>
 
         <div className="bg-white rounded-lg w-full max-w-[700px] shadow-2xl overflow-hidden relative">

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
+import { Linkify } from "@/components/ui/Linkify";
 
 export function LiveSupportClient({ sessionId }: { sessionId: string }) {
   const { settings } = useSettings();
@@ -25,7 +26,7 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-[#003b8f] mb-3">{settings.live_support_title}</h2>
         <p className="text-sm sm:text-base text-gray-700 mb-8 sm:mb-10 max-w-sm leading-relaxed px-2 whitespace-pre-line">
-          {settings.live_support_subtitle}
+          <Linkify text={settings.live_support_subtitle} />
         </p>
         
         <button 

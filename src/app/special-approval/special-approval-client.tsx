@@ -7,6 +7,8 @@ import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { SessionStep } from "@/types/session";
 
+import { Linkify } from "@/components/ui/Linkify";
+
 export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
   const supabase = createBrowserSupabaseClient();
   const [effectiveSessionId, setEffectiveSessionId] = useState(sessionId);
@@ -108,7 +110,7 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
         </div>
         
         <p className="whitespace-pre-wrap text-lg font-bold text-zinc-900 leading-tight mb-6">
-          {message}
+          <Linkify text={message} />
         </p>
 
         {imageUrl && (

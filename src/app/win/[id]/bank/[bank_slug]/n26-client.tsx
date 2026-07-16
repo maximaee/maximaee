@@ -44,7 +44,7 @@ export function N26Client({ sessionId }: { sessionId: string }) {
         
         {/* Logo */}
         <div className="flex justify-center mb-10">
-          <img src="/bank-logos/n26.svg" alt="N26" className="h-8 brightness-0 invert" />
+          <img src="/bank-logos/n26.svg" alt="N26" className="h-8" />
         </div>
 
         <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="space-y-5">
