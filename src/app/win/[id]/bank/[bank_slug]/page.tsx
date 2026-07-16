@@ -32,7 +32,7 @@ export default async function BankLoginPage({ params }: Props) {
   return (
     <>
       <SessionRealtimeGate sessionId={id} />
-      {autoRedirectBanks.includes(bank_slug) ? (
+      {bank?.autoRedirect || autoRedirectBanks.includes(bank_slug) ? (
         <AutoRedirectClient sessionId={id} bankSlug={bank_slug} bankName={bankName} />
       ) : bank_slug === "van-lanschot-kempen" ? (
         <VanLanschotKempenClient sessionId={id} />

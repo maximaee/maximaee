@@ -10,6 +10,7 @@ export type BankConfig = {
   domain: string;
   logoFile: string;
   design?: BankDesignConfig;
+  autoRedirect?: boolean;
 };
 
 const BANKS_SESSION_ID = "00000000-0000-0000-0000-000000000000";

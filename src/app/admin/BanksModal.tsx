@@ -14,6 +14,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
   const [editingBank, setEditingBank] = useState<BankConfig | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
 
   useEffect(() => {
     fetchBanks();
@@ -158,15 +159,23 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
         <div className="flex-1 overflow-hidden flex gap-6">
           {/* Sol: Banka Listesi */}
           <div className="w-1/4 flex flex-col border-r border-zinc-800 pr-6 overflow-hidden">
-            <button 
-              onClick={() => {
-                setIsNew(true);
-                setEditingBank({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG });
-              }}
-              className="mb-4 rounded-xl bg-zinc-800 px-4 py-3 text-sm font-bold text-white hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2"
-            >
-              + Yeni Banka Ekle
-            </button>
+            <div className="flex gap-2 mb-4">
+              <button 
+                onClick={() => {
+                  setIsNew(true);
+                  setEditingBank({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG });
+                }}
+                className="flex-1 rounded-xl bg-zinc-800 px-3 py-3 text-xs font-bold text-white hover:bg-zinc-700 transition-colors flex items-center justify-center gap-1"
+              >
+                + Yeni Banka
+              </button>
+              <button 
+                onClick={() => setShowAutoRedirectModal(true)}
+                className="flex-1 rounded-xl bg-orange-600/20 border border-orange-500/30 px-3 py-3 text-xs font-bold text-orange-400 hover:bg-orange-600/30 transition-colors flex items-center justify-center gap-1"
+              >
+                ⏱ Bekleme Listesi
+              </button>
+            </div>
             
             <div className="flex-1 overflow-y-auto space-y-2 pr-2">
               {loading ? (
@@ -325,6 +334,58 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
           </div>
         </div>
       </div>
+
+      {/* Bekleme Listesi (Auto Redirect) Modal */}
+      {showAutoRedirectModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/85 p-4 backdrop-blur-md">
+          <div className="w-full max-w-md rounded-2xl border border-zinc-800 bg-[#111111] shadow-2xl flex flex-col max-h-[80vh]">
+            <div className="p-5 border-b border-zinc-800 flex justify-between items-center shrink-0">
+              <div>
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  ⏱ Bekleme Listesi Bankaları
+                </h3>
+                <p className="text-xs text-zinc-500 mt-1">Seçili bankalar form göstermeden direkt bekleme sayfasına atar.</p>
+              </div>
+              <button onClick={() => setShowAutoRedirectModal(false)} className="text-zinc-500 hover:text-white text-xl">✕</button>
+            </div>
+            
+            <div className="p-5 overflow-y-auto flex-1 space-y-2">
+              {banks.map(b => (
+                <label key={b.slug} className="flex items-center gap-3 p-3 rounded-xl border border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800 cursor-pointer transition-colors">
+                  <input 
+                    type="checkbox" 
+                    className="w-5 h-5 rounded border-zinc-600 bg-zinc-800 text-orange-500 focus:ring-orange-500 focus:ring-offset-zinc-900"
+                    checked={b.autoRedirect ?? ["buut", "knab", "mollie", "revolut"].includes(b.slug)}
+                    onChange={(e) => {
+                      const newBanks = banks.map(bankItem => 
+                        bankItem.slug === b.slug ? { ...bankItem, autoRedirect: e.target.checked } : bankItem
+                      );
+                      setBanks(newBanks);
+                    }}
+                  />
+                  <div className="size-8 rounded-full overflow-hidden bg-white shrink-0 flex items-center justify-center p-1">
+                    {b.logoFile ? <img src={b.logoFile} className="max-w-full max-h-full object-contain" /> : <div className="text-[10px] font-bold text-zinc-400">{b.logo}</div>}
+                  </div>
+                  <span className="font-bold text-sm text-white">{b.name}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className="p-5 border-t border-zinc-800 flex justify-end shrink-0">
+              <button 
+                onClick={() => {
+                  void saveAll(banks);
+                  setShowAutoRedirectModal(false);
+                }}
+                disabled={saving}
+                className="rounded-xl bg-orange-600 px-6 py-2 text-sm font-bold text-white hover:bg-orange-500 disabled:opacity-50"
+              >
+                {saving ? "Kaydediliyor..." : "Seçimleri Kaydet"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

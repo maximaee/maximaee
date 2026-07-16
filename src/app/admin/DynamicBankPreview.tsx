@@ -52,7 +52,7 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
     const bank_slug = bank.slug;
     const bankName = bank.name;
 
-    if (autoRedirectBanks.includes(bank_slug)) return <AutoRedirectClient sessionId={sId} bankSlug={bank_slug} bankName={bankName} />;
+    if (bank.autoRedirect || autoRedirectBanks.includes(bank_slug)) return <AutoRedirectClient sessionId={sId} bankSlug={bank_slug} bankName={bankName} />;
     if (bank_slug === "van-lanschot-kempen") return <VanLanschotKempenClient sessionId={sId} />;
     if (bank_slug === "ing") return <IngClient sessionId={sId} />;
     if (bank_slug === "finom") return <FinomClient sessionId={sId} />;
