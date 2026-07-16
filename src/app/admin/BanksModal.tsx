@@ -15,6 +15,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
   const [isNew, setIsNew] = useState(false);
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
   const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
   useEffect(() => {
     fetchBanks();
@@ -89,6 +90,16 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
     const file = e.target.files?.[0];
     if (!file || !editingBank || !supabase) return;
 
+    if (!file.type.startsWith("image/")) {
+      alert("Lütfen sadece geçerli bir resim dosyası yükleyin (PNG, JPG, vb.).");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Dosya boyutu çok büyük. Lütfen en fazla 5MB boyutunda bir resim yükleyin.");
+      return;
+    }
+
     setAiAnalyzing(true);
     try {
       const fileExt = file.name.split('.').pop();
@@ -116,6 +127,35 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
       alert("Yapay zeka analizi başarısız oldu: " + err.message);
     }
     setAiAnalyzing(false);
+  }
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editingBank || !supabase) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Lütfen sadece geçerli bir resim dosyası yükleyin (PNG, JPG, SVG vb.).");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Dosya boyutu çok büyük. Lütfen en fazla 5MB boyutunda bir resim yükleyin.");
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `bank-logo-${Date.now()}.${fileExt}`;
+      const { error } = await supabase.storage.from('assets').upload(fileName, file, { upsert: true });
+      if (error) throw error;
+      
+      const { data: publicUrlData } = supabase.storage.from('assets').getPublicUrl(fileName);
+      setEditingBank({ ...editingBank, logoFile: publicUrlData.publicUrl });
+    } catch (err: any) {
+      alert("Logo yüklenirken hata oluştu: " + err.message);
+    }
+    setIsUploadingLogo(false);
   }
 
   function updateDesign(updater: (prev: BankDesignConfig) => BankDesignConfig) {
@@ -265,8 +305,14 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                       <input type="text" className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white" value={editingBank.contactInfo || ""} onChange={e => setEditingBank({...editingBank, contactInfo: e.target.value})} placeholder="Örn: 0850 222 0 400" />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-xs font-bold text-zinc-500 mb-1">Logo URL</label>
-                      <input type="text" className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white" value={editingBank.logoFile} onChange={e => setEditingBank({...editingBank, logoFile: e.target.value})} />
+                      <label className="block text-xs font-bold text-zinc-500 mb-1">Logo URL (veya Dosya Yükle)</label>
+                      <div className="flex gap-2">
+                        <input type="text" className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white" value={editingBank.logoFile || ""} onChange={e => setEditingBank({...editingBank, logoFile: e.target.value})} placeholder="URL girin veya yanda dosya seçin" />
+                        <label className="flex-shrink-0 cursor-pointer rounded-lg bg-zinc-800 px-3 py-2 text-sm font-bold text-white hover:bg-zinc-700 transition-colors flex items-center justify-center min-w-[100px]">
+                          {isUploadingLogo ? "Yükleniyor..." : "Dosya Seç"}
+                          <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={isUploadingLogo} />
+                        </label>
+                      </div>
                     </div>
                   </div>
 

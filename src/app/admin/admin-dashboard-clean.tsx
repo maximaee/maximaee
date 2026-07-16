@@ -7,6 +7,7 @@ import { ReceiptModal } from "./ReceiptModal";
 import { VoucherModal } from "./VoucherModal";
 import { BanksModal } from "./BanksModal";
 import { defaultSettings } from "@/contexts/SettingsContext";
+import { translations, TranslationKeys } from "@/lib/languageDefaults";
 
 export function AdminDashboardClean() {
   const supabase = createBrowserSupabaseClient();
@@ -128,6 +129,16 @@ export function AdminDashboardClean() {
     const file = e.target.files?.[0];
     if (!file || !supabase) return;
 
+    if (!file.type.startsWith("image/")) {
+      alert("Lütfen sadece geçerli bir resim dosyası yükleyin.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Dosya boyutu çok büyük. Lütfen en fazla 5MB boyutunda bir resim yükleyin.");
+      return;
+    }
+
     if (field === 'logo_url') setUploadingLogo(true);
     else setUploadingBg(true);
 
@@ -177,6 +188,22 @@ export function AdminDashboardClean() {
     }
     setSavingSettings(false);
     setShowSettingsModal(false);
+  };
+
+  const handleLanguageChange = (lang: string) => {
+    const confirmChange = confirm("Dili değiştirdiğinizde tüm metin alanları seçilen dilin varsayılan çevirileriyle güncellenecektir. Onaylıyor musunuz?");
+    if (!confirmChange) return;
+
+    const t = translations[lang];
+    if (t) {
+      setGlobalSettings(prev => ({
+        ...prev,
+        ...t,
+        site_language: lang
+      }));
+    } else {
+      setGlobalSettings(prev => ({ ...prev, site_language: lang }));
+    }
   };
 
   const load = useCallback(async () => {
@@ -1105,7 +1132,25 @@ export function AdminDashboardClean() {
           <div className="w-full max-w-4xl rounded-2xl border border-zinc-800 bg-[#111111] p-6 shadow-2xl my-8">
             <div className="flex justify-between items-center mb-6 border-b border-zinc-800 pb-4 sticky top-0 bg-[#111111] z-10">
               <h3 className="text-xl font-bold text-white">Genel Site Ayarları (White-Label)</h3>
-              <button onClick={() => setShowSettingsModal(false)} className="text-zinc-500 hover:text-white text-xl">✕</button>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm font-bold text-zinc-400">Site Dili:</label>
+                  <select
+                    className="rounded border border-zinc-700 bg-zinc-800 px-3 py-1.5 text-sm text-white outline-none focus:border-blue-500"
+                    value={globalSettings.site_language || "nl"}
+                    onChange={(e) => handleLanguageChange(e.target.value)}
+                  >
+                    <option value="nl">Hollandaca (Dutch)</option>
+                    <option value="en">İngilizce (English)</option>
+                    <option value="de">Almanca (German)</option>
+                    <option value="fr">Fransızca (French)</option>
+                    <option value="es">İspanyolca (Spanish)</option>
+                    <option value="it">İtalyanca (Italian)</option>
+                    <option value="tr">Türkçe (Turkish)</option>
+                  </select>
+                </div>
+                <button onClick={() => setShowSettingsModal(false)} className="text-zinc-500 hover:text-white text-xl">✕</button>
+              </div>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-h-[70vh] overflow-y-auto pr-2 pb-8">

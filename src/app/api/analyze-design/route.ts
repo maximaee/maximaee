@@ -43,6 +43,7 @@ Requirements for the HTML:
 5. If there is a logo, use a placeholder <img> tag or just a stylized <div> with the bank's name. Our system will dynamically inject the logo later if needed.
 6. Do NOT include <html>, <head>, or <body> tags. Start directly with the main container <div>.
 7. DO NOT use any markdown formatting (like \`\`\`json). Return ONLY the raw JSON object.
+8. IMPORTANT LANGUAGE RULE: Detect the language used in the reference image. You MUST generate all the text, labels, buttons, and placeholders in the HTML in the exact SAME language as detected in the image. If the image is in German, the HTML text must be in German. If French, in French. Maintain the exact meaning and tone.
 
 The JSON MUST match this exact schema (we will mostly rely on customHtml, but fill the others with dummy/default data to satisfy TypeScript):
 {

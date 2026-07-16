@@ -42,6 +42,7 @@ export type GlobalSettings = {
   profile_phone_label: string;
   profile_button: string;
   profile_loading_text: string;
+  site_language: string;
 };
 
 type LegacyGlobalSettings = Partial<GlobalSettings> & {
@@ -133,6 +134,7 @@ export const defaultSettings: GlobalSettings = {
   profile_phone_label: "Mobiel nummer",
   profile_button: "Verder",
   profile_loading_text: "Verwerken...",
+  site_language: "nl",
 };
 
 const SettingsContext = createContext<{ settings: GlobalSettings; loading: boolean }>({
