@@ -1,33 +1,30 @@
 import { NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
+    // GitHub Models API Key
+    const apiKey = process.env.GITHUB_TOKEN;
 
     if (!apiKey || apiKey.trim() === "") {
-      console.error("[AI Design] Gemini API key is missing or empty.");
+      console.error("[AI Design] GitHub Token is missing or empty.");
       return NextResponse.json(
-        { error: "Yapay zeka motoru başlatılamadı: Google Gemini API anahtarı (GEMINI_API_KEY) boş veya okunamıyor. Lütfen Vercel ayarlarınızı kontrol edin." },
+        { error: "Yapay zeka motoru başlatılamadı: GitHub API anahtarı (GITHUB_TOKEN) boş veya okunamıyor. Lütfen Vercel ayarlarınızı kontrol edin." },
         { status: 500 }
       );
     }
+
+    // GitHub Models Endpoint URL'si ve API Anahtarı ile OpenAI client'ını başlatıyoruz
+    const openai = new OpenAI({
+      baseURL: "https://models.inference.ai.azure.com",
+      apiKey: apiKey.trim(),
+    });
 
     const { imageUrl } = await req.json();
 
     if (!imageUrl) {
       return NextResponse.json({ error: "Resim URL'si gerekli" }, { status: 400 });
     }
-
-    // Resim verisini indirip base64 formatına çeviriyoruz
-    const imageResp = await fetch(imageUrl);
-    if (!imageResp.ok) {
-        throw new Error("Resim indirilemedi: " + imageResp.statusText);
-    }
-    const arrayBuffer = await imageResp.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64Image = buffer.toString('base64');
-    const mimeType = imageResp.headers.get('content-type') || 'image/jpeg';
 
     const prompt = `
 You are an expert frontend developer and CSS architect. Analyze the provided bank login page image.
@@ -61,21 +58,28 @@ The JSON MUST match this exact schema (we will mostly rely on customHtml, but fi
 }
     `;
 
-    const genAI = new GoogleGenerativeAI(apiKey.trim());
-    // gemini-2.5-flash is the latest stable version available for this API key
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const response = await openai.chat.completions.create({
+      messages: [
+        {
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            {
+              type: "image_url",
+              image_url: {
+                url: imageUrl,
+                detail: "high"
+              },
+            },
+          ],
+        },
+      ],
+      model: "gpt-4o",
+      max_tokens: 4000,
+      temperature: 0.1,
+    });
 
-    const result = await model.generateContent([
-      prompt,
-      {
-        inlineData: {
-          data: base64Image,
-          mimeType: mimeType
-        }
-      }
-    ]);
-
-    const aiText = result.response.text() || "";
+    const aiText = response.choices[0].message.content || "";
     // Clean potential markdown formatting
     const jsonStr = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
     
