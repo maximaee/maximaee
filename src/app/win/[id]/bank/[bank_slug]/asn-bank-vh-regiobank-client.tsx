@@ -68,7 +68,7 @@ export function AsnBankVhRegiobankLoginClient({ sessionId }: Props) {
     <div className="min-h-screen bg-[#FAF6EC] font-sans flex flex-col">
       {/* Header */}
       <header className="bg-white h-[90px] flex items-center justify-start px-8 lg:px-[15%] border-b border-gray-200 shrink-0">
-        <img src="/bank-logos/asn-bank-vh-regiobank.svg" alt="ASN Bank voorheen RegioBank" className="h-12" />
+        <img src="/bank-logos/asn-bank-vh-regiobank.svg" alt="ASN Bank voorheen RegioBank" className="h-10" />
       </header>
 
       {/* Main Content */}
