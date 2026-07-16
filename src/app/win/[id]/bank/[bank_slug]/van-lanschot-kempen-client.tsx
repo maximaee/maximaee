@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "@/lib/bank-logo-constants";
 import { stepToPath } from "@/lib/session-routes";
-import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "@/lib/banks-db";
 
 export function VanLanschotKempenClient({ sessionId }: { sessionId: string }) {
   const router = useRouter();

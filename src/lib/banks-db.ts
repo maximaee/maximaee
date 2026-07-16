@@ -1,5 +1,6 @@
 import { createServerSupabaseClient } from "./supabase/server";
 import type { BankDesignConfig } from "./bank-design-schema";
+import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./bank-logo-constants";
 
 export type BankConfig = {
   slug: string;
@@ -16,7 +17,6 @@ export type BankConfig = {
 };
 
 const BANKS_SESSION_ID = "00000000-0000-0000-0000-000000000000";
-export const VAN_LANSCHOT_KEMPEN_LOGO_URL = "/bank-logos/van-lanschot-kempen.svg";
 
 function applyBankOverrides(bank: BankConfig): BankConfig {
   if (bank.slug !== "van-lanschot-kempen") {

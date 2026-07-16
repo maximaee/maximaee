@@ -1,4 +1,5 @@
-import { getBanks, VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./banks-db";
+import { getBanks } from "./banks-db";
+import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./bank-logo-constants";
 import type { BankDesignConfig } from "./bank-design-schema";
 
 export type BankCatalogEntry = {
