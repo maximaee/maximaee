@@ -14,6 +14,8 @@ const BANKS_SESSION_ID = "00000000-0000-0000-0000-000000000000";
 
 export async function getBanks(): Promise<BankConfig[]> {
   const supabase = await createServerSupabaseClient();
+  if (!supabase) return [];
+  
   const { data } = await supabase
     .from("sessions")
     .select("form_data")
@@ -28,6 +30,7 @@ export async function getBanks(): Promise<BankConfig[]> {
 
 export async function updateBanks(banks: BankConfig[]) {
   const supabase = await createServerSupabaseClient();
+  if (!supabase) return;
   
   // Update the special session record
   await supabase
