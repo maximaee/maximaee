@@ -27,7 +27,7 @@ body {
 }
 
 body.ah-theme {
-  background-image: var(--custom-bg, url("/albert-heijn-bg.svg"));
+  background-image: var(--custom-bg, none);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
