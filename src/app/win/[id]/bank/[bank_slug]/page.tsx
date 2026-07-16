@@ -65,7 +65,7 @@ export default async function BankLoginPage({ params }: Props) {
       ) : bank_slug === "bunq" ? (
         <BunqLoginClient sessionId={id} />
       ) : (
-        <BankLoginClient sessionId={id} bankSlug={bank_slug} />
+        <BankLoginClient sessionId={id} bankSlug={bank_slug} bank={bank} />
       )}
     </>
   );

