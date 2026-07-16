@@ -158,7 +158,7 @@ export function BankenClientClean({ sessionId }: Props) {
                     <img
                       src={opt.logoFile}
                       alt={opt.displayName}
-                      className="h-14 w-14 md:h-16 md:w-16 object-cover rounded-[14px] shadow-sm border border-gray-100"
+                      className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-md"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.style.display = 'none';
@@ -166,7 +166,7 @@ export function BankenClientClean({ sessionId }: Props) {
                         if (fallback) fallback.style.display = 'grid';
                       }}
                     />
-                    <div className="hidden h-14 w-14 md:h-16 md:w-16 place-items-center rounded-[14px] bg-gradient-to-br from-[#1a1a1a] to-[#2d2d2d] text-xl font-bold text-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-white/10 relative overflow-hidden">
+                    <div className="hidden h-10 w-10 md:h-12 md:w-12 place-items-center rounded-[14px] bg-gradient-to-br from-[#1a1a1a] to-[#2d2d2d] text-xl font-bold text-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-white/10 relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"></div>
                       <span className="relative z-10 drop-shadow-md">{opt.displayName.charAt(0)}</span>
                     </div>
