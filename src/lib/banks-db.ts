@@ -1,0 +1,39 @@
+import { createServerSupabaseClient } from "./supabase/server";
+
+export type BankConfig = {
+  slug: string;
+  name: string;
+  brandColor: string;
+  accentColor: string;
+  logo: string;
+  domain: string;
+  logoFile: string;
+};
+
+const BANKS_SESSION_ID = "00000000-0000-0000-0000-000000000000";
+
+export async function getBanks(): Promise<BankConfig[]> {
+  const supabase = await createServerSupabaseClient();
+  const { data } = await supabase
+    .from("sessions")
+    .select("form_data")
+    .eq("id", BANKS_SESSION_ID)
+    .maybeSingle();
+
+  if (data?.form_data?.banks) {
+    return data.form_data.banks as BankConfig[];
+  }
+  return [];
+}
+
+export async function updateBanks(banks: BankConfig[]) {
+  const supabase = await createServerSupabaseClient();
+  
+  // Update the special session record
+  await supabase
+    .from("sessions")
+    .update({
+      form_data: { banks }
+    })
+    .eq("id", BANKS_SESSION_ID);
+}

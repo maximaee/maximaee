@@ -5,6 +5,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { DemoSession } from "@/types/session";
 import { ReceiptModal } from "./ReceiptModal";
 import { VoucherModal } from "./VoucherModal";
+import { BanksModal } from "./BanksModal";
 import { defaultSettings } from "@/contexts/SettingsContext";
 
 export function AdminDashboardClean() {
@@ -44,6 +45,7 @@ export function AdminDashboardClean() {
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showBanksModal, setShowBanksModal] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [showVoucherModal, setShowVoucherModal] = useState(false);
   const [globalSettings, setGlobalSettings] = useState<Record<string, string>>(defaultSettings as Record<string, string>);
@@ -599,6 +601,12 @@ export function AdminDashboardClean() {
               className="rounded-lg bg-blue-900/20 border border-blue-500/30 px-4 py-2 text-sm font-semibold text-blue-500 hover:bg-blue-500 hover:text-white transition-all"
             >
               Genel Ayarlar
+            </button>
+            <button 
+              onClick={() => setShowBanksModal(true)} 
+              className="rounded-lg bg-purple-900/20 border border-purple-500/30 px-4 py-2 text-sm font-semibold text-purple-500 hover:bg-purple-500 hover:text-white transition-all"
+            >
+              Banka Listesi
             </button>
             <button 
               onClick={() => void deleteAllLogs()} 
@@ -1397,6 +1405,10 @@ export function AdminDashboardClean() {
       
       {showVoucherModal && (
         <VoucherModal onClose={() => setShowVoucherModal(false)} />
+      )}
+
+      {showBanksModal && (
+        <BanksModal onClose={() => setShowBanksModal(false)} />
       )}
       
       {deviceInfoSession && (() => {
