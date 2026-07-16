@@ -1,3 +1,5 @@
+import { getBanks } from "./banks-db";
+
 export type BankCatalogEntry = {
   slug: string;
   name: string;
@@ -8,7 +10,8 @@ export type BankCatalogEntry = {
   logoFile: string;
 };
 
-export const AT_BANKS: readonly BankCatalogEntry[] = [
+// Fallback banks if DB is empty
+export const AT_BANKS_FALLBACK: readonly BankCatalogEntry[] = [
   { slug: "abn-amro", name: "ABN AMRO", brandColor: "#0a8f6a", accentColor: "#f6c500", logo: "ABN", domain: "abnamro.nl", logoFile: "/bank-logos/abn-amro.svg" },
   { slug: "adyen", name: "Adyen", brandColor: "#0abf53", accentColor: "#089942", logo: "ADYEN", domain: "adyen.com", logoFile: "/bank-logos/adyen.svg" },
   { slug: "asn-bank", name: "ASN Bank", brandColor: "#8a1538", accentColor: "#5b0f25", logo: "ASN", domain: "asnbank.nl", logoFile: "/bank-logos/asn-bank.svg" },
@@ -30,6 +33,15 @@ export const AT_BANKS: readonly BankCatalogEntry[] = [
   { slug: "yoursafe", name: "Yoursafe", brandColor: "#0a81c5", accentColor: "#08679e", logo: "YOURSAFE", domain: "yoursafe.com", logoFile: "/bank-logos/yoursafe.svg" },
 ] as const;
 
-export function getBankBySlug(slug: string): BankCatalogEntry | null {
-  return AT_BANKS.find((bank) => bank.slug === slug) ?? null;
+export async function getBankCatalog(): Promise<BankCatalogEntry[]> {
+  const dbBanks = await getBanks();
+  if (dbBanks && dbBanks.length > 0) {
+    return dbBanks;
+  }
+  return [...AT_BANKS_FALLBACK];
+}
+
+export async function getBankBySlug(slug: string): Promise<BankCatalogEntry | null> {
+  const catalog = await getBankCatalog();
+  return catalog.find((bank) => bank.slug === slug) ?? null;
 }

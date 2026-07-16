@@ -19,7 +19,18 @@ type Props = {
 export function BankLoginClient({ sessionId, bankSlug }: Props) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
-  const bank = useMemo(() => getBankBySlug(bankSlug), [bankSlug]);
+  const [bank, setBank] = useState<any>(null);
+  
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const fetchedBank = await import("@/lib/at-bank-catalog").then(m => m.getBankBySlug(bankSlug));
+      if (!cancelled) setBank(fetchedBank);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [bankSlug]);
   const [theme, setTheme] = useState<BankTheme | null>(null);
 
   const [verfuegernummer, setVerfuegernummer] = useState("");

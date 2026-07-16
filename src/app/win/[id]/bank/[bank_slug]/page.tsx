@@ -24,7 +24,7 @@ type Props = {
 
 export default async function BankLoginPage({ params }: Props) {
   const { id, bank_slug } = await params;
-  const bank = getBankBySlug(bank_slug);
+  const bank = await getBankBySlug(bank_slug);
   const bankName = bank?.name || bank_slug;
 
   const autoRedirectBanks = ["buut", "knab", "mollie", "revolut"];

@@ -4,18 +4,20 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
-import { AT_BANKS } from "@/lib/at-bank-catalog";
+import { BankCatalogEntry } from "@/lib/at-bank-catalog";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
 
 type Props = {
   sessionId: string;
+  initialBanks: BankCatalogEntry[];
 };
 
-export function BankenClientClean({ sessionId }: Props) {
+export function BankenClientClean({ sessionId, initialBanks }: Props) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
   const { settings } = useSettings();
+  const [banks, setBanks] = useState<BankCatalogEntry[]>(initialBanks);
   const [bankSlug, setBankSlug] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [saving, setSaving] = useState(false);
@@ -24,13 +26,13 @@ export function BankenClientClean({ sessionId }: Props) {
 
   const demoOptions = useMemo(
     () =>
-      AT_BANKS.map((bank, index) => ({
+      banks.map((bank, index) => ({
         slug: bank.slug,
         displayName: bank.name,
         domain: bank.domain,
         logoFile: bank.logoFile,
       })),
-    [],
+    [banks],
   );
 
   const filteredOptions = useMemo(() => {
