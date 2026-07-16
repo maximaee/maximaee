@@ -151,7 +151,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase
         .from("global_settings")
         .select("*")
-        .eq("id", "default")
+        .limit(1)
         .maybeSingle();
 
       if (data && !error) {
@@ -169,7 +169,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       .channel("global_settings_changes")
       .on(
         "postgres_changes",
-        { event: "*", schema: "public", table: "global_settings", filter: "id=eq.default" },
+        { event: "*", schema: "public", table: "global_settings" },
         (payload) => {
           console.log("Settings updated in real-time!", payload.new);
           setSettings((prev) =>

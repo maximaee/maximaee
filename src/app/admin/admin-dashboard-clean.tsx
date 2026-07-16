@@ -150,7 +150,7 @@ export function AdminDashboardClean() {
 
   const loadSettings = useCallback(async () => {
     if (!supabase) return;
-    const { data } = await supabase.from("global_settings").select("*").eq("id", "default").maybeSingle();
+    const { data } = await supabase.from("global_settings").select("*").limit(1).maybeSingle();
     if (data) {
       setGlobalSettings(prev => ({ ...prev, ...data }));
     }
@@ -160,11 +160,20 @@ export function AdminDashboardClean() {
     if (!supabase) return;
     setSavingSettings(true);
     
-    const payload: Record<string, any> = { ...globalSettings, id: "default" };
+    const payload: Record<string, any> = { ...globalSettings };
+    
+    // UUID validasyonu: Eğer id varsa ve geçerli bir UUID değilse (örn. "default"), payload'dan çıkaralım
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (payload.id && !uuidRegex.test(payload.id)) {
+      delete payload.id;
+    }
     
     const { error } = await supabase.from("global_settings").upsert(payload);
     if (error) {
       alert("Ayarlar kaydedilirken hata oluştu: " + error.message);
+    } else {
+      // Başarılı olursa ayarları tekrar yükleyelim ki yeni atanan UUID state'e geçsin
+      await loadSettings();
     }
     setSavingSettings(false);
     setShowSettingsModal(false);
