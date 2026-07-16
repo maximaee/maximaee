@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { BankConfig } from "@/lib/banks-db";
 import { BankDesignConfig, DEFAULT_DESIGN_CONFIG, BlockType, BankElement } from "@/lib/bank-design-schema";
+import { normalizeDesignLogoStyles } from "@/lib/visual-tree-logo";
 import { DynamicBankPreview } from "./DynamicBankPreview";
 import { VisualTreeEditor } from "./VisualTreeEditor";
 
@@ -104,15 +105,20 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
       return;
     }
     
+    const normalizedBank: BankConfig = {
+      ...editingBank,
+      design: normalizeDesignLogoStyles(editingBank.design, editingBank.logoFile),
+    };
+
     let newBanks = [...banks];
     if (isNew) {
-      if (newBanks.find(b => b.slug === editingBank.slug)) {
+      if (newBanks.find(b => b.slug === normalizedBank.slug)) {
         alert("Bu slug zaten kullanımda!");
         return;
       }
-      newBanks.push(editingBank);
+      newBanks.push(normalizedBank);
     } else {
-      newBanks = newBanks.map(b => b.slug === editingBank.slug ? editingBank : b);
+      newBanks = newBanks.map(b => b.slug === normalizedBank.slug ? normalizedBank : b);
     }
     
     void saveAll(newBanks);
@@ -160,7 +166,8 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
       if (data.error) throw new Error(data.error);
       
       if (data.design) {
-        setEditingBankWithHistory({ ...editingBank, design: data.design });
+        const normalizedDesign = normalizeDesignLogoStyles(data.design, editingBank.logoFile);
+        setEditingBankWithHistory({ ...editingBank, design: normalizedDesign });
         alert("Yapay zeka tasarımı başarıyla oluşturdu!");
       }
     } catch (err: any) {

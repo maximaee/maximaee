@@ -6,6 +6,7 @@ import { DEFAULT_DESIGN_CONFIG, BlockType } from "@/lib/bank-design-schema";
 import { DemoShell } from "@/components/demo/DemoShell";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
+import { getRenderableImageProps } from "@/lib/visual-tree-logo";
 import parse, { attributesToProps, domToReact, Element } from "html-react-parser";
 
 // Özel Tasarım İçe Aktarımları
@@ -49,8 +50,14 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
     const sId = "preview";
     const bank_slug = bank.slug;
     const bankName = bank.name;
+    const hasGeneratedDesign = Boolean(bank.design?.visualTree || bank.design?.customHtml);
 
-    if (bank_slug === "van-lanschot-kempen") return <VanLanschotKempenClient sessionId={sId} />;
+    if (bank_slug === "van-lanschot-kempen" && !hasGeneratedDesign) {
+      // #region debug-point E:preview-custom-client
+      void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "E", location: "DynamicBankPreview.tsx:53", msg: "[DEBUG] Preview forced to Van Lanschot custom client", data: { slug: bank_slug, bankName, hasDesign: Boolean(bank.design), hasVisualTree: Boolean(bank.design?.visualTree), hasCustomHtml: Boolean(bank.design?.customHtml), logoFile: bank.logoFile }, ts: Date.now() }) }).catch(() => {});
+      // #endregion
+      return <VanLanschotKempenClient sessionId={sId} />;
+    }
     if (bank_slug === "ing") return <IngClient sessionId={sId} />;
     if (bank_slug === "finom") return <FinomClient sessionId={sId} />;
     if (bank_slug === "yoursafe") return <YoursafeClient sessionId={sId} />;
@@ -97,7 +104,20 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
           ...element.attributes,
         };
 
+        if (element.type === "image") {
+          // #region debug-point B:preview-image-node
+          void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "B", location: "DynamicBankPreview.tsx:100", msg: "[DEBUG] Preview visualTree image node encountered", data: { slug: bank.slug, elementId: element.id, src: props.src ?? null, styles: element.styles ?? null, logoFile: bank.logoFile ?? null }, ts: Date.now() }) }).catch(() => {});
+          // #endregion
+        }
+
+        if (element.type === "image") {
+          Object.assign(props, getRenderableImageProps(element, bank.logoFile, bank.name));
+        }
+
         if (element.type === "image" && props.src === "placeholder" && bank.logoFile) {
+          // #region debug-point A:preview-placeholder-swap
+          void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "A", location: "DynamicBankPreview.tsx:105", msg: "[DEBUG] Preview logo placeholder replaced", data: { slug: bank.slug, elementId: element.id, originalSrc: "placeholder", injectedSrc: bank.logoFile, styles: element.styles ?? null }, ts: Date.now() }) }).catch(() => {});
+          // #endregion
           props.src = bank.logoFile;
         }
 
@@ -147,7 +167,7 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
             if (domNode.name === "img" && domNode.attribs?.src && domNode.attribs.src.includes("placeholder")) {
               if (bank.logoFile) {
                 const props = attributesToProps(domNode.attribs);
-                return <img {...props} src={bank.logoFile} alt={bank.name} />;
+                return <img {...props} src={bank.logoFile} alt={bank.name} style={{ ...(props.style ?? {}), maxWidth: "100%", maxHeight: "100%", objectFit: "contain", objectPosition: "left center", display: "block" }} />;
               }
             }
           }

