@@ -84,7 +84,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    if (!file || !editingBank) return;
+    if (!file || !editingBank || !supabase) return;
 
     try {
       const fileExt = file.name.split('.').pop();
