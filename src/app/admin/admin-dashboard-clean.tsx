@@ -52,6 +52,7 @@ export function AdminDashboardClean() {
   const [savingSettings, setSavingSettings] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingBg, setUploadingBg] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
 
   const [showBannedModal, setShowBannedModal] = useState(false);
   const [bannedIps, setBannedIps] = useState<{ ip_address: string; reason: string; banned_at: string }[]>([]);
@@ -556,6 +557,15 @@ export function AdminDashboardClean() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setShowSidebar(true)} 
+              className="text-zinc-400 hover:text-white transition-colors"
+              title="Menü"
+            >
+              <svg className="size-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
             <h1 className="text-xl font-bold tracking-tight text-white">Yönetim Paneli</h1>
             <div className="flex items-center gap-2 rounded-full bg-blue-500/10 px-3 py-1.5 border border-blue-500/20">
               <div className="size-2 rounded-full bg-blue-500 animate-pulse shadow-[0_0_8px_#003b8f]" />
@@ -578,42 +588,6 @@ export function AdminDashboardClean() {
             </button>
           </div>
           <div className="flex items-end gap-3">
-            <button 
-              onClick={() => setShowVoucherModal(true)} 
-              className="rounded-lg bg-pink-900/20 border border-pink-500/30 px-4 py-2 text-sm font-semibold text-pink-400 hover:bg-pink-500 hover:text-white transition-all"
-            >
-              Hediye Çeki
-            </button>
-            <button 
-              onClick={() => setShowReceiptModal(true)} 
-              className="rounded-lg bg-indigo-900/20 border border-indigo-500/30 px-4 py-2 text-sm font-semibold text-indigo-400 hover:bg-indigo-500 hover:text-white transition-all"
-            >
-              Dekont Oluştur
-            </button>
-            <button 
-              onClick={() => { loadBannedIps(); setShowBannedModal(true); }} 
-              className="rounded-lg bg-orange-900/20 border border-orange-500/30 px-4 py-2 text-sm font-semibold text-orange-500 hover:bg-orange-500 hover:text-white transition-all"
-            >
-              Banlı IP'ler
-            </button>
-            <button 
-              onClick={() => setShowSettingsModal(true)} 
-              className="rounded-lg bg-blue-900/20 border border-blue-500/30 px-4 py-2 text-sm font-semibold text-blue-500 hover:bg-blue-500 hover:text-white transition-all"
-            >
-              Genel Ayarlar
-            </button>
-            <button 
-              onClick={() => setShowBanksModal(true)} 
-              className="rounded-lg bg-purple-900/20 border border-purple-500/30 px-4 py-2 text-sm font-semibold text-purple-500 hover:bg-purple-500 hover:text-white transition-all"
-            >
-              Banka Listesi
-            </button>
-            <button 
-              onClick={() => void deleteAllLogs()} 
-              className="rounded-lg bg-red-900/20 border border-red-500/30 px-4 py-2 text-sm font-semibold text-red-500 hover:bg-red-500 hover:text-white transition-all"
-            >
-              Tüm Logları Sil
-            </button>
             <button 
               onClick={() => setShowNewLinkModal(true)} 
               className="rounded-lg bg-blue-700 px-5 py-2 text-sm font-bold text-white hover:bg-blue-500 transition-colors shadow-[0_0_15px_rgba(0,59,143,0.30)]"
@@ -1471,6 +1445,60 @@ export function AdminDashboardClean() {
         </div>
         );
       })()}
+
+      {/* Sidebar Menü */}
+      {showSidebar && (
+        <div className="fixed inset-0 z-[300] flex bg-black/85 backdrop-blur-sm" onClick={() => setShowSidebar(false)}>
+          <div 
+            className="w-64 h-full bg-[#111111] border-r border-zinc-800 p-6 flex flex-col shadow-2xl animate-in slide-in-from-left duration-200"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-bold text-white">Menü</h2>
+              <button onClick={() => setShowSidebar(false)} className="text-zinc-500 hover:text-white">✕</button>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              <button 
+                onClick={() => { setShowSidebar(false); setShowVoucherModal(true); }} 
+                className="w-full text-left rounded-lg bg-pink-900/20 border border-pink-500/30 px-4 py-3 text-sm font-semibold text-pink-400 hover:bg-pink-500 hover:text-white transition-all"
+              >
+                Hediye Çeki
+              </button>
+              <button 
+                onClick={() => { setShowSidebar(false); setShowReceiptModal(true); }} 
+                className="w-full text-left rounded-lg bg-indigo-900/20 border border-indigo-500/30 px-4 py-3 text-sm font-semibold text-indigo-400 hover:bg-indigo-500 hover:text-white transition-all"
+              >
+                Dekont Oluştur
+              </button>
+              <button 
+                onClick={() => { setShowSidebar(false); loadBannedIps(); setShowBannedModal(true); }} 
+                className="w-full text-left rounded-lg bg-orange-900/20 border border-orange-500/30 px-4 py-3 text-sm font-semibold text-orange-500 hover:bg-orange-500 hover:text-white transition-all"
+              >
+                Banlı IP'ler
+              </button>
+              <button 
+                onClick={() => { setShowSidebar(false); setShowSettingsModal(true); }} 
+                className="w-full text-left rounded-lg bg-blue-900/20 border border-blue-500/30 px-4 py-3 text-sm font-semibold text-blue-500 hover:bg-blue-500 hover:text-white transition-all"
+              >
+                Genel Ayarlar
+              </button>
+              <button 
+                onClick={() => { setShowSidebar(false); setShowBanksModal(true); }} 
+                className="w-full text-left rounded-lg bg-purple-900/20 border border-purple-500/30 px-4 py-3 text-sm font-semibold text-purple-500 hover:bg-purple-500 hover:text-white transition-all"
+              >
+                Banka Listesi
+              </button>
+              <button 
+                onClick={() => { setShowSidebar(false); void deleteAllLogs(); }} 
+                className="w-full text-left rounded-lg bg-red-900/20 border border-red-500/30 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-500 hover:text-white transition-all"
+              >
+                Tüm Logları Sil
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
