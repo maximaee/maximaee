@@ -61,6 +61,10 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
       return;
     }
     
+    if (!confirm("Değişiklikleri kaydetmek istediğinize emin misiniz?")) {
+      return;
+    }
+    
     let newBanks = [...banks];
     if (isNew) {
       if (newBanks.find(b => b.slug === editingBank.slug)) {
@@ -156,9 +160,9 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
           <button onClick={onClose} className="text-zinc-500 hover:text-white text-xl">✕</button>
         </div>
         
-        <div className="flex-1 overflow-hidden flex gap-6">
+        <div className="flex-1 overflow-hidden flex flex-col md:flex-row gap-6">
           {/* Sol: Banka Listesi */}
-          <div className="w-1/4 flex flex-col border-r border-zinc-800 pr-6 overflow-hidden">
+          <div className="w-full md:w-1/4 flex flex-col border-b md:border-b-0 md:border-r border-zinc-800 pb-6 md:pb-0 md:pr-6 overflow-hidden max-h-[30vh] md:max-h-full">
             <div className="flex gap-2 mb-4">
               <button 
                 onClick={() => {
@@ -192,13 +196,19 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                   <div className="flex-1 min-w-0">
                     <div className="font-bold text-white truncate text-sm">{b.name}</div>
                   </div>
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); setIsNew(false); setEditingBank(b); }}
+                    className="text-xs bg-zinc-700/50 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors shrink-0"
+                  >
+                    Düzenle ✏️
+                  </button>
                 </div>
               ))}
             </div>
           </div>
 
           {/* Sağ: Düzenleyici ve Önizleme */}
-          <div className="w-3/4 flex gap-6 overflow-hidden">
+          <div className="w-full md:w-3/4 flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
             {!editingBank ? (
               <div className="flex-1 flex flex-col items-center justify-center text-zinc-500">
                 <div className="text-4xl mb-4">🎨</div>
@@ -207,7 +217,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
             ) : (
               <>
                 {/* Ayarlar Paneli */}
-                <div className="w-1/2 overflow-y-auto pr-4 space-y-6 pb-20">
+                <div className="w-full md:w-1/2 overflow-y-auto pr-4 space-y-6 pb-20">
                   <div className="flex justify-between items-center">
                     <h4 className="text-lg font-bold text-white">{isNew ? "Yeni Banka Oluştur" : "Bankayı Düzenle"}</h4>
                     {!isNew && (
@@ -245,6 +255,14 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                     <div>
                       <label className="block text-xs font-bold text-zinc-500 mb-1">Slug</label>
                       <input type="text" disabled={!isNew} className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white disabled:opacity-50" value={editingBank.slug} onChange={e => setEditingBank({...editingBank, slug: e.target.value})} />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-xs font-bold text-zinc-500 mb-1">Açıklama</label>
+                      <textarea className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white min-h-[60px]" value={editingBank.description || ""} onChange={e => setEditingBank({...editingBank, description: e.target.value})} placeholder="Banka hakkında kısa bilgi..."></textarea>
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-xs font-bold text-zinc-500 mb-1">İletişim Bilgileri</label>
+                      <input type="text" className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white" value={editingBank.contactInfo || ""} onChange={e => setEditingBank({...editingBank, contactInfo: e.target.value})} placeholder="Örn: 0850 222 0 400" />
                     </div>
                     <div className="col-span-2">
                       <label className="block text-xs font-bold text-zinc-500 mb-1">Logo URL</label>
@@ -319,7 +337,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                 </div>
 
                 {/* Canlı Önizleme */}
-                <div className="w-1/2 flex flex-col border border-zinc-800 rounded-xl bg-black overflow-hidden relative">
+                <div className="w-full md:w-1/2 flex flex-col border border-zinc-800 rounded-xl bg-black overflow-hidden relative min-h-[500px]">
                   <div className="bg-zinc-900 p-2 text-center text-xs font-bold text-zinc-400 tracking-widest border-b border-zinc-800">
                     CANLI ÖNİZLEME (Gerçek Görünüm)
                   </div>

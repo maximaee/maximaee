@@ -9,6 +9,8 @@ export type BankConfig = {
   logo: string;
   domain: string;
   logoFile: string;
+  description?: string;
+  contactInfo?: string;
   design?: BankDesignConfig;
   autoRedirect?: boolean;
 };

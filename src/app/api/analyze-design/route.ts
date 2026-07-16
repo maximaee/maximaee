@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     if (!process.env.OPENAI_API_KEY) {
       console.error("[AI Design] OpenAI API key is missing in environment variables.");
       return NextResponse.json(
-        { error: "Yapay zeka motoru başlatılamadı: OpenAI API anahtarı bulunamadı. Lütfen sunucu ortam değişkenlerini (Environment Variables) veya .env.local dosyasını kontrol edin." },
+        { error: "Yapay zeka motoru başlatılamadı: OpenAI API anahtarı (OPENAI_API_KEY) bulunamadı. Lütfen projenin .env.local dosyasında tanımlı olduğundan ve Vercel (veya sunucu) ortam değişkenleri (Environment Variables) sekmesine eklendiğinden emin olun." },
         { status: 500 }
       );
     }
