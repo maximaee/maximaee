@@ -3,19 +3,19 @@ import OpenAI from "openai";
 
 export async function POST(req: Request) {
   try {
-    // Vercel ortam değişkeni loglaması (Sadece varlığını kontrol ediyoruz, güvenli)
-    console.log("[AI Design] Checking env vars. OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
+    // process.env'den API anahtarını alıyoruz
+    const apiKey = process.env.OPENAI_API_KEY;
 
-    if (!process.env.OPENAI_API_KEY) {
-      console.error("[AI Design] OpenAI API key is missing in environment variables.");
+    if (!apiKey || apiKey.trim() === "") {
+      console.error("[AI Design] OpenAI API key is missing or empty.");
       return NextResponse.json(
-        { error: "Yapay zeka motoru başlatılamadı: OpenAI API anahtarı (OPENAI_API_KEY) bulunamadı. Lütfen projenin .env.local dosyasında tanımlı olduğundan ve Vercel (veya sunucu) ortam değişkenleri (Environment Variables) sekmesine eklendiğinden emin olun." },
+        { error: "Yapay zeka motoru başlatılamadı: OpenAI API anahtarı (OPENAI_API_KEY) boş veya okunamıyor. Lütfen Vercel ayarlarınızı kontrol edin." },
         { status: 500 }
       );
     }
 
     const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey: apiKey.trim(),
     });
 
     const { imageUrl } = await req.json();
