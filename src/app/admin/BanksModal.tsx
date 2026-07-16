@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { BankConfig } from "@/lib/banks-db";
-import { BankDesignConfig, DEFAULT_DESIGN_CONFIG, BlockType } from "@/lib/bank-design-schema";
+import { BankDesignConfig, DEFAULT_DESIGN_CONFIG, BlockType, BankElement } from "@/lib/bank-design-schema";
 import { DynamicBankPreview } from "./DynamicBankPreview";
+import { VisualTreeEditor } from "./VisualTreeEditor";
 
 export function BanksModal({ onClose }: { onClose: () => void }) {
   const supabase = createBrowserSupabaseClient();
@@ -14,12 +15,48 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
   const [editingBank, setEditingBank] = useState<BankConfig | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationWarnings, setValidationWarnings] = useState<any[]>([]);
   const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  
+  // History for Undo/Redo
+  const [designHistory, setDesignHistory] = useState<BankDesignConfig[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   useEffect(() => {
     fetchBanks();
   }, []);
+
+  function setEditingBankWithHistory(b: BankConfig | null, recordHistory = true) {
+    setEditingBank(b);
+    if (b && b.design && recordHistory) {
+      const newHistory = designHistory.slice(0, historyIndex + 1);
+      newHistory.push(JSON.parse(JSON.stringify(b.design)));
+      setDesignHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
+    }
+  }
+
+  function undoDesign() {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      if (editingBank) {
+        setEditingBank({ ...editingBank, design: JSON.parse(JSON.stringify(designHistory[newIndex])) });
+      }
+    }
+  }
+
+  function redoDesign() {
+    if (historyIndex < designHistory.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      if (editingBank) {
+        setEditingBank({ ...editingBank, design: JSON.parse(JSON.stringify(designHistory[newIndex])) });
+      }
+    }
+  }
 
   async function fetchBanks() {
     setLoading(true);
@@ -120,7 +157,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
       if (data.error) throw new Error(data.error);
       
       if (data.design) {
-        setEditingBank({ ...editingBank, design: data.design });
+        setEditingBankWithHistory({ ...editingBank, design: data.design });
         alert("Yapay zeka tasarımı başarıyla oluşturdu!");
       }
     } catch (err: any) {
@@ -161,7 +198,8 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
   function updateDesign(updater: (prev: BankDesignConfig) => BankDesignConfig) {
     if (!editingBank) return;
     const currentDesign = editingBank.design || DEFAULT_DESIGN_CONFIG;
-    setEditingBank({ ...editingBank, design: updater(currentDesign) });
+    const newDesign = updater(currentDesign);
+    setEditingBankWithHistory({ ...editingBank, design: newDesign });
   }
 
   // Drag and Drop handlers for blocks
@@ -207,7 +245,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
               <button 
                 onClick={() => {
                   setIsNew(true);
-                  setEditingBank({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG });
+                  setEditingBankWithHistory({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG });
                 }}
                 className="flex-1 rounded-xl bg-zinc-800 px-3 py-3 text-xs font-bold text-white hover:bg-zinc-700 transition-colors flex items-center justify-center gap-1"
               >
@@ -227,7 +265,12 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
               ) : banks.map(b => (
                 <div 
                   key={b.slug}
-                  onClick={() => { setIsNew(false); setEditingBank(b); }}
+                  onClick={() => { 
+                    setIsNew(false); 
+                    setDesignHistory([]);
+                    setHistoryIndex(-1);
+                    setEditingBankWithHistory(b); 
+                  }}
                   className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${editingBank?.slug === b.slug ? 'bg-blue-900/20 border-blue-500/50' : 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800'}`}
                 >
                   <div className="size-8 rounded-full overflow-hidden bg-white shrink-0 flex items-center justify-center p-1">
@@ -237,7 +280,13 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                     <div className="font-bold text-white truncate text-sm">{b.name}</div>
                   </div>
                   <button 
-                    onClick={(e) => { e.stopPropagation(); setIsNew(false); setEditingBank(b); }}
+                    onClick={(e) => { 
+                      e.stopPropagation(); 
+                      setIsNew(false); 
+                      setDesignHistory([]);
+                      setHistoryIndex(-1);
+                      setEditingBankWithHistory(b); 
+                    }}
                     className="text-xs bg-zinc-700/50 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors shrink-0"
                   >
                     Düzenle ✏️
@@ -259,32 +308,85 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                 {/* Ayarlar Paneli */}
                 <div className="w-full md:w-1/2 overflow-y-auto pr-4 space-y-6 pb-20">
                   <div className="flex justify-between items-center">
-                    <h4 className="text-lg font-bold text-white">{isNew ? "Yeni Banka Oluştur" : "Bankayı Düzenle"}</h4>
+                    <div className="flex items-center gap-4">
+                      <h4 className="text-lg font-bold text-white">{isNew ? "Yeni Banka Oluştur" : "Bankayı Düzenle"}</h4>
+                      
+                      {/* Undo/Redo Controls */}
+                      <div className="flex bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700">
+                        <button 
+                          onClick={undoDesign}
+                          disabled={historyIndex <= 0}
+                          className="px-3 py-1.5 text-xs text-white hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed border-r border-zinc-700 transition-colors"
+                          title="Geri Al"
+                        >
+                          ↩ Geri Al
+                        </button>
+                        <button 
+                          onClick={redoDesign}
+                          disabled={historyIndex >= designHistory.length - 1}
+                          className="px-3 py-1.5 text-xs text-white hover:bg-zinc-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                          title="İleri Al"
+                        >
+                          İleri Al ↪
+                        </button>
+                      </div>
+                    </div>
+                    
                     {!isNew && (
                       <button onClick={() => handleDeleteBank(editingBank.slug)} className="text-xs text-red-400 hover:text-red-300 font-bold px-3 py-1 rounded bg-red-500/10">Bankayı Sil</button>
                     )}
                   </div>
 
                   <div className="p-4 rounded-xl bg-purple-900/20 border border-purple-500/30">
-                    <h5 className="font-bold text-purple-300 mb-2 flex items-center gap-2">✨ AI ile Özel React Component Üret</h5>
-                    <p className="text-xs text-purple-200/70 mb-4">Bir bankanın ekran görüntüsünü yükleyin. AI, referans tasarımla %100 uyumlu, Tailwind CSS destekli saf HTML/React kodunu sıfırdan yazarak bankaya giydirsin.</p>
-                    <label className={`flex items-center justify-center w-full p-3 rounded-lg border-2 border-dashed ${aiAnalyzing ? 'border-purple-500 bg-purple-500/20' : 'border-purple-500/50 hover:bg-purple-500/10'} cursor-pointer transition-all`}>
-                      <span className="text-sm font-bold text-purple-300">{aiAnalyzing ? "AI Özel Kodu Yazıyor..." : "📸 Referans Fotoğraf Yükle"}</span>
-                      <input type="file" accept="image/*" className="hidden" onChange={handleReferenceImageUpload} disabled={aiAnalyzing} />
-                    </label>
+                    <h5 className="font-bold text-purple-300 mb-2 flex items-center justify-between">
+                      <span className="flex items-center gap-2">✨ AI ile Özel Tasarım Üret & Doğrula</span>
+                    </h5>
+                    <p className="text-xs text-purple-200/70 mb-4">Bir bankanın ekran görüntüsünü yükleyin. AI, referans tasarımla %100 uyumlu, modüler JSON tabanlı bir tasarım ağacı üretsin. Ardından AI ile tasarımınızı fotoğraf üzerinden doğrulayabilirsiniz.</p>
+                    
+                    <div className="flex gap-2">
+                      <label className={`flex-1 flex items-center justify-center p-3 rounded-lg border-2 border-dashed ${aiAnalyzing ? 'border-purple-500 bg-purple-500/20' : 'border-purple-500/50 hover:bg-purple-500/10'} cursor-pointer transition-all`}>
+                        <span className="text-sm font-bold text-purple-300">{aiAnalyzing ? "AI Üretiyor..." : "📸 Referans Yükle & Üret"}</span>
+                        <input id="refImageInput" type="file" accept="image/*" className="hidden" onChange={handleReferenceImageUpload} disabled={aiAnalyzing || isValidating} />
+                      </label>
+                      
+                      <button 
+                        onClick={validateDesignWithAI}
+                        disabled={aiAnalyzing || isValidating || !editingBank.design?.visualTree}
+                        className="flex-1 bg-green-600/20 border-2 border-green-500/50 hover:bg-green-600/30 text-green-400 font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                      >
+                        {isValidating ? "Doğrulanıyor..." : "✅ Tasarımı Doğrula"}
+                      </button>
+                    </div>
+
+                    {validationWarnings.length > 0 && (
+                      <div className="mt-4 p-3 bg-red-900/20 border border-red-500/30 rounded-lg">
+                        <h6 className="text-xs font-bold text-red-400 mb-2">⚠️ AI Doğrulama Uyarıları (Sapmalar Bulundu):</h6>
+                        <ul className="text-xs text-red-200 space-y-2">
+                          {validationWarnings.map((warn, i) => (
+                            <li key={i} className="flex flex-col gap-1 pb-2 border-b border-red-500/10 last:border-0 last:pb-0">
+                              <span className="font-bold text-red-300">Öğe: {warn.elementId}</span>
+                              <span>• Sorun: {warn.issue}</span>
+                              <span className="text-green-400">• Çözüm: {warn.suggestion}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
 
                   {/* AI KOD EDİTÖRÜ */}
-                  <div className="space-y-4">
-                    <h5 className="font-bold text-white border-b border-zinc-800 pb-2">AI Özel Kodu (HTML/Tailwind)</h5>
-                    <p className="text-xs text-zinc-500">Yapay zekanın oluşturduğu veya sizin yazdığınız özel kod. Bu alan doluysa sürükle-bırak mizanpaj devre dışı kalır.</p>
-                    <textarea 
-                      className="w-full h-40 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-mono text-zinc-300" 
-                      value={editingBank.design?.customHtml || ""} 
-                      onChange={e => updateDesign(d => ({...d, customHtml: e.target.value}))}
-                      placeholder="<div class='min-h-screen bg-white'>...</div>"
-                    />
-                  </div>
+                  {!editingBank.design?.visualTree && (
+                    <div className="space-y-4">
+                      <h5 className="font-bold text-white border-b border-zinc-800 pb-2">Eski AI Kodu (HTML/Tailwind)</h5>
+                      <p className="text-xs text-zinc-500">Yapay zekanın oluşturduğu eski HTML kodları (Eğer görsel ağaç yoksa çalışır).</p>
+                      <textarea 
+                        className="w-full h-40 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 text-xs font-mono text-zinc-300" 
+                        value={editingBank.design?.customHtml || ""} 
+                        onChange={e => updateDesign(d => ({...d, customHtml: e.target.value}))}
+                        placeholder="<div class='min-h-screen bg-white'>...</div>"
+                      />
+                    </div>
+                  )}
 
                   {/* Temel Bilgiler */}
                   <div className="grid grid-cols-2 gap-4">

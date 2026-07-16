@@ -82,6 +82,48 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
   if (bank.design) {
     const design = bank.design;
     
+    if (design.visualTree) {
+      const renderVisualTree = (element: any): React.ReactNode => {
+        const Tag = element.type === "container" ? "div" : 
+                    element.type === "text" ? "span" : 
+                    element.type === "form" ? "form" : 
+                    element.type === "button" ? "button" : 
+                    element.type === "image" ? "img" : 
+                    element.type === "input" ? "input" : "div";
+
+        const props: any = {
+          key: element.id,
+          style: element.styles,
+          ...element.attributes,
+        };
+
+        if (element.type === "image" && props.src === "placeholder" && bank.logoFile) {
+          props.src = bank.logoFile;
+        }
+
+        if (element.type === "input" || element.type === "button") {
+          props.disabled = true; // disabled in preview
+        }
+
+        if (element.type === "input" || element.type === "image") {
+          return <Tag {...props} />;
+        }
+
+        return (
+          <Tag {...props}>
+            {element.content}
+            {element.children?.map(renderVisualTree)}
+          </Tag>
+        );
+      };
+
+      return (
+        <div style={{ pointerEvents: 'none' }} className="min-h-screen w-full font-sans antialiased scale-75 origin-top relative">
+          {renderVisualTree(design.visualTree)}
+        </div>
+      );
+    }
+
     if (design.customHtml) {
       const options = {
         replace: (domNode: any) => {
