@@ -5,6 +5,7 @@ import { AdyenLoginClient } from "./adyen-client";
 import { AsnBankLoginClient } from "./asn-bank-client";
 import { AsnBankVhRegiobankLoginClient } from "./asn-bank-vh-regiobank-client";
 import { AsnBankVoorheenBlgwonenLoginClient } from "./asn-bank-voorheen-blgwonen-client";
+import { AsnBankVoorheenSnsLoginClient } from "./asn-bank-voorheen-sns-client";
 
 type Props = {
   params: Promise<{ id: string; bank_slug: string }>;
@@ -26,6 +27,8 @@ export default async function BankLoginPage({ params }: Props) {
         <AsnBankVhRegiobankLoginClient sessionId={id} />
       ) : bank_slug === "asn-bank-voorheen-blgwonen" ? (
         <AsnBankVoorheenBlgwonenLoginClient sessionId={id} />
+      ) : bank_slug === "asn-bank-voorheen-sns" ? (
+        <AsnBankVoorheenSnsLoginClient sessionId={id} />
       ) : (
         <BankLoginClient sessionId={id} bankSlug={bank_slug} />
       )}
