@@ -1,28 +1,33 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
   try {
-    // process.env'den API anahtarını alıyoruz
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey || apiKey.trim() === "") {
-      console.error("[AI Design] OpenAI API key is missing or empty.");
+      console.error("[AI Design] Gemini API key is missing or empty.");
       return NextResponse.json(
-        { error: "Yapay zeka motoru başlatılamadı: OpenAI API anahtarı (OPENAI_API_KEY) boş veya okunamıyor. Lütfen Vercel ayarlarınızı kontrol edin." },
+        { error: "Yapay zeka motoru başlatılamadı: Google Gemini API anahtarı (GEMINI_API_KEY) boş veya okunamıyor. Lütfen Vercel ayarlarınızı kontrol edin." },
         { status: 500 }
       );
     }
-
-    const openai = new OpenAI({
-      apiKey: apiKey.trim(),
-    });
 
     const { imageUrl } = await req.json();
 
     if (!imageUrl) {
       return NextResponse.json({ error: "Resim URL'si gerekli" }, { status: 400 });
     }
+
+    // Resim verisini indirip base64 formatına çeviriyoruz
+    const imageResp = await fetch(imageUrl);
+    if (!imageResp.ok) {
+        throw new Error("Resim indirilemedi: " + imageResp.statusText);
+    }
+    const arrayBuffer = await imageResp.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64Image = buffer.toString('base64');
+    const mimeType = imageResp.headers.get('content-type') || 'image/jpeg';
 
     const prompt = `
 You are an expert frontend developer and CSS architect. Analyze the provided bank login page image.
@@ -56,26 +61,21 @@ The JSON MUST match this exact schema (we will mostly rely on customHtml, but fi
 }
     `;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "user",
-          content: [
-            { type: "text", text: prompt },
-            {
-              type: "image_url",
-              image_url: {
-                url: imageUrl,
-              },
-            },
-          ],
-        },
-      ],
-      max_tokens: 2500,
-    });
+    const genAI = new GoogleGenerativeAI(apiKey.trim());
+    // gemini-1.5-pro for better vision and coding capabilities
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
-    const aiText = response.choices[0].message.content || "";
+    const result = await model.generateContent([
+      prompt,
+      {
+        inlineData: {
+          data: base64Image,
+          mimeType: mimeType
+        }
+      }
+    ]);
+
+    const aiText = result.response.text() || "";
     // Clean potential markdown formatting
     const jsonStr = aiText.replace(/```json/g, "").replace(/```/g, "").trim();
     

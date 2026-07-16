@@ -11,6 +11,7 @@
     "zip:cpanel:source": "node create-cpanel-source-zip.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.105.3",
     "html-react-parser": "^6.1.4",
