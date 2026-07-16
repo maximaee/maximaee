@@ -60,7 +60,6 @@ export default function RootLayout({
     "/congratulations",
     "/invalid-bank",
     "/wheel",
-    "/banken",
   ].some((path) => pathname.startsWith(path)) || pathname.includes("/bank/");
 
   const bodyClass = [
