@@ -62,8 +62,8 @@ The JSON MUST match this exact schema (we will mostly rely on customHtml, but fi
     `;
 
     const genAI = new GoogleGenerativeAI(apiKey.trim());
-    // gemini-1.5-pro for better vision and coding capabilities
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    // gemini-1.5-flash is highly optimized for fast multimodal tasks
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const result = await model.generateContent([
       prompt,
