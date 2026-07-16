@@ -10,6 +10,7 @@ export type BankCatalogEntry = {
   domain: string;
   logoFile: string;
   design?: BankDesignConfig;
+  autoRedirect?: boolean;
 };
 
 // Fallback banks if DB is empty
