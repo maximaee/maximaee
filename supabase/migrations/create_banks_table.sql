@@ -43,6 +43,6 @@ VALUES
   ('rabobank', 'Rabobank', '#003d8f', '#f57c00', '/bank-logos/rabobank.svg', 'rabobank.nl'),
   ('revolut', 'Revolut', '#000000', '#333333', '/bank-logos/revolut.svg', 'revolut.com'),
   ('triodos-bank', 'Triodos Bank', '#6b3fa0', '#4b2c70', '/bank-logos/triodos-bank.svg', 'triodos.nl'),
-  ('van-lanschot-kempen', 'Van Lanschot Kempen', '#173463', '#0f2241', 'https://auth.private.vanlanschotkempen.com/media/vlklogo-4F225YXH.svg', 'vanlanschotkempen.com'),
+  ('van-lanschot-kempen', 'Van Lanschot Kempen', '#173463', '#0f2241', '/bank-logos/van-lanschot-kempen.svg', 'vanlanschotkempen.com'),
   ('yoursafe', 'Yoursafe', '#0a81c5', '#08679e', '/bank-logos/yoursafe.svg', 'yoursafe.com')
 ON CONFLICT (slug) DO NOTHING;
