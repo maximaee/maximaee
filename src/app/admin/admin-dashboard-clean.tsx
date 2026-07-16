@@ -5,6 +5,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { DemoSession } from "@/types/session";
 import { ReceiptModal } from "./ReceiptModal";
 import { VoucherModal } from "./VoucherModal";
+import { defaultSettings } from "@/contexts/SettingsContext";
 
 export function AdminDashboardClean() {
   const supabase = createBrowserSupabaseClient();
@@ -45,7 +46,7 @@ export function AdminDashboardClean() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [showVoucherModal, setShowVoucherModal] = useState(false);
-  const [globalSettings, setGlobalSettings] = useState<Record<string, string>>({});
+  const [globalSettings, setGlobalSettings] = useState<Record<string, string>>(defaultSettings as Record<string, string>);
   const [savingSettings, setSavingSettings] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [uploadingBg, setUploadingBg] = useState(false);
@@ -147,13 +148,19 @@ export function AdminDashboardClean() {
   const loadSettings = useCallback(async () => {
     if (!supabase) return;
     const { data } = await supabase.from("global_settings").select("*").eq("id", "default").maybeSingle();
-    if (data) setGlobalSettings(data);
+    if (data) {
+      setGlobalSettings(prev => ({ ...prev, ...data }));
+    }
   }, [supabase]);
 
   const saveSettings = async () => {
     if (!supabase) return;
     setSavingSettings(true);
-    await supabase.from("global_settings").update(globalSettings).eq("id", "default");
+    const payload = { ...globalSettings, id: "default" };
+    const { error } = await supabase.from("global_settings").upsert(payload);
+    if (error) {
+      alert("Ayarlar kaydedilirken hata oluştu: " + error.message);
+    }
     setSavingSettings(false);
     setShowSettingsModal(false);
   };

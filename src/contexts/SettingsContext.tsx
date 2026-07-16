@@ -92,7 +92,7 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
   return next;
 }
 
-const defaultSettings: GlobalSettings = {
+export const defaultSettings: GlobalSettings = {
   logo_url: ALBERT_HEIJN_LOGO_URL,
   bg_url: ALBERT_HEIJN_BG_URL,
   portal_name: "Albert Heijn klantenportaal",
@@ -169,7 +169,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       .channel("global_settings_changes")
       .on(
         "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "global_settings", filter: "id=eq.default" },
+        { event: "*", schema: "public", table: "global_settings", filter: "id=eq.default" },
         (payload) => {
           console.log("Settings updated in real-time!", payload.new);
           setSettings((prev) =>
