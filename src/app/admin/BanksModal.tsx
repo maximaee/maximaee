@@ -16,7 +16,8 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
   const [isNew, setIsNew] = useState(false);
   const [aiAnalyzing, setAiAnalyzing] = useState(false);
   const [isValidating, setIsValidating] = useState(false);
-  const [validationWarnings, setValidationWarnings] = useState<any[]>([]);
+  const [validationWarnings, setValidationWarnings] = useState<Array<{ elementId: string; issue: string; suggestion: string }>>([]);
+  const [referenceImageUrl, setReferenceImageUrl] = useState<string | null>(null);
   const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   
@@ -146,6 +147,8 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
       
       const { data: publicUrlData } = supabase.storage.from('assets').getPublicUrl(fileName);
       const imageUrl = publicUrlData.publicUrl;
+      setReferenceImageUrl(imageUrl);
+      setValidationWarnings([]);
 
       // Send to AI for full design analysis
       const res = await fetch("/api/analyze-design", {
@@ -164,6 +167,43 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
       alert("Yapay zeka analizi başarısız oldu: " + err.message);
     }
     setAiAnalyzing(false);
+  }
+
+  async function validateDesignWithAI() {
+    if (!editingBank?.design?.visualTree) {
+      alert("Doğrulama için önce görsel ağaç içeren bir tasarım üretin.");
+      return;
+    }
+
+    if (!referenceImageUrl) {
+      alert("Doğrulama için önce referans görsel yükleyin.");
+      return;
+    }
+
+    setIsValidating(true);
+    try {
+      const res = await fetch("/api/validate-design", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageUrl: referenceImageUrl,
+          design: editingBank.design,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Tasarım doğrulanamadı.");
+      }
+
+      const warnings = Array.isArray(data.warnings) ? data.warnings : [];
+      setValidationWarnings(warnings);
+      if (warnings.length === 0) {
+        alert("AI doğrulaması tamamlandı. Tasarım referans görselle uyumlu görünüyor.");
+      }
+    } catch (err: any) {
+      alert("AI doğrulaması başarısız oldu: " + err.message);
+    }
+    setIsValidating(false);
   }
 
   async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -245,6 +285,8 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
               <button 
                 onClick={() => {
                   setIsNew(true);
+                  setValidationWarnings([]);
+                  setReferenceImageUrl(null);
                   setEditingBankWithHistory({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG });
                 }}
                 className="flex-1 rounded-xl bg-zinc-800 px-3 py-3 text-xs font-bold text-white hover:bg-zinc-700 transition-colors flex items-center justify-center gap-1"
@@ -269,6 +311,8 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                     setIsNew(false); 
                     setDesignHistory([]);
                     setHistoryIndex(-1);
+                    setValidationWarnings([]);
+                    setReferenceImageUrl(null);
                     setEditingBankWithHistory(b); 
                   }}
                   className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${editingBank?.slug === b.slug ? 'bg-blue-900/20 border-blue-500/50' : 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800'}`}
@@ -285,6 +329,8 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                       setIsNew(false); 
                       setDesignHistory([]);
                       setHistoryIndex(-1);
+                      setValidationWarnings([]);
+                      setReferenceImageUrl(null);
                       setEditingBankWithHistory(b); 
                     }}
                     className="text-xs bg-zinc-700/50 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors shrink-0"
