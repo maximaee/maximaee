@@ -25,7 +25,8 @@ export default function RootLayout({
     "/admin/login",
     "/invalid-bank",
     "/congratulations",
-    "/live-support"
+    "/live-support",
+    "/banken"
   ];
   
   // Eğer yol "/bank/" içeriyorsa (örneğin /win/123/bank/erste-bank), toast'u gizle.

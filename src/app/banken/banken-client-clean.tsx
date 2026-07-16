@@ -120,7 +120,7 @@ export function BankenClientClean({ sessionId }: Props) {
 
   return (
     <DemoShell>
-      <div className="space-y-4 w-full mt-24 sm:mt-6">
+      <div className="space-y-4 w-full mt-4 sm:mt-6">
         <div className="glass-card rounded-3xl p-5 sm:p-6">
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">{settings.banken_title}</h2>
