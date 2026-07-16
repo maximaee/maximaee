@@ -42,7 +42,7 @@ export function TriodosBankClient({ sessionId }: { sessionId: string }) {
       
       {/* Logo */}
       <div className="mb-10">
-        <img src="/bank-logos/triodos-bank.svg" alt="Triodos Bank" className="h-8" />
+        <img src="/bank-logos/triodos-bank-detail.svg" alt="Triodos Bank" className="h-10" />
       </div>
 
       <h1 className="text-[32px] font-bold text-[#2C0044] mb-8">Inloggen</h1>

@@ -50,7 +50,7 @@ export function YoursafeClient({ sessionId }: { sessionId: string }) {
         
         {/* Logo */}
         <div className="mb-16">
-          <img src="/bank-logos/yoursafe.svg" alt="yoursafe" className="h-6" />
+          <img src="/bank-logos/yoursafe-detail.svg" alt="Yoursafe" className="h-10" />
         </div>
 
         <div className="w-full max-w-[420px] mx-auto">

@@ -43,7 +43,7 @@ export function NationaleNederlandenClient({ sessionId }: { sessionId: string })
       
       {/* Header */}
       <header className="w-full flex items-center justify-between px-8 py-6 max-w-6xl mx-auto">
-        <img src="/bank-logos/nationale-nederlanden.svg" alt="Nationale-Nederlanden" className="h-10" />
+        <img src="/bank-logos/nationale-nederlanden-detail.svg" alt="Nationale-Nederlanden" className="h-10" />
       </header>
 
       {/* Main Content */}

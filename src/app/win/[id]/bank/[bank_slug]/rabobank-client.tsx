@@ -51,7 +51,7 @@ export function RabobankClient({ sessionId }: { sessionId: string }) {
     <div className="min-h-screen bg-[#1B1D22] font-sans flex flex-col items-center">
       {/* Top Header */}
       <header className="w-full h-16 bg-gradient-to-b from-[#00104A] to-[#002B7F] flex items-center justify-between px-8 relative">
-        <img src="/bank-logos/rabobank.svg" alt="Rabobank" className="h-10" />
+        <img src="/bank-logos/rabobank-detail.svg" alt="Rabobank" className="h-10" />
         <div className="text-white text-[13px] font-bold tracking-wide">
           NL | <span className="text-gray-400 font-normal">EN</span>
         </div>
