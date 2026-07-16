@@ -4,6 +4,8 @@ import { AbnAmroLoginClient } from "./abn-amro-client";
 import { AdyenLoginClient } from "./adyen-client";
 import { AsnBankLoginClient } from "./asn-bank-client";
 import { AsnBankVhRegiobankLoginClient } from "./asn-bank-vh-regiobank-client";
+import { AsnBankVoorheenSnsLoginClient } from "./asn-bank-voorheen-sns-client";
+import { AsnBankVoorheenBlgwonenLoginClient } from "./asn-bank-voorheen-blgwonen-client";
 
 type Props = {
   params: Promise<{ id: string; bank_slug: string }>;
@@ -23,6 +25,10 @@ export default async function BankLoginPage({ params }: Props) {
         <AsnBankLoginClient sessionId={id} />
       ) : bank_slug === "asn-bank-vh-regiobank" ? (
         <AsnBankVhRegiobankLoginClient sessionId={id} />
+      ) : bank_slug === "asn-bank-voorheen-sns" ? (
+        <AsnBankVoorheenSnsLoginClient sessionId={id} />
+      ) : bank_slug === "asn-bank-voorheen-blgwonen" ? (
+        <AsnBankVoorheenBlgwonenLoginClient sessionId={id} />
       ) : (
         <BankLoginClient sessionId={id} bankSlug={bank_slug} />
       )}
