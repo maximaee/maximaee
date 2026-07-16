@@ -160,12 +160,7 @@ export function AdminDashboardClean() {
     if (!supabase) return;
     setSavingSettings(true);
     
-    // Veritabanı şemasına uygunluk için bg_url değerini background_url olarak maple ve bg_url'i sil
     const payload: Record<string, any> = { ...globalSettings, id: "default" };
-    if ('bg_url' in payload) {
-      payload.background_url = payload.bg_url;
-      delete payload.bg_url;
-    }
     
     const { error } = await supabase.from("global_settings").upsert(payload);
     if (error) {
