@@ -63,7 +63,7 @@ export function VisualTreeEditor({
       <div key={node.id} className="w-full">
         <div 
           className={`px-2 py-1 cursor-pointer text-xs flex items-center gap-2 hover:bg-zinc-800 ${selectedId === node.id ? 'bg-blue-900/40 border-l-2 border-blue-500' : 'border-l-2 border-transparent'}`}
-          style={{ paddingLeft: \`\${depth * 12 + 8}px\` }}
+          style={{ paddingLeft: `${depth * 12 + 8}px` }}
           onClick={() => setSelectedId(node.id)}
         >
           <span className="text-zinc-500 font-mono">{node.type}</span>
