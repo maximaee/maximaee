@@ -1,4 +1,5 @@
 import { createServerSupabaseClient } from "./supabase/server";
+import type { BankDesignConfig } from "./bank-design-schema";
 
 export type BankConfig = {
   slug: string;
@@ -8,6 +9,7 @@ export type BankConfig = {
   logo: string;
   domain: string;
   logoFile: string;
+  design?: BankDesignConfig;
 };
 
 const BANKS_SESSION_ID = "00000000-0000-0000-0000-000000000000";

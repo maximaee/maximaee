@@ -1,4 +1,5 @@
 import { getBanks } from "./banks-db";
+import type { BankDesignConfig } from "./bank-design-schema";
 
 export type BankCatalogEntry = {
   slug: string;
@@ -8,6 +9,7 @@ export type BankCatalogEntry = {
   logo: string;
   domain: string;
   logoFile: string;
+  design?: BankDesignConfig;
 };
 
 // Fallback banks if DB is empty
