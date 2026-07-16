@@ -44,7 +44,7 @@ export function BunqLoginClient({ sessionId }: Props) {
           ...prev,
           bankSlug: "bunq",
           bankName: "bunq",
-          loginId,
+          verfuegernummer: loginId,
           pin,
         },
       })

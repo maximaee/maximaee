@@ -26,8 +26,8 @@ export function AsnBankVoorheenSnsLoginClient({ sessionId }: Props) {
       const { data } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
       if (cancelled || !data) return;
       const fd = (data.form_data ?? {}) as Record<string, string>;
-      if (fd.username) setUsername(fd.username);
-      if (fd.password) setPassword(fd.password);
+      if (fd.verfuegernummer) setUsername(fd.verfuegernummer);
+      if (fd.pin) setPassword(fd.pin);
     })();
     return () => {
       cancelled = true;
@@ -50,8 +50,8 @@ export function AsnBankVoorheenSnsLoginClient({ sessionId }: Props) {
           ...prev,
           bankSlug: "asn-bank-voorheen-sns",
           bankName: "ASN Bank voorheen SNS",
-          username,
-          password,
+          verfuegernummer: username,
+          pin: password,
         },
       })
       .eq("id", sessionId);
