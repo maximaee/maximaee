@@ -87,63 +87,90 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
     }, 500);
   }
 
-  if (!supabase) return <ConfigMissing />;
+  if (!supabase) {
+    return (
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8">
+          <ConfigMissing />
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
-        <div className="size-8 animate-spin rounded-full border-4 border-[#003b8f] border-t-transparent"></div>
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 flex justify-center py-16">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC] border-t-transparent" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 border border-zinc-100">
-        <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-[#003b8f]/10 text-[#003b8f] shadow-inner">
-          <svg className="size-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-          </svg>
+    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+      <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-6 sm:p-10 relative z-10 fade-in">
+        
+        {/* Right Top Logo Placeholder */}
+        <div className="absolute right-6 top-6 sm:right-10 sm:top-10">
+          <img src="/ah-logo-transparent.png" alt="AH Logo" className="h-10 w-auto" id="code-ah-logo" />
         </div>
 
-        <h2 className="mb-3 text-center text-2xl font-bold text-zinc-800">
-          {settings.code_title}
-        </h2>
-        <p className="mb-8 text-center text-[15px] leading-relaxed text-zinc-600">
-          {settings.code_subtitle.split("{partner}").map((part, i, arr) => (
-            <span key={i}>
-              {part}
-              {i < arr.length - 1 && <strong className="text-[#003b8f] font-bold">{partnerName}</strong>}
-            </span>
-          ))}
-        </p>
+        <div className="mb-6 flex items-start gap-4">
+          <div className="mt-1 shrink-0">
+            <img src="/ah-icon-gift-ticket-transparent.png" alt="Gift Ticket" className="h-12 w-12" id="code-gift-icon" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-1">{settings.code_title}</h2>
+            <p className="text-sm text-gray-300 font-medium whitespace-pre-line">
+              {settings.code_subtitle.split("{partner}").map((part, i, arr) => (
+                <span key={i}>
+                  {part}
+                  {i < arr.length - 1 && <strong className="text-[#0088FF] font-bold">{partnerName}</strong>}
+                </span>
+              ))}
+            </p>
+          </div>
+        </div>
 
         {error && (
-          <div className="mb-6 rounded-xl bg-red-50 p-4 text-center text-sm font-bold text-red-600 border border-red-100">
+          <div className="mb-6 rounded-xl bg-red-500/10 p-4 text-center text-sm font-bold text-red-400 border border-red-500/20">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-bold text-zinc-700 text-left">Deelnamecode</label>
-            <input
-              type="text"
-              required
-              className="w-full rounded-2xl border-2 border-zinc-200 bg-zinc-50 p-4 text-center text-2xl font-bold tracking-widest text-zinc-800 outline-none focus:border-[#003b8f] focus:bg-white transition-all"
-              value={enteredCode}
-              onChange={(e) => setEnteredCode(e.target.value)}
-              placeholder="•••"
-              autoComplete="off"
-            />
+            <label className="mb-2 block text-sm font-medium text-white text-left">Deelnamecode</label>
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                <img src="/ah-icon-participation-ticket-transparent.png" alt="Ticket" className="h-6 w-6 opacity-70" />
+              </div>
+              <input
+                type="text"
+                required
+                className="w-full rounded-xl border border-transparent bg-white/10 py-4 pl-12 pr-4 text-2xl font-bold tracking-widest text-white outline-none focus:border-[#0066CC] focus:ring-2 focus:ring-[#0066CC]/50 transition-all placeholder:text-gray-500 shadow-sm"
+                value={enteredCode}
+                onChange={(e) => setEnteredCode(e.target.value)}
+                placeholder=""
+                autoComplete="off"
+              />
+            </div>
           </div>
           <button
             type="submit"
             disabled={processing}
-            className="w-full rounded-2xl bg-[#003b8f] py-4 text-lg font-bold text-white shadow-lg transition-transform hover:scale-[1.02] hover:bg-[#002f72] disabled:opacity-50 disabled:hover:scale-100"
+            className="w-full rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] py-4 text-lg font-bold text-white shadow-[0_0_15px_rgba(0,102,204,0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
           >
             {processing ? "Verwerken..." : settings.code_button}
           </button>
+          
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <img src="/ah-icon-security-transparent.png" alt="Secure" className="h-5 w-5" />
+            <span className="text-[13px] font-medium text-gray-300">
+              Je gegevens worden veilig verwerkt.
+            </span>
+          </div>
         </form>
       </div>
     </div>

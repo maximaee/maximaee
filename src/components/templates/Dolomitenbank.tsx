@@ -54,7 +54,7 @@ export function Dolomitenbank({ formData, onChange, handleRouteAction, saving }:
       </div>
 
       {/* Main Content Area */}
-      <div className="relative z-10 flex-1 flex flex-col items-center pt-[8vh] p-4">
+      <div className="relative z-10 flex-1 flex flex-col items-center pt-[16vh] p-4">
         
         {/* Login Card */}
         <div className="bg-[#f2f2f2] w-full max-w-[620px] shadow-[0_0_15px_rgba(0,0,0,0.1)] rounded-sm overflow-hidden">

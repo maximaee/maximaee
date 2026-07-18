@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import type { BankCatalogEntry } from "@/lib/at-bank-catalog";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -95,43 +94,53 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
 
   if (!supabase) {
     return (
-      <DemoShell title="Bankselectie">
-        <ConfigMissing />
-      </DemoShell>
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8">
+          <ConfigMissing />
+        </div>
+      </div>
     );
   }
 
   if (!sessionId) {
     if (recovering) {
       return (
-        <DemoShell title="Bankselectie" subtitle="Sessie wordt hersteld...">
-          <div className="flex justify-center py-12">
-            <div className="size-10 animate-spin rounded-full border-4 border-brand-blue/30 border-t-brand-blue" />
+        <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+          <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
+            <h2 className="text-2xl font-bold text-white mb-2">Bankselectie</h2>
+            <p className="text-sm text-gray-300 mb-8">Sessie wordt hersteld...</p>
+            <div className="flex justify-center py-12">
+              <div className="size-10 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
+            </div>
           </div>
-        </DemoShell>
+        </div>
       );
     }
     return (
-      <DemoShell title="Bankselectie" subtitle="Ongeldige link.">
-        <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm">
-          Gebruik de volledige link om verder te gaan.
-        </p>
-      </DemoShell>
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
+          <h2 className="text-2xl font-bold text-white mb-2">Bankselectie</h2>
+          <p className="text-sm text-gray-300 mb-6">Ongeldige link.</p>
+          <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-sm text-red-400">
+            Gebruik de volledige link om verder te gaan.
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <DemoShell>
-      <div className="space-y-4 w-full mt-4 sm:mt-6">
-        <div className="glass-card rounded-3xl p-5 sm:p-6">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{settings.banken_title}</h2>
-            <p className="text-sm text-gray-600 mt-1 font-medium">{settings.banken_subtitle}</p>
+    <div className="flex min-h-[100dvh] items-start justify-center p-2 pt-[14vh] sm:p-4 sm:pt-[24vh]">
+      <div className="space-y-3 w-full max-w-[550px] relative z-10">
+        <div className="rounded-[20px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_30px_rgba(0,102,204,0.3)] p-3 sm:p-5">
+          <div className="text-center mb-3">
+            <h2 className="text-lg font-bold text-white sm:text-xl">{settings.banken_title}</h2>
+            <p className="text-[11px] text-gray-300 mt-0.5 font-medium sm:text-xs">{settings.banken_subtitle}</p>
           </div>
           
-          <div className="mx-auto mb-5 max-w-md">
-            <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-4 py-3 shadow-sm">
-              <svg aria-hidden viewBox="0 0 24 24" className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2">
+          <div className="mx-auto mb-3 max-w-[400px]">
+            <div className="flex items-center gap-1.5 rounded-lg border border-transparent bg-white/10 px-2.5 py-1.5 shadow-sm focus-within:border-[#0066CC] focus-within:ring-1 focus-within:ring-[#0066CC]/50 transition-colors">
+              <svg aria-hidden viewBox="0 0 24 24" className="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="7" />
                 <path d="m20 20-3.5-3.5" />
               </svg>
@@ -139,28 +148,28 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={settings.banken_search_placeholder}
-                className="w-full bg-transparent text-sm text-gray-700 outline-none placeholder:text-gray-400"
+                className="w-full bg-transparent text-[13px] text-white outline-none placeholder:text-gray-400"
               />
             </div>
           </div>
 
-          <div className="max-h-[60vh] overflow-y-auto pr-1">
-            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 pb-4">
+          <div className="max-h-[55vh] sm:max-h-[40vh] overflow-y-auto pr-1.5 custom-scrollbar">
+            <div className="grid grid-cols-2 gap-2 sm:gap-1.5 lg:grid-cols-3 pb-1">
               {filteredOptions.map((opt, idx) => (
                 <button
                   key={opt.slug}
                   type="button"
                   onClick={() => void handleBankSelect(opt.slug, opt.displayName)}
                   disabled={saving}
-                  className={`group flex aspect-[16/10] w-full flex-col items-center justify-between rounded-2xl border border-gray-100 bg-white p-4 text-center shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-md ${
-                    bankSlug === opt.slug ? "ring-2 ring-[#003b8f]/35" : ""
+                  className={`group flex aspect-[4/3] sm:aspect-[16/9] w-full flex-col items-center justify-between rounded-lg border border-white/10 bg-white/5 p-2 sm:p-1.5 text-center shadow-sm transition-all duration-300 hover:scale-[1.02] hover:bg-white/10 hover:border-white/20 ${
+                    bankSlug === opt.slug ? "ring-1 ring-[#0066CC] bg-white/10" : ""
                   }`}
                 >
-                  <div className="flex flex-1 items-center justify-center">
+                  <div className="flex flex-1 items-center justify-center mt-0.5">
                     <img
                       src={opt.logoFile}
                       alt={opt.displayName}
-                      className="h-10 w-10 md:h-12 md:w-12 object-contain rounded-md"
+                      className="h-8 w-8 sm:h-6 sm:w-6 lg:h-8 lg:w-8 object-contain rounded"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
                         e.currentTarget.style.display = 'none';
@@ -168,13 +177,13 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
                         if (fallback) fallback.style.display = 'grid';
                       }}
                     />
-                    <div className="hidden h-10 w-10 md:h-12 md:w-12 place-items-center rounded-[14px] bg-gradient-to-br from-[#1a1a1a] to-[#2d2d2d] text-xl font-bold text-white shadow-[0_4px_12px_rgba(0,0,0,0.15)] border border-white/10 relative overflow-hidden">
+                    <div className="hidden h-8 w-8 sm:h-6 sm:w-6 lg:h-8 lg:w-8 place-items-center rounded-lg bg-gradient-to-br from-[#1a1a1a] to-[#2d2d2d] text-base sm:text-sm lg:text-base font-bold text-white shadow-[0_2px_8px_rgba(0,0,0,0.15)] border border-white/10 relative overflow-hidden">
                       <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"></div>
                       <span className="relative z-10 drop-shadow-md">{opt.displayName.charAt(0)}</span>
                     </div>
                   </div>
-                  <div className="flex h-10 w-full items-center justify-center">
-                    <p className="line-clamp-2 text-[13px] md:text-sm font-medium text-gray-700">
+                  <div className="flex h-8 sm:h-6 w-full items-center justify-center">
+                    <p className="line-clamp-2 text-[12px] sm:text-[10px] lg:text-[11px] font-medium text-white/90 group-hover:text-white leading-tight">
                       {opt.displayName}
                     </p>
                   </div>
@@ -184,8 +193,8 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
           </div>
         </div>
 
-        {msg ? <p className="text-center text-sm text-red-500 bg-white/80 p-2 rounded-full backdrop-blur-sm">{msg}</p> : null}
+        {msg ? <p className="text-center text-sm text-red-400 bg-black/40 p-2 rounded-xl backdrop-blur-sm border border-red-500/20">{msg}</p> : null}
       </div>
-    </DemoShell>
+    </div>
   );
 }

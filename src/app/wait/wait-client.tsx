@@ -104,20 +104,6 @@ export function WaitClient({ sessionId }: Props) {
       <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] rounded-full bg-[#003b8f]/10 blur-[100px] animate-[pulse_6s_ease-in-out_infinite]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] rounded-full bg-[#f7a600]/10 blur-[100px] animate-[pulse_8s_ease-in-out_infinite_alternate]" />
 
-      <header className="border-b border-white/35 bg-white/55 shadow-sm backdrop-blur-xl relative z-10 w-full shrink-0">
-        <div className="mx-auto flex max-w-lg items-center justify-between gap-4 px-4 py-4">
-          <div className="flex items-center gap-2">
-            <div className="flex h-16 items-center">
-              <img src={settings.logo_url} alt="Albert Heijn logo" width={120} height={32} className="h-14 sm:h-16 w-auto object-contain" />
-            </div>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">{settings.portal_name}</p>
-              <p className="text-lg font-semibold leading-none text-[#003b8f]">{settings.support_center_name}</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="flex-1 flex flex-col items-center justify-center p-4 w-full">
         {!sessionId ? (
           <div className="flex justify-center relative z-10 w-full">

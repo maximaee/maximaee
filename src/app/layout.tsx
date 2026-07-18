@@ -70,8 +70,8 @@ export default function RootLayout({
     .join(" ");
 
   // GEÇİCİ OLARAK KAPATILDI: LiveToast özelliği daha sonra tekrar açılmak üzere deaktif edildi.
-  // Şu an test için açık bırakıldı.
-  const ENABLE_TOAST = true;
+  // Kullanıcının göreceği arayüz tasarımları yenilendiği için bildirimler gizlendi.
+  const ENABLE_TOAST = false;
 
   return (
     <html lang="nl">

