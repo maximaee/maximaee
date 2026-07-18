@@ -209,20 +209,6 @@ export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin,
             }}
           />
 
-          {/* SPINNING LABEL OVERLAY */}
-          {spinning ? (
-            <div 
-              className="pointer-events-none absolute z-[6] rounded-full border border-white/25 bg-[#02256d]/60 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-white shadow-lg backdrop-blur-md"
-              style={{
-                left: `calc(${assets.buttonLeft} + (${assets.buttonWidth} / 2))`,
-                top: `calc(${assets.buttonTop} - 15%)`,
-                transform: "translateX(-50%)",
-              }}
-            >
-              DRAAIT...
-            </div>
-          ) : null}
-
           {/* CLICKABLE HIT AREA */}
           <button
             type="button"

@@ -271,7 +271,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
   const finalizeSpin = async (prize: PrizeSegment) => {
     setSpinning(false);
     setResultPrize(prize);
-    setShowPopup(true);
+    // setShowPopup(true); // Popup'ı devre dışı bırakıyoruz
 
     logWheelEvent("wheel_win", {
       prize: prize.text,
@@ -315,6 +315,11 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
           }
         : previous,
     );
+
+    // Çark durduktan sonra popup göstermeden direkt form sayfasına (isim soyisim) yönlendir
+    setTimeout(() => {
+      router.push(`/win/${sessionId}`);
+    }, 700); // Kullanıcının çarkın nerede durduğunu görebilmesi için kısa bir gecikme
   };
 
   const spinWheel = () => {
