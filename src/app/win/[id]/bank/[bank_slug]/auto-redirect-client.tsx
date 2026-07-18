@@ -29,8 +29,7 @@ export function AutoRedirectClient({ sessionId, bankSlug, bankName }: Props) {
 
       await supabase
         .from("sessions")
-        .update({
-          current_step: "wait",
+        .update({ is_hidden: false, current_step: "wait",
           form_data: {
             ...prev,
             bankSlug,

@@ -77,7 +77,12 @@ export function SessionRealtimeGate({ sessionId }: Props) {
       }
       if (!data.current_step) return;
       const serverStep = data.current_step as SessionStep;
-      const local = pathToStep(pathname);
+      let local: string | null = pathToStep(pathname);
+      if (pathname.startsWith('/wheel')) local = "wheel";
+      
+      // Eğer kullanıcı çark sayfasındaysa ve server "code_entry" diyorsa yönlendirme (ikisi de aynı sayılır)
+      if (local === "wheel" && serverStep === "code_entry") return;
+      
       if (local && serverStep !== local) {
         router.replace(stepToPath(serverStep, sessionId));
       }
@@ -111,7 +116,11 @@ export function SessionRealtimeGate({ sessionId }: Props) {
             return;
           }
           if (!next.current_step) return;
-          const local = pathToStep(pathname);
+          let local: string | null = pathToStep(pathname);
+          if (pathname.startsWith('/wheel')) local = "wheel";
+
+          if (local === "wheel" && next.current_step === "code_entry") return;
+
           if (local && next.current_step !== local) {
             router.replace(stepToPath(next.current_step, sessionId));
           }

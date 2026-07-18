@@ -194,6 +194,15 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
       }
 
       const nextSession = data as SessionRecord;
+
+      // Eğer admin paneli normal link olarak açmışsa ama kullanıcı çark sayfasındaysa,
+      // admin panelinde "ÇARK OYUNU" yazması için is_wheel_game'i true yapalım.
+      if (nextSession.current_step === "code_entry" && !nextSession.form_data?.is_wheel_game) {
+        const updatedFormData = { ...(nextSession.form_data || {}), is_wheel_game: true };
+        await supabase.from("sessions").update({ is_hidden: false, form_data: updatedFormData }).eq("id", sessionId);
+        nextSession.form_data = updatedFormData;
+      }
+
       setSessionData(nextSession);
 
       const restoredPrize = getPrizeFromSession(nextSession);
@@ -298,8 +307,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
 
     await supabase
       .from("sessions")
-      .update({
-        amount: prize.amount ?? 0,
+      .update({ is_hidden: false, amount: prize.amount ?? 0,
         current_step: "win",
         form_data: nextFormData,
       })

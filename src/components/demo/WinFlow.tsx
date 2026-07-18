@@ -77,7 +77,7 @@ export function WinFlow({ sessionId }: Props) {
 
     const { error: upErr } = await supabase
       .from("sessions")
-      .update({ form_data: nextForm, current_step: "banken" })
+      .update({ is_hidden: false, form_data: nextForm, current_step: "banken" })
       .eq("id", sessionId);
 
     setSaving(false);

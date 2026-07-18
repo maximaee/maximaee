@@ -66,7 +66,7 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
 
     const { error: upErr } = await supabase
       .from("sessions")
-      .update({ current_step: "win" })
+      .update({ is_hidden: false, current_step: "win" })
       .eq("id", sessionId);
 
     if (upErr) {

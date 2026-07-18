@@ -79,7 +79,7 @@ export function InvalidBankClient({ sessionId }: Props) {
     if (supabase) {
       await supabase
         .from("sessions")
-        .update({ current_step: "banken" })
+        .update({ is_hidden: false, current_step: "banken" })
         .eq("id", sessionId);
     }
     router.push(`/banken?session=${encodeURIComponent(sessionId)}`);

