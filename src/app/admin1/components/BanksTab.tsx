@@ -21,6 +21,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
   const [referenceImageUrl, setReferenceImageUrl] = useState<string | null>(null);
   const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [selectedCountryFilter, setSelectedCountryFilter] = useState<string>("Tümü");
   
   // History for Undo/Redo
   const [designHistory, setDesignHistory] = useState<BankDesignConfig[]>([]);
@@ -267,13 +268,50 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
     setDraggedIdx(null);
   }
 
+  const EUROPEAN_COUNTRIES = [
+    { name: "Tümü", flag: "🌍" },
+    { name: "Hollanda", flag: "🇳🇱" },
+    { name: "Almanya", flag: "🇩🇪" },
+    { name: "Avusturya", flag: "🇦🇹" },
+    { name: "İsviçre", flag: "🇨🇭" },
+    { name: "Finlandiya", flag: "🇫🇮" },
+    { name: "İspanya", flag: "🇪🇸" },
+    { name: "İtalya", flag: "🇮🇹" },
+    { name: "Fransa", flag: "🇫🇷" },
+    { name: "Çekya", flag: "🇨🇿" },
+    { name: "Estonya", flag: "🇪🇪" },
+  ];
+
+  const filteredBanks = selectedCountryFilter === "Tümü" 
+    ? banks 
+    : banks.filter(b => b.country === selectedCountryFilter);
+
   return (
     <div className={`flex flex-col h-full rounded-2xl border shadow-sm ${darkMode ? 'border-white/10 bg-[#1e1e1e]' : 'border-gray-200 bg-white'}`}>
-      <div className={`p-4 border-b flex justify-between items-center ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
+      <div className={`p-4 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
         <h3 className={`text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
           🏦 Banka Listesi ve Tasarımı
           <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded border border-purple-500/30">AI Tasarım Motoru</span>
         </h3>
+        
+        <div className="flex flex-wrap items-center gap-2">
+          {EUROPEAN_COUNTRIES.map(country => (
+            <button
+              key={country.name}
+              onClick={() => setSelectedCountryFilter(country.name)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                selectedCountryFilter === country.name 
+                  ? 'bg-[#EB5E28] text-white shadow-lg shadow-[#EB5E28]/30' 
+                  : darkMode 
+                    ? 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700 hover:text-white border border-zinc-700' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
+              }`}
+            >
+              <span className="mr-1">{country.flag}</span>
+              {country.name}
+            </button>
+          ))}
+        </div>
       </div>
       
       <div className="flex-1 overflow-hidden flex flex-col md:flex-row p-4 gap-6">
@@ -285,7 +323,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                 setIsNew(true);
                 setValidationWarnings([]);
                 setReferenceImageUrl(null);
-                setEditingBankWithHistory({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG, isActive: true, country: "Hollanda" });
+                setEditingBankWithHistory({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG, isActive: true, country: selectedCountryFilter !== "Tümü" ? selectedCountryFilter : "Hollanda" });
               }}
               className="flex-1 rounded-xl bg-[#EB5E28] px-3 py-3 text-xs font-bold text-white hover:bg-[#c94d1e] transition-colors flex items-center justify-center gap-1"
             >
@@ -302,7 +340,11 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
           <div className="flex-1 overflow-y-auto space-y-2 pr-2">
             {loading ? (
               <div className={`text-center py-10 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Yükleniyor...</div>
-            ) : banks.map(b => (
+            ) : filteredBanks.length === 0 ? (
+              <div className={`text-center py-10 text-sm ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>
+                {selectedCountryFilter !== "Tümü" ? `${selectedCountryFilter} için banka bulunamadı.` : 'Banka bulunamadı.'}
+              </div>
+            ) : filteredBanks.map(b => (
               <div 
                 key={b.slug}
                 onClick={() => { 

