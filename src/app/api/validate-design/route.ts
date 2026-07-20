@@ -3,16 +3,17 @@ import OpenAI from "openai";
 
 export async function POST(req: Request) {
   try {
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GITHUB_TOKEN;
 
     if (!apiKey || apiKey.trim() === "") {
       return NextResponse.json(
-        { error: "OPENAI_API_KEY is missing." },
+        { error: "GITHUB_TOKEN is missing." },
         { status: 500 }
       );
     }
 
     const openai = new OpenAI({
+      baseURL: "https://models.inference.ai.azure.com",
       apiKey: apiKey.trim(),
     });
 

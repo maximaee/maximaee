@@ -4,15 +4,15 @@ export async function POST(req: Request) {
   try {
     const { imageUrl } = await req.json();
 
-    if (!process.env.OPENAI_API_KEY) {
-      throw new Error("OpenAI API anahtarı eksik!");
+    if (!process.env.GITHUB_TOKEN) {
+      throw new Error("GitHub API anahtarı (GITHUB_TOKEN) eksik!");
     }
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    const response = await fetch("https://models.inference.ai.azure.com/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
