@@ -22,7 +22,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
   const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
-  const [selectedCountryFilter, setSelectedCountryFilter] = useState<string>("Tümü");
+  const [selectedCountryFilter, setSelectedCountryFilter] = useState<string>("Hollanda");
   
   // History for Undo/Redo
   const [designHistory, setDesignHistory] = useState<BankDesignConfig[]>([]);
@@ -278,7 +278,6 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
   }
 
   const EUROPEAN_COUNTRIES = [
-    { name: "Tümü", flag: "🌍" },
     { name: "Hollanda", flag: "🇳🇱" },
     { name: "Almanya", flag: "🇩🇪" },
     { name: "Avusturya", flag: "🇦🇹" },
@@ -292,7 +291,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
     { name: "Estonya", flag: "🇪🇪" },
   ];
 
-  const filteredBanks = selectedCountryFilter === "Tümü" 
+  const filteredBanks = selectedCountryFilter === "Tümü" || !selectedCountryFilter
     ? banks 
     : banks.filter(b => b.country === selectedCountryFilter);
 
@@ -332,7 +331,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                 setIsNew(true);
                 setValidationWarnings([]);
                 setReferenceImageUrl(null);
-                setEditingBankWithHistory({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG, isActive: true, country: selectedCountryFilter !== "Tümü" ? selectedCountryFilter : "Hollanda" });
+                setEditingBankWithHistory({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG, isActive: true, country: selectedCountryFilter !== "Tümü" && selectedCountryFilter ? selectedCountryFilter : "Hollanda" });
               }}
               className="flex-1 rounded-xl bg-[#EB5E28] px-3 py-3 text-xs font-bold text-white hover:bg-[#c94d1e] transition-colors flex items-center justify-center gap-1"
             >
