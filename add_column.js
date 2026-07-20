@@ -68,22 +68,16 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var supabase_js_1 = require("@supabase/supabase-js");
-var fs = __importStar(require("fs"));
-var path = __importStar(require("path"));
-// read .env.local manually
-var envPath = path.resolve(process.cwd(), '.env.local');
-var envContent = fs.readFileSync(envPath, 'utf8');
-var env = {};
-envContent.split('\n').forEach(function (line) {
-    var match = line.match(/^([^=]+)=(.*)$/);
-    if (match) {
-        env[match[1].trim()] = match[2].trim();
-    }
-});
-var supabaseUrl = env['NEXT_PUBLIC_SUPABASE_URL'];
-var supabaseKey = env['NEXT_PUBLIC_SUPABASE_ANON_KEY'];
+var dotenv = __importStar(require("dotenv"));
+var path_1 = __importDefault(require("path"));
+dotenv.config({ path: path_1.default.resolve(process.cwd(), '.env.local') });
+var supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+var supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 if (!supabaseUrl || !supabaseKey) {
     console.error("Missing supabase credentials");
     process.exit(1);
@@ -91,14 +85,29 @@ if (!supabaseUrl || !supabaseKey) {
 var supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseKey);
 function addColumn() {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, data, error;
+        var error, _a, data, selectError;
         return __generator(this, function (_b) {
             switch (_b.label) {
-                case 0: return [4 /*yield*/, supabase.from('sessions').select('*').limit(1)];
+                case 0: return [4 /*yield*/, supabase.rpc('run_sql', { sql: "ALTER TABLE banks ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true;" })];
                 case 1:
-                    _a = _b.sent(), data = _a.data, error = _a.error;
-                    console.log("Current columns in sessions table:", data && data.length > 0 ? Object.keys(data[0]) : "no data");
-                    return [2 /*return*/];
+                    error = (_b.sent()).error;
+                    if (!error) return [3 /*break*/, 3];
+                    console.log("RPC run_sql failed, trying direct insert/select to check if column exists...");
+                    return [4 /*yield*/, supabase.from('banks').select('is_active').limit(1)];
+                case 2:
+                    _a = _b.sent(), data = _a.data, selectError = _a.error;
+                    if (selectError && selectError.message.includes("does not exist")) {
+                        console.error("Column 'is_active' does not exist and no direct SQL method available.");
+                        console.error("Please add the column 'is_active' (boolean, default true) to the 'banks' table in Supabase Dashboard.");
+                    }
+                    else {
+                        console.log("Column 'is_active' might already exist or checking failed:", (selectError === null || selectError === void 0 ? void 0 : selectError.message) || "exists");
+                    }
+                    return [3 /*break*/, 4];
+                case 3:
+                    console.log("Added column via RPC successfully!");
+                    _b.label = 4;
+                case 4: return [2 /*return*/];
             }
         });
     });

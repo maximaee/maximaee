@@ -5,7 +5,6 @@ import { usePathname, useRouter } from "next/navigation";
 import type { SessionStatus, SessionStep } from "@/types/session";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { pathToStep, stepToPath } from "@/lib/session-routes";
-import { ChatWidget } from "./ChatWidget";
 
 type Props = {
   sessionId: string;
@@ -135,5 +134,5 @@ export function SessionRealtimeGate({ sessionId }: Props) {
     };
   }, [sessionId, pathname, router]);
 
-  return <ChatWidget sessionId={sessionId} />;
+  return null;
 }

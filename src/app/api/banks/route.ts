@@ -15,7 +15,13 @@ export async function GET() {
       isActive: b.isActive !== false
     })) || [];
 
-    return NextResponse.json({ banks: fixedBanks });
+    return NextResponse.json({ banks: fixedBanks }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+      }
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
@@ -29,7 +35,11 @@ export async function POST(req: Request) {
     // Değişikliklerin anında yansıması için tüm cache'i temizle
     revalidatePath("/", "layout");
     
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true }, {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0'
+      }
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

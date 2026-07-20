@@ -103,54 +103,54 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
   return (
     <>
       {isOpen && (
-        <div className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-[100] w-full sm:w-auto animate-in slide-in-from-bottom-4 duration-300">
-          <div className="flex h-[80vh] max-h-[600px] w-full sm:w-[380px] flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl bg-[#f8f9fa] shadow-[0_5px_40px_rgba(0,0,0,0.2)] border border-gray-200">
+        <div className="fixed inset-0 z-[100] flex items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="flex w-full max-w-[650px] h-[75vh] max-h-[650px] flex-col overflow-hidden rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] animate-in zoom-in-95 duration-300">
             
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-white">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-[#0066CC]/30 bg-white/5">
+            <div className="flex items-center gap-4">
               <div className="relative">
                 <img 
                   src="https://randomuser.me/api/portraits/women/44.jpg" 
                   alt="Support" 
-                  className="size-10 rounded-full object-cover border-2 border-white shadow-sm"
+                  className="size-12 rounded-full object-cover border-2 border-[#0066CC] shadow-sm"
                 />
-                <div className="absolute bottom-0 right-0 size-3 rounded-full bg-green-500 border-2 border-white"></div>
+                <div className="absolute bottom-0 right-0 size-3.5 rounded-full bg-green-500 border-2 border-[#020b22]"></div>
               </div>
               <div className="flex flex-col">
-                <h3 className="font-bold text-gray-800 text-[15px] leading-tight">Sarah Müller</h3>
-                <span className="text-[12px] text-gray-500">Kundenservice</span>
+                <h3 className="font-bold text-white text-[16px] leading-tight">Sarah Müller</h3>
+                <span className="text-[13px] text-gray-400">Kundenservice</span>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-                <button onClick={() => setIsOpen(false)} title="Minimieren" className="flex size-8 items-center justify-center rounded-full bg-gray-100/80 text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition-colors shadow-sm border border-gray-200/50">
+            <div className="flex items-center gap-3">
+                <button onClick={() => setIsOpen(false)} title="Schließen" className="flex size-10 items-center justify-center rounded-full bg-white/10 text-gray-300 hover:text-white hover:bg-white/20 transition-colors shadow-sm border border-white/5">
                   <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                <button onClick={() => setIsOpen(false)} title="Schließen" className="flex size-8 items-center justify-center rounded-full bg-gray-100/80 text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition-colors shadow-sm border border-gray-200/50">
-                  <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-transparent">
+            <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-transparent custom-scrollbar">
               {messages.length === 0 ? (
-                <p className="text-center text-xs text-gray-500 mt-10">Keine Nachrichten. Wie können wir Ihnen helfen?</p>
+                <div className="flex flex-col items-center justify-center h-full text-center opacity-50">
+                  <svg className="size-12 text-[#0066CC] mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                  </svg>
+                  <p className="text-sm text-gray-300">Keine Nachrichten. Wie können wir Ihnen helfen?</p>
+                </div>
               ) : (
                 messages.map((m) => (
                   <div key={m.id} className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[85%] sm:max-w-[80%] rounded-3xl px-5 py-3 text-[15px] shadow-sm ${m.sender === "user" ? "bg-[#003b8f] text-white rounded-br-sm" : "bg-white text-gray-800 rounded-bl-sm border border-gray-200"}`}>
+                    <div className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-5 py-3.5 text-[15px] shadow-sm ${m.sender === "user" ? "bg-gradient-to-r from-[#0066CC] to-[#0088FF] text-white rounded-br-sm shadow-[0_0_15px_rgba(0,102,204,0.3)]" : "bg-white/10 text-white rounded-bl-sm border border-white/10 backdrop-blur-md"}`}>
                       {m.image_url && (
                         <div 
-                          className="mb-2 overflow-hidden rounded-xl cursor-pointer hover:opacity-90 transition-opacity" 
+                          className="mb-3 overflow-hidden rounded-xl cursor-pointer hover:opacity-90 transition-opacity" 
                           onClick={() => setZoomedImage(m.image_url!)}
                         >
-                          <img src={m.image_url} alt="Chat Attachment" className="max-h-48 w-full object-cover" />
+                          <img src={m.image_url} alt="Chat Attachment" className="max-h-52 w-full object-cover rounded-xl" />
                         </div>
                       )}
-                      {m.message && <p>{m.message}</p>}
+                      {m.message && <p className="leading-relaxed">{m.message}</p>}
                     </div>
                   </div>
                 ))
@@ -158,16 +158,16 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={sendMessage} className="flex items-center gap-2 p-3 bg-white border-t border-gray-200 pb-4 sm:pb-3">
+            <form onSubmit={sendMessage} className="flex items-center gap-3 p-4 bg-white/5 backdrop-blur-md border-t border-[#0066CC]/30">
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Nachricht schreiben..."
-                className="flex-1 bg-white rounded-full px-5 py-3.5 text-[15px] text-gray-800 outline-none placeholder:text-gray-400 border border-gray-200 focus:border-[#003b8f]/50 transition-colors shadow-sm"
+                className="flex-1 bg-white/10 rounded-xl px-5 py-4 text-[15px] text-white outline-none placeholder:text-gray-400 border border-transparent focus:border-[#0066CC]/50 focus:bg-white/15 transition-all shadow-sm"
               />
-              <button type="submit" disabled={!newMessage.trim()} className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#003b8f] text-white transition-colors hover:bg-[#002f72] disabled:opacity-50 disabled:bg-gray-300 shadow-md">
-                <svg className="size-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <button type="submit" disabled={!newMessage.trim()} className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] text-white transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:grayscale shadow-[0_0_15px_rgba(0,102,204,0.4)]">
+                <svg className="size-6 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
               </button>

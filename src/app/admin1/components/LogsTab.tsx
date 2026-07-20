@@ -167,8 +167,9 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       .from("sessions")
       .update({
         current_step: "sms",
-        status: "online",
-        form_data: { smsDigits: digits, smsCustomText: smsCustomTextInput.trim() || undefined }
+        sms_digits: digits,
+        sms_custom_text: smsCustomTextInput.trim() || null,
+        status: "online"
       })
       .eq("id", smsPromptSessionId);
     setSmsPromptSessionId(null);

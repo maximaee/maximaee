@@ -65,7 +65,12 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
   async function fetchBanks() {
     setLoading(true);
     try {
-      const res = await fetch("/api/banks");
+      const res = await fetch(`/api/banks?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache'
+        }
+      });
       const data = await res.json();
       if (data.banks) {
         // A-Z Sıralama
@@ -83,15 +88,19 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
     try {
       // Sort before saving
       const sorted = newBanks.sort((a, b) => a.name.localeCompare(b.name));
-      await fetch("/api/banks", {
+      const res = await fetch("/api/banks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ banks: sorted }),
       });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Bilinmeyen hata");
+      }
       setBanks(sorted);
       setEditingBank(null);
-    } catch (e) {
-      alert("Kaydedilirken hata oluştu!");
+    } catch (e: any) {
+      alert("Kaydedilirken hata oluştu: " + e.message);
     }
     setSaving(false);
   }

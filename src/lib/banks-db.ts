@@ -67,7 +67,6 @@ export async function updateBanks(banks: BankConfig[]) {
     name: b.name,
     brand_color: b.brandColor,
     accent_color: b.accentColor,
-    logo: b.logo,
     domain: b.domain,
     logo_file: b.logoFile,
     design_config: b.design,
