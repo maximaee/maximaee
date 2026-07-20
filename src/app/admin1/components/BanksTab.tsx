@@ -416,7 +416,15 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                   </div>
                   <div>
                     <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Ülke</label>
-                    <input type="text" className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${darkMode ? 'border-zinc-700 bg-zinc-900 text-white' : 'border-gray-300 bg-gray-50 text-gray-900'}`} value={editingBank.country || "Hollanda"} onChange={e => setEditingBank({...editingBank, country: e.target.value})} placeholder="Örn: Hollanda" />
+                    <select 
+                      className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${darkMode ? 'border-zinc-700 bg-zinc-900 text-white' : 'border-gray-300 bg-gray-50 text-gray-900'}`} 
+                      value={editingBank.country || "Hollanda"} 
+                      onChange={e => setEditingBank({...editingBank, country: e.target.value})}
+                    >
+                      {EUROPEAN_COUNTRIES.filter(c => c.name !== "Tümü").map(c => (
+                        <option key={c.name} value={c.name}>{c.flag} {c.name}</option>
+                      ))}
+                    </select>
                   </div>
                   <div className="col-span-2">
                     <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Logo URL (veya Dosya Yükle)</label>
@@ -487,7 +495,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                   </div>
                 </div>
 
-                <div className="flex justify-end pt-4 sticky bottom-0 py-4 border-t" style={{ backgroundColor: darkMode ? '#1e1e1e' : '#ffffff', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e7eb' }}>
+                <div className={`flex justify-end pt-6 pb-2 border-t mt-8 ${darkMode ? 'border-zinc-800' : 'border-gray-200'}`}>
                   <button
                     onClick={handleSaveBank}
                     disabled={saving}

@@ -44,6 +44,7 @@ export type GlobalSettings = {
   profile_loading_text: string;
   site_language: string;
   target_country?: string;
+
   wheel_settings: any;
 };
 
@@ -137,6 +138,7 @@ export const defaultSettings: GlobalSettings = {
   profile_button: "Verder",
   profile_loading_text: "Verwerken...",
   site_language: "nl",
+  target_country: "Hollanda",
   wheel_settings: {},
 };
 

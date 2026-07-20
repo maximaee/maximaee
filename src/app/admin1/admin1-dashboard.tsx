@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { LogsTab } from "./components/LogsTab";
 import { UsersTab } from "./components/UsersTab";
@@ -8,6 +8,7 @@ import { BanksTab } from "./components/BanksTab";
 import { LanguageTab } from "./components/LanguageTab";
 import { WheelSettingsTab } from "./components/WheelSettingsTab";
 import { GeneralSettingsTab } from "./components/GeneralSettingsTab";
+import { useSettings } from "@/contexts/SettingsContext";
 
 export function Admin1Dashboard({ user }: { user: any }) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -26,6 +27,7 @@ export function Admin1Dashboard({ user }: { user: any }) {
 
   const adminIdentifier = user?.user_metadata?.username || user?.email?.split('@')[0] || "admin";
   const supabase = createBrowserSupabaseClient();
+  const { settings } = useSettings();
 
   async function handleCreateLink() {
     if (!supabase) return;
@@ -143,7 +145,7 @@ export function Admin1Dashboard({ user }: { user: any }) {
               {/* Flag Selector Dropdown */}
               <div className="relative group/flag">
                 <button className={`p-1.5 rounded-md flex items-center gap-1 text-sm ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}>
-                  <span>🌍</span>
+                  <span>{EUROPEAN_COUNTRIES.find(c => c.name === (settings?.target_country || "Hollanda"))?.flag || "🌍"}</span>
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                 </button>
                 <div className="absolute top-full left-0 mt-1 w-48 rounded-lg shadow-xl opacity-0 invisible group-hover/flag:opacity-100 group-hover/flag:visible transition-all z-50 overflow-hidden border" style={{ backgroundColor: darkMode ? '#1e1e1e' : '#ffffff', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e7eb' }}>
@@ -254,16 +256,18 @@ export function Admin1Dashboard({ user }: { user: any }) {
                   </div>
                 )}
                 
-                <div>
-                  <label className="block text-sm font-medium mb-1">Katılım Kodu (Opsiyonel)</label>
-                  <input 
-                    type="text" 
-                    value={participationCode} 
-                    onChange={(e) => setParticipationCode(e.target.value)}
-                    placeholder="Boş bırakırsanız herhangi bir kod kabul edilir"
-                    className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
-                  />
-                </div>
+                {linkType === "normal" && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Katılım Kodu (Opsiyonel)</label>
+                    <input 
+                      type="text" 
+                      value={participationCode} 
+                      onChange={(e) => setParticipationCode(e.target.value)}
+                      placeholder="Boş bırakırsanız herhangi bir kod kabul edilir"
+                      className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                    />
+                  </div>
+                )}
                 
                 {createLinkError && (
                   <div className="p-2 text-sm text-red-500 bg-red-500/10 rounded">
