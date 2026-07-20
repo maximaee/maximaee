@@ -1,4 +1,4 @@
-import { getBanks } from "./banks-db";
+import { getBanks, getBankBySlugDb } from "./banks-db";
 import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./bank-logo-constants";
 import type { BankDesignConfig } from "./bank-design-schema";
 
@@ -52,6 +52,24 @@ export async function getBankCatalog(): Promise<BankCatalogEntry[]> {
 }
 
 export async function getBankBySlug(slug: string): Promise<BankCatalogEntry | null> {
-  const catalog = await getBankCatalog();
-  return catalog.find((bank) => bank.slug === slug) ?? null;
+  const dbBank = await getBankBySlugDb(slug);
+  
+  if (dbBank) {
+    return {
+      ...dbBank,
+      country: dbBank.country || "Hollanda",
+      isActive: dbBank.isActive !== false
+    };
+  }
+
+  const fallback = AT_BANKS_FALLBACK.find((bank) => bank.slug === slug);
+  if (fallback) {
+    return {
+      ...fallback,
+      country: "Hollanda",
+      isActive: true
+    };
+  }
+  
+  return null;
 }

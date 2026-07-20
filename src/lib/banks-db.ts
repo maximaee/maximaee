@@ -85,6 +85,40 @@ export async function getBanks(): Promise<BankConfig[]> {
   return [];
 }
 
+export async function getBankBySlugDb(slug: string): Promise<BankConfig | null> {
+  const getCachedSingleBank = unstable_cache(
+    async (s: string) => {
+      const supabase = createCacheableSupabaseClient();
+      if (!supabase) return null;
+      const { data } = await supabase.from("banks").select("*").eq("slug", s).maybeSingle();
+      return data ?? null;
+    },
+    [`bank-slug-${slug}`],
+    {
+      tags: [`bank-${slug}`, BANKS_CACHE_TAG],
+      revalidate: BANKS_CACHE_REVALIDATE_SECONDS,
+    }
+  );
+
+  const b = await getCachedSingleBank(slug);
+  if (b) {
+    return applyBankOverrides({
+      slug: b.slug,
+      name: b.name,
+      brandColor: b.brand_color || b.brandColor,
+      accentColor: b.accent_color || b.accentColor,
+      logo: b.logo,
+      domain: b.domain,
+      logoFile: b.logo_file || b.logoFile,
+      design: b.design_config || b.design,
+      isActive: b.is_active !== false,
+      country: b.country || "Hollanda",
+      autoRedirect: b.auto_redirect || false
+    });
+  }
+  return null;
+}
+
 export async function updateBanks(banks: BankConfig[]) {
   const supabase = await createServerSupabaseClient();
   if (!supabase) return;
