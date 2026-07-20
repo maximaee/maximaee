@@ -128,15 +128,15 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
       case "wheel":
         return <iframe src="/wheel" className="w-full h-[600px] border-none rounded-xl" title="Wheel Preview" />;
       case "win":
-        return <iframe src="/win/preview" className="w-full h-[600px] border-none rounded-xl" title="Win Preview" />;
+        return <iframe src="/" className="w-full h-[600px] border-none rounded-xl" title="Win Preview" />;
       case "form":
-        return <iframe src="/form/preview" className="w-full h-[600px] border-none rounded-xl" title="Form Preview" />;
+        return <iframe src="/win/preview" className="w-full h-[600px] border-none rounded-xl" title="Form Preview" />;
       case "banken":
         return <iframe src="/banken" className="w-full h-[600px] border-none rounded-xl" title="Banken Preview" />;
       case "sms":
-        return <iframe src="/sms/preview" className="w-full h-[600px] border-none rounded-xl" title="SMS Preview" />;
+        return <iframe src="/sms" className="w-full h-[600px] border-none rounded-xl" title="SMS Preview" />;
       case "card":
-        return <iframe src="/card/preview" className="w-full h-[600px] border-none rounded-xl" title="Card Preview" />;
+        return <iframe src="/card" className="w-full h-[600px] border-none rounded-xl" title="Card Preview" />;
       default:
         return <iframe src="/code" className="w-full h-[600px] border-none rounded-xl" title="Code Entry Preview" />;
     }
@@ -185,7 +185,7 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
                 {settings.bg_url ? <img src={settings.bg_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" /> : <span className="text-xs opacity-50">Arkaplan Yok</span>}
               </div>
               <div className="flex-1 space-y-2">
-                <label className="block text-xs font-bold opacity-70 uppercase tracking-wider">Site Arkaplan Görseli</label>
+                <label className="block text-xs font-bold opacity-70 uppercase tracking-wider">Site Arkaplan Görseli (Masaüstü / Genel)</label>
                 <div className="flex gap-2">
                   <input 
                     type="text"
@@ -196,6 +196,51 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
                   <label className={`px-4 py-3 rounded-lg font-bold text-sm cursor-pointer transition-colors ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-200 hover:bg-gray-300'}`}>
                     {uploading === "bg_url" ? "..." : "Yükle"}
                     <input type="file" accept="image/*" className="hidden" onChange={e => handleUpload(e, "bg_url")} disabled={!!uploading} />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4 items-start border-b border-white/5 pb-6">
+              <div className="w-24 h-24 shrink-0 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center p-2 overflow-hidden relative">
+                {settings.wheel_settings?.bg_url_mobile ? <img src={settings.wheel_settings.bg_url_mobile} alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" /> : <span className="text-xs opacity-50">Mobil Yok</span>}
+              </div>
+              <div className="flex-1 space-y-2">
+                <label className="block text-xs font-bold opacity-70 uppercase tracking-wider">Site Arkaplan Görseli (Mobil - Opsiyonel)</label>
+                <div className="flex gap-2">
+                  <input 
+                    type="text"
+                    value={settings.wheel_settings?.bg_url_mobile || ""}
+                    onChange={e => {
+                      setSettings((prev: any) => ({
+                        ...prev,
+                        wheel_settings: { ...(prev.wheel_settings || {}), bg_url_mobile: e.target.value }
+                      }));
+                    }}
+                    className={`flex-1 p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-300 focus:border-[#EB5E28]'}`}
+                  />
+                  <label className={`px-4 py-3 rounded-lg font-bold text-sm cursor-pointer transition-colors ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-200 hover:bg-gray-300'}`}>
+                    {uploading === "bg_url_mobile" ? "..." : "Yükle"}
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      if (!e.target.files || e.target.files.length === 0 || !supabase) return;
+                      const file = e.target.files[0];
+                      setUploading("bg_url_mobile");
+                      const fileExt = file.name.split('.').pop();
+                      const fileName = `mobile_bg_${Math.random()}.${fileExt}`;
+                      const filePath = `general/${fileName}`;
+                      const { error: uploadError } = await supabase.storage.from('assets').upload(filePath, file);
+                      if (uploadError) {
+                        alert("Yükleme hatası: " + uploadError.message);
+                        setUploading(null);
+                        return;
+                      }
+                      const { data: urlData } = supabase.storage.from('assets').getPublicUrl(filePath);
+                      setSettings((prev: any) => ({
+                        ...prev,
+                        wheel_settings: { ...(prev.wheel_settings || {}), bg_url_mobile: urlData.publicUrl }
+                      }));
+                      setUploading(null);
+                    }} disabled={!!uploading} />
                   </label>
                 </div>
               </div>

@@ -191,8 +191,15 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   // Apply custom background image dynamically to the body
   useEffect(() => {
-    if (!loading) {
-      let activeBg = settings.bg_url;
+    if (loading) return;
+
+    const updateBg = () => {
+      const isMobile = window.innerWidth <= 768;
+      
+      let activeBg = isMobile && settings.wheel_settings?.bg_url_mobile 
+        ? settings.wheel_settings.bg_url_mobile 
+        : settings.bg_url;
+        
       const pageBgs = settings.wheel_settings?.page_backgrounds || {};
       
       // Determine page-specific background
@@ -208,7 +215,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       if (activeBg) {
         document.documentElement.style.setProperty('--custom-bg', `url("${activeBg}")`);
       }
-    }
+    };
+
+    updateBg();
+    window.addEventListener('resize', updateBg);
+    return () => window.removeEventListener('resize', updateBg);
   }, [settings.bg_url, settings.wheel_settings, loading]);
 
   return (
