@@ -3,20 +3,19 @@ import OpenAI from "openai";
 
 export async function POST(req: Request) {
   try {
-    // GitHub Models API Key
-    const apiKey = process.env.GITHUB_TOKEN;
+    // OpenAI API Key
+    const apiKey = process.env.OPENAI_API_KEY;
 
     if (!apiKey || apiKey.trim() === "") {
-      console.error("[AI Design] GitHub Token is missing or empty.");
+      console.error("[AI Design] OPENAI_API_KEY is missing or empty.");
       return NextResponse.json(
-        { error: "Yapay zeka motoru başlatılamadı: GitHub API anahtarı (GITHUB_TOKEN) boş veya okunamıyor. Lütfen Vercel ayarlarınızı kontrol edin." },
+        { error: "Yapay zeka motoru başlatılamadı: OpenAI API anahtarı (OPENAI_API_KEY) boş veya okunamıyor. Lütfen ayarlarınızı kontrol edin." },
         { status: 500 }
       );
     }
 
-    // GitHub Models Endpoint URL'si ve API Anahtarı ile OpenAI client'ını başlatıyoruz
+    // Standard OpenAI endpoint
     const openai = new OpenAI({
-      baseURL: "https://models.inference.ai.azure.com",
       apiKey: apiKey.trim(),
     });
 
