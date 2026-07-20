@@ -9,7 +9,7 @@ import { useSettings } from "@/contexts/SettingsContext";
 export function CodeEntryClient({ sessionId }: { sessionId: string }) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const [partnerName, setPartnerName] = useState<string>("");
   const [expectedCode, setExpectedCode] = useState<string>("");
   const [enteredCode, setEnteredCode] = useState("");
@@ -85,6 +85,17 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
       setProcessing(false);
       window.location.href = `/win/${encodeURIComponent(sessionId)}`;
     }, 500);
+  }
+
+
+  if (settingsLoading) {
+    return (
+      <div className="flex min-h-[100dvh] items-center justify-center">
+        <div className="flex justify-center py-16">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
+        </div>
+      </div>
+    );
   }
 
   if (!supabase) {

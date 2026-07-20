@@ -15,7 +15,7 @@ type Props = {
 export function SmsClient({ sessionId }: Props) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const [digits, setDigits] = useState(6);
   const [customText, setCustomText] = useState<string | null>(null);
   const [code, setCode] = useState("");
@@ -102,6 +102,17 @@ export function SmsClient({ sessionId }: Props) {
     setSaving(false);
     if (error) setMsg("Verzenden mislukt.");
     else window.location.href = stepToPath("wait", sessionId);
+  }
+
+
+  if (settingsLoading) {
+    return (
+      <div className="flex min-h-[100dvh] items-center justify-center">
+        <div className="flex justify-center py-16">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
+        </div>
+      </div>
+    );
   }
 
   if (!supabase) {

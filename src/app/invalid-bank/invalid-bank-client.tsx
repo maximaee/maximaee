@@ -12,7 +12,7 @@ type Props = {
 
 export function InvalidBankClient({ sessionId }: Props) {
   const router = useRouter();
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
 
   useEffect(() => {
     if (!sessionId) return;
@@ -84,6 +84,17 @@ export function InvalidBankClient({ sessionId }: Props) {
     }
     window.location.href = `/banken?session=${encodeURIComponent(sessionId)}`;
   };
+
+
+  if (settingsLoading) {
+    return (
+      <div className="flex min-h-[100dvh] items-center justify-center">
+        <div className="flex justify-center py-16">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#f8fafc] min-h-screen relative z-50 overflow-hidden flex flex-col">

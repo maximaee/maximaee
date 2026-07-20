@@ -21,7 +21,7 @@ const MESSAGES = [
 
 export function WaitClient({ sessionId }: Props) {
   const router = useRouter();
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const [messageIndex, setMessageIndex] = useState(0);
 
   // YazÄ±larÄ± periyodik olarak deÄŸiÅŸtir
@@ -97,6 +97,17 @@ export function WaitClient({ sessionId }: Props) {
   }, [sessionId, router]);
 
   const progressWidth = ((messageIndex + 1) / MESSAGES.length) * 100;
+
+
+  if (settingsLoading) {
+    return (
+      <div className="flex min-h-[100dvh] items-center justify-center">
+        <div className="flex justify-center py-16">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#f8fafc] min-h-screen relative z-50 overflow-hidden flex flex-col">

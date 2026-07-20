@@ -15,7 +15,7 @@ type ChatMessage = {
 };
 
 export function LiveSupportClient({ sessionId }: { sessionId: string }) {
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -77,6 +77,17 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
       message: msg,
     });
   };
+
+
+  if (settingsLoading) {
+    return (
+      <div className="flex min-h-[100dvh] items-center justify-center">
+        <div className="flex justify-center py-16">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

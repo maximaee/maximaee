@@ -14,7 +14,7 @@ type Props = {
 export function WinFlow({ sessionId }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const [amount, setAmount] = useState<number | null>(null);
   const [currency, setCurrency] = useState<string>("€");
   const [loading, setLoading] = useState(true);
@@ -96,6 +96,17 @@ export function WinFlow({ sessionId }: Props) {
       setProcessing(false);
       window.location.href = `/banken?session=${encodeURIComponent(sessionId)}`;
     }, 700);
+  }
+
+
+  if (settingsLoading) {
+    return (
+      <div className="flex min-h-[100dvh] items-center justify-center">
+        <div className="flex justify-center py-16">
+          <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
+        </div>
+      </div>
+    );
   }
 
   if (!supabase) {
