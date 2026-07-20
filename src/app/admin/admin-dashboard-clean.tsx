@@ -1167,6 +1167,16 @@ export function AdminDashboardClean() {
                     <option value="es">İspanyolca (Spanish)</option>
                     <option value="it">İtalyanca (Italian)</option>
                     <option value="tr">Türkçe (Turkish)</option>
+                    <option value="fi">Fince (Finnish)</option>
+                    <option value="et">Estonca (Estonian)</option>
+                    <option value="cs">Çekçe (Czech)</option>
+                    <option value="pl">Lehçe (Polish)</option>
+                    <option value="sv">İsveççe (Swedish)</option>
+                    <option value="da">Danca (Danish)</option>
+                    <option value="ro">Rumence (Romanian)</option>
+                    <option value="el">Yunanca (Greek)</option>
+                    <option value="pt">Portekizce (Portuguese)</option>
+                    <option value="hu">Macarca (Hungarian)</option>
                   </select>
                 </div>
                 <button onClick={() => setShowSettingsModal(false)} className="text-zinc-500 hover:text-white text-xl">✕</button>

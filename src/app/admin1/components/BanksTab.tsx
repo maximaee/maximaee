@@ -287,6 +287,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
   }
 
   const EUROPEAN_COUNTRIES = [
+    { name: "Tümü", flag: "🌍" },
     { name: "Hollanda", flag: "🇳🇱" },
     { name: "Almanya", flag: "🇩🇪" },
     { name: "Avusturya", flag: "🇦🇹" },
@@ -298,6 +299,13 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
     { name: "Fransa", flag: "🇫🇷" },
     { name: "Çekya", flag: "🇨🇿" },
     { name: "Estonya", flag: "🇪🇪" },
+    { name: "Polonya", flag: "🇵🇱" },
+    { name: "İsveç", flag: "🇸🇪" },
+    { name: "Danimarka", flag: "🇩🇰" },
+    { name: "Romanya", flag: "🇷🇴" },
+    { name: "Yunanistan", flag: "🇬🇷" },
+    { name: "Portekiz", flag: "🇵🇹" },
+    { name: "Macaristan", flag: "🇭🇺" }
   ];
 
   const filteredBanks = selectedCountryFilter === "Tümü" || !selectedCountryFilter

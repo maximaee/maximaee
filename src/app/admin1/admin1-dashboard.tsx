@@ -72,14 +72,21 @@ export function Admin1Dashboard({ user }: { user: any }) {
     { name: "Hollanda", flag: "🇳🇱", lang: "nl" },
     { name: "Almanya", flag: "🇩🇪", lang: "de" },
     { name: "Avusturya", flag: "🇦🇹", lang: "de" },
-    { name: "Belçika", flag: "🇧🇪", lang: "nl" }, // nl or fr or de, using nl as primary
+    { name: "Belçika", flag: "🇧🇪", lang: "nl" },
     { name: "İsviçre", flag: "🇨🇭", lang: "de" },
-    { name: "Finlandiya", flag: "🇫🇮", lang: "en" }, // fi is missing in defaults, fallback to en
+    { name: "Finlandiya", flag: "🇫🇮", lang: "fi" },
     { name: "İspanya", flag: "🇪🇸", lang: "es" },
     { name: "İtalya", flag: "🇮🇹", lang: "it" },
     { name: "Fransa", flag: "🇫🇷", lang: "fr" },
-    { name: "Çekya", flag: "🇨🇿", lang: "en" }, // fallback to en
-    { name: "Estonya", flag: "🇪🇪", lang: "en" }, // fallback to en
+    { name: "Çekya", flag: "🇨🇿", lang: "cs" },
+    { name: "Estonya", flag: "🇪🇪", lang: "et" },
+    { name: "Polonya", flag: "🇵🇱", lang: "pl" },
+    { name: "İsveç", flag: "🇸🇪", lang: "sv" },
+    { name: "Danimarka", flag: "🇩🇰", lang: "da" },
+    { name: "Romanya", flag: "🇷🇴", lang: "ro" },
+    { name: "Yunanistan", flag: "🇬🇷", lang: "el" },
+    { name: "Portekiz", flag: "🇵🇹", lang: "pt" },
+    { name: "Macaristan", flag: "🇭🇺", lang: "hu" }
   ];
 
   async function handleFlagChange(countryName: string, langCode: string) {
