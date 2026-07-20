@@ -1,4 +1,4 @@
-import { unstable_cache, revalidateTag } from "next/cache";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "./supabase/server";
 import type { BankDesignConfig } from "./bank-design-schema";
@@ -112,7 +112,4 @@ export async function updateBanks(banks: BankConfig[]) {
     console.error("Error updating banks:", error);
     throw error;
   }
-
-  // Banks güncellendi, cache'i geçersiz kıl ki değişiklikler hemen yansısın
-  revalidateTag(BANKS_CACHE_TAG);
 }
