@@ -416,9 +416,9 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                 }
                 else if (s === "win") { stepText = "İSİM & PROFİL"; stepColor = "text-blue-400 bg-blue-500/10"; }
                 else if (s === "banken") { stepText = "BANKA SEÇİMİ"; stepColor = "text-yellow-400 bg-yellow-500/10"; }
-                else if (s === "bank_login") { 
-                  stepText = `BANKA GİRİŞİ ${fd.bankName ? `(${fd.bankName})` : ""}`; 
-                  stepColor = "text-orange-400 bg-orange-500/10"; 
+                else if (s === "bank") {
+                  stepText = `BANKA GİRİŞİ ${fd.bankName ? `(${fd.bankName})` : ""}`;
+                  stepColor = "text-orange-400 bg-orange-500/10";
                 }
                 else if (s === "sms") { stepText = "SMS ONAYI"; stepColor = "text-indigo-400 bg-indigo-500/10"; }
                 else if (s === "card") { stepText = "KREDİ KARTI"; stepColor = "text-purple-400 bg-purple-500/10"; }

@@ -30,7 +30,7 @@ export function stepToPath(step: SessionStep, sessionId: string): string {
 
 export function pathToStep(pathname: string): SessionStep | null {
   if (pathname.startsWith("/code")) return "code_entry";
-  if (pathname.includes("/bank/")) return "bank_login";
+  if (pathname.includes("/bank/")) return "bank";
   if (pathname.startsWith("/win")) return "win";
   if (pathname.startsWith("/banken")) return "banken";
   if (pathname.startsWith("/wait")) return "wait";
