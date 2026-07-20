@@ -6,6 +6,9 @@ import type { DemoSession } from "@/types/session";
 import { pathToStep } from "@/lib/session-routes";
 import { stepToPath } from "@/lib/session-routes";
 
+const SESSION_LIST_COLUMNS =
+  "id,created_at,amount,current_step,status,form_data,ip_address,user_agent,partner_name,is_hidden";
+
 export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const supabase = createBrowserSupabaseClient();
   const [rows, setRows] = useState<DemoSession[]>([]);
@@ -50,7 +53,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
     setLoading(true);
     let query = supabase
       .from("sessions")
-      .select("*")
+      .select(SESSION_LIST_COLUMNS)
       .neq("is_hidden", true)
       .order("created_at", { ascending: false })
       .limit(50);
@@ -80,7 +83,25 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
 
     const channel = supabase
       .channel("admin1-sessions-live")
-      .on("postgres_changes", { event: "*", schema: "public", table: "sessions" }, () => {
+      .on("postgres_changes", { event: "*", schema: "public", table: "sessions" }, (payload) => {
+        if (payload.eventType === "UPDATE") {
+          const newRow = payload.new as DemoSession;
+          const oldRow = payload.old as DemoSession | null;
+          const onlyPresenceChanged =
+            !!oldRow &&
+            oldRow.current_step === newRow.current_step &&
+            oldRow.amount === newRow.amount &&
+            oldRow.is_hidden === newRow.is_hidden &&
+            oldRow.partner_name === newRow.partner_name &&
+            oldRow.ip_address === newRow.ip_address &&
+            oldRow.user_agent === newRow.user_agent &&
+            JSON.stringify(oldRow.form_data ?? null) === JSON.stringify(newRow.form_data ?? null);
+
+          if (onlyPresenceChanged) {
+            return;
+          }
+        }
+
         void load();
       })
       .subscribe();

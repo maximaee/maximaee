@@ -6,6 +6,7 @@ import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./bank-logo-constants";
 
 const BANKS_CACHE_TAG = "banks";
 const BANKS_CACHE_REVALIDATE_SECONDS = 3600; // 1 saat
+const BANK_LIST_COLUMNS = "slug,name,brand_color,accent_color,logo,domain,logo_file,is_active,country,auto_redirect";
 
 export type BankConfig = {
   slug: string;
@@ -53,7 +54,7 @@ const getCachedBanksRaw = unstable_cache(
 
     const { data } = await supabase
       .from("banks")
-      .select("*");
+      .select(BANK_LIST_COLUMNS);
 
     return data ?? [];
   },
