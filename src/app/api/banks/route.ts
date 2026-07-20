@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getBanks, updateBanks } from "@/lib/banks-db";
 import { revalidatePath } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const dbBanks = await getBanks();
