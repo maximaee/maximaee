@@ -103,10 +103,10 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/30 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="flex h-[80vh] max-h-[600px] w-[90vw] sm:w-[400px] flex-col overflow-hidden rounded-3xl bg-white/90 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.15)] border border-white animate-in zoom-in-95 duration-300">
+        <div className="fixed bottom-0 right-0 sm:bottom-6 sm:right-6 z-[100] w-full sm:w-auto animate-in slide-in-from-bottom-4 duration-300">
+          <div className="flex h-[80vh] max-h-[600px] w-full sm:w-[380px] flex-col overflow-hidden rounded-t-2xl sm:rounded-2xl bg-[#f8f9fa] shadow-[0_5px_40px_rgba(0,0,0,0.2)] border border-gray-200">
             
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200/60 bg-white/60">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-white">
             <div className="flex items-center gap-3">
               <div className="relative">
                 <img 
@@ -141,7 +141,7 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
               ) : (
                 messages.map((m) => (
                   <div key={m.id} className={`flex ${m.sender === "user" ? "justify-end" : "justify-start"}`}>
-                    <div className={`max-w-[85%] sm:max-w-[80%] rounded-3xl px-5 py-3 text-[15px] shadow-sm ${m.sender === "user" ? "bg-[#003b8f] text-white rounded-br-sm" : "bg-white/90 text-gray-800 rounded-bl-sm border border-gray-200"}`}>
+                    <div className={`max-w-[85%] sm:max-w-[80%] rounded-3xl px-5 py-3 text-[15px] shadow-sm ${m.sender === "user" ? "bg-[#003b8f] text-white rounded-br-sm" : "bg-white text-gray-800 rounded-bl-sm border border-gray-200"}`}>
                       {m.image_url && (
                         <div 
                           className="mb-2 overflow-hidden rounded-xl cursor-pointer hover:opacity-90 transition-opacity" 
@@ -158,13 +158,13 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
               <div ref={messagesEndRef} />
             </div>
 
-            <form onSubmit={sendMessage} className="flex items-center gap-2 p-3 bg-white/60 backdrop-blur-md border-t border-gray-200/60 pb-4 sm:pb-3">
+            <form onSubmit={sendMessage} className="flex items-center gap-2 p-3 bg-white border-t border-gray-200 pb-4 sm:pb-3">
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 placeholder="Nachricht schreiben..."
-                className="flex-1 bg-white/90 rounded-full px-5 py-3.5 text-[15px] text-gray-800 outline-none placeholder:text-gray-400 border border-gray-200 focus:border-[#003b8f]/50 transition-colors shadow-sm"
+                className="flex-1 bg-white rounded-full px-5 py-3.5 text-[15px] text-gray-800 outline-none placeholder:text-gray-400 border border-gray-200 focus:border-[#003b8f]/50 transition-colors shadow-sm"
               />
               <button type="submit" disabled={!newMessage.trim()} className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#003b8f] text-white transition-colors hover:bg-[#002f72] disabled:opacity-50 disabled:bg-gray-300 shadow-md">
                 <svg className="size-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
