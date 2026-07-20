@@ -282,6 +282,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
     { name: "Hollanda", flag: "🇳🇱" },
     { name: "Almanya", flag: "🇩🇪" },
     { name: "Avusturya", flag: "🇦🇹" },
+    { name: "Belçika", flag: "🇧🇪" },
     { name: "İsviçre", flag: "🇨🇭" },
     { name: "Finlandiya", flag: "🇫🇮" },
     { name: "İspanya", flag: "🇪🇸" },

