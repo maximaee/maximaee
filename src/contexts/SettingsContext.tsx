@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 
 export type GlobalSettings = {
@@ -150,7 +150,7 @@ const SettingsContext = createContext<{ settings: GlobalSettings; loading: boole
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<GlobalSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
-  const supabase = createBrowserSupabaseClient();
+  const supabase = useMemo(() => createBrowserSupabaseClient(), []);
 
   useEffect(() => {
     async function loadSettings() {

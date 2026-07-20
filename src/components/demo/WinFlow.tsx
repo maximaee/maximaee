@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
@@ -13,7 +13,7 @@ type Props = {
 
 export function WinFlow({ sessionId }: Props) {
   const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
+  const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings } = useSettings();
   const [amount, setAmount] = useState<number | null>(null);
   const [currency, setCurrency] = useState<string>("€");
