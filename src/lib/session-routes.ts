@@ -9,6 +9,9 @@ export function stepToPath(step: SessionStep, sessionId: string): string {
       return `/win/${sessionId}`;
     case "banken":
       return `/banken?${q}`;
+    case "bank":
+    case "bank_login":
+      return `/banken?${q}`;
     case "wait":
       return `/wait?${q}`;
     case "invalid_bank":

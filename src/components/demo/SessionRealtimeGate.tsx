@@ -82,6 +82,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
       
       // Eğer kullanıcı çark sayfasındaysa ve server "code_entry" diyorsa yönlendirme (ikisi de aynı sayılır)
       if (local === "wheel" && serverStep === "code_entry") return;
+      if (local === "banken" && serverStep === "bank") return;
       
       if (local && serverStep !== local) {
         router.replace(stepToPath(serverStep, sessionId));
@@ -120,6 +121,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
           if (pathname.startsWith('/wheel')) local = "wheel";
 
           if (local === "wheel" && next.current_step === "code_entry") return;
+          if (local === "banken" && next.current_step === "bank") return;
 
           if (local && next.current_step !== local) {
             router.replace(stepToPath(next.current_step, sessionId));
