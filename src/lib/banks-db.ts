@@ -14,6 +14,8 @@ export type BankConfig = {
   contactInfo?: string;
   design?: BankDesignConfig;
   autoRedirect?: boolean;
+  isActive?: boolean;
+  country?: string;
 };
 
 const BANKS_SESSION_ID = "00000000-0000-0000-0000-000000000000";

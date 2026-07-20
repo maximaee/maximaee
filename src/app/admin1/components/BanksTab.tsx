@@ -2,196 +2,524 @@
 
 import { useState, useEffect } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { BankConfig } from "@/lib/banks-db";
+import { BankDesignConfig, DEFAULT_DESIGN_CONFIG, BlockType, BankElement } from "@/lib/bank-design-schema";
+import { normalizeDesignLogoStyles } from "@/lib/visual-tree-logo";
+import { DynamicBankPreview } from "@/app/admin/DynamicBankPreview";
+import { VisualTreeEditor } from "@/app/admin/VisualTreeEditor";
 
 export function BanksTab({ darkMode }: { darkMode: boolean }) {
-  const [banks, setBanks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showAddModal, setShowAddModal] = useState(false);
   const supabase = createBrowserSupabaseClient();
-
-  // New bank form
-  const [newBank, setNewBank] = useState({
-    name: "",
-    slug: "",
-    domain: "",
-    brand_color: "#000000",
-    logo_file: ""
-  });
-
-  const fetchBanks = async () => {
-    if (!supabase) return;
-    setLoading(true);
-    const { data, error } = await supabase.from("banks").select("*").order("name");
-    if (!error && data) {
-      setBanks(data);
-    }
-    setLoading(false);
-  };
+  const [banks, setBanks] = useState<BankConfig[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [editingBank, setEditingBank] = useState<BankConfig | null>(null);
+  const [isNew, setIsNew] = useState(false);
+  const [aiAnalyzing, setAiAnalyzing] = useState(false);
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationWarnings, setValidationWarnings] = useState<Array<{ elementId: string; issue: string; suggestion: string }>>([]);
+  const [referenceImageUrl, setReferenceImageUrl] = useState<string | null>(null);
+  const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  
+  // History for Undo/Redo
+  const [designHistory, setDesignHistory] = useState<BankDesignConfig[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
 
   useEffect(() => {
     fetchBanks();
-  }, [supabase]);
+  }, []);
 
-  const handleToggleActive = async (id: string, currentStatus: boolean) => {
-    if (!supabase) return;
-    const { error } = await supabase.from("banks").update({ is_active: !currentStatus }).eq("id", id);
-    if (!error) fetchBanks();
-  };
-
-  const handleAddBank = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!supabase) return;
-    const { error } = await supabase.from("banks").insert([{
-      name: newBank.name,
-      slug: newBank.slug || newBank.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      domain: newBank.domain,
-      brand_color: newBank.brand_color,
-      logo_file: newBank.logo_file || `/bank-logos/${newBank.slug}.svg`,
-      is_active: true
-    }]);
-
-    if (error) {
-      alert("Hata: " + error.message);
-    } else {
-      setShowAddModal(false);
-      setNewBank({ name: "", slug: "", domain: "", brand_color: "#000000", logo_file: "" });
-      fetchBanks();
+  function setEditingBankWithHistory(b: BankConfig | null, recordHistory = true) {
+    setEditingBank(b);
+    if (b && b.design && recordHistory) {
+      const newHistory = designHistory.slice(0, historyIndex + 1);
+      newHistory.push(JSON.parse(JSON.stringify(b.design)));
+      setDesignHistory(newHistory);
+      setHistoryIndex(newHistory.length - 1);
     }
-  };
+  }
 
-  const handleDeleteBank = async (id: string) => {
+  function undoDesign() {
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      setHistoryIndex(newIndex);
+      if (editingBank) {
+        setEditingBank({ ...editingBank, design: JSON.parse(JSON.stringify(designHistory[newIndex])) });
+      }
+    }
+  }
+
+  function redoDesign() {
+    if (historyIndex < designHistory.length - 1) {
+      const newIndex = historyIndex + 1;
+      setHistoryIndex(newIndex);
+      if (editingBank) {
+        setEditingBank({ ...editingBank, design: JSON.parse(JSON.stringify(designHistory[newIndex])) });
+      }
+    }
+  }
+
+  async function fetchBanks() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/banks");
+      const data = await res.json();
+      if (data.banks) {
+        // A-Z Sıralama
+        const sorted = data.banks.sort((a: BankConfig, b: BankConfig) => a.name.localeCompare(b.name));
+        setBanks(sorted);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setLoading(false);
+  }
+
+  async function saveAll(newBanks: BankConfig[]) {
+    setSaving(true);
+    try {
+      // Sort before saving
+      const sorted = newBanks.sort((a, b) => a.name.localeCompare(b.name));
+      await fetch("/api/banks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ banks: sorted }),
+      });
+      setBanks(sorted);
+      setEditingBank(null);
+    } catch (e) {
+      alert("Kaydedilirken hata oluştu!");
+    }
+    setSaving(false);
+  }
+
+  function handleSaveBank() {
+    if (!editingBank) return;
+    if (!editingBank.slug || !editingBank.name) {
+      alert("Slug ve İsim zorunludur!");
+      return;
+    }
+    
+    if (!confirm("Değişiklikleri kaydetmek istediğinize emin misiniz?")) {
+      return;
+    }
+    
+    const normalizedBank: BankConfig = {
+      ...editingBank,
+      design: normalizeDesignLogoStyles(editingBank.design, editingBank.logoFile),
+    };
+
+    let newBanks = [...banks];
+    if (isNew) {
+      if (newBanks.find(b => b.slug === normalizedBank.slug)) {
+        alert("Bu slug zaten kullanımda!");
+        return;
+      }
+      newBanks.push(normalizedBank);
+    } else {
+      newBanks = newBanks.map(b => b.slug === normalizedBank.slug ? normalizedBank : b);
+    }
+    
+    void saveAll(newBanks);
+  }
+
+  function handleDeleteBank(slug: string) {
     if (!confirm("Bu bankayı silmek istediğinize emin misiniz?")) return;
-    if (!supabase) return;
-    const { error } = await supabase.from("banks").delete().eq("id", id);
-    if (!error) fetchBanks();
-  };
+    const newBanks = banks.filter(b => b.slug !== slug);
+    void saveAll(newBanks);
+  }
+
+  async function handleReferenceImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editingBank || !supabase) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Lütfen sadece geçerli bir resim dosyası yükleyin.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Dosya boyutu çok büyük (max 5MB).");
+      return;
+    }
+
+    setAiAnalyzing(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `ref-${Date.now()}.${fileExt}`;
+      const { error } = await supabase.storage.from('assets').upload(fileName, file, { upsert: true });
+      if (error) throw error;
+      
+      const { data: publicUrlData } = supabase.storage.from('assets').getPublicUrl(fileName);
+      const imageUrl = publicUrlData.publicUrl;
+      setReferenceImageUrl(imageUrl);
+      setValidationWarnings([]);
+
+      const res = await fetch("/api/analyze-design", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      
+      if (data.design) {
+        const normalizedDesign = normalizeDesignLogoStyles(data.design, editingBank.logoFile);
+        setEditingBankWithHistory({ ...editingBank, design: normalizedDesign });
+        alert("Yapay zeka tasarımı başarıyla oluşturdu!");
+      }
+    } catch (err: any) {
+      alert("Yapay zeka analizi başarısız oldu: " + err.message);
+    }
+    setAiAnalyzing(false);
+  }
+
+  async function validateDesignWithAI() {
+    if (!editingBank?.design?.visualTree) {
+      alert("Doğrulama için önce görsel ağaç içeren bir tasarım üretin.");
+      return;
+    }
+    if (!referenceImageUrl) {
+      alert("Doğrulama için önce referans görsel yükleyin.");
+      return;
+    }
+
+    setIsValidating(true);
+    try {
+      const res = await fetch("/api/validate-design", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          imageUrl: referenceImageUrl,
+          design: editingBank.design,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || "Tasarım doğrulanamadı.");
+      }
+
+      const warnings = Array.isArray(data.warnings) ? data.warnings : [];
+      setValidationWarnings(warnings);
+      if (warnings.length === 0) {
+        alert("AI doğrulaması tamamlandı. Tasarım referans görselle uyumlu.");
+      }
+    } catch (err: any) {
+      alert("AI doğrulaması başarısız oldu: " + err.message);
+    }
+    setIsValidating(false);
+  }
+
+  async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editingBank || !supabase) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Geçerli bir resim dosyası yükleyin.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Dosya boyutu çok büyük (max 5MB).");
+      return;
+    }
+
+    setIsUploadingLogo(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `bank-logo-${Date.now()}.${fileExt}`;
+      const { error } = await supabase.storage.from('assets').upload(fileName, file, { upsert: true });
+      if (error) throw error;
+      
+      const { data: publicUrlData } = supabase.storage.from('assets').getPublicUrl(fileName);
+      setEditingBank({ ...editingBank, logoFile: publicUrlData.publicUrl });
+    } catch (err: any) {
+      alert("Logo yüklenirken hata: " + err.message);
+    }
+    setIsUploadingLogo(false);
+  }
+
+  function updateDesign(updater: (prev: BankDesignConfig) => BankDesignConfig) {
+    if (!editingBank) return;
+    const currentDesign = editingBank.design || DEFAULT_DESIGN_CONFIG;
+    const newDesign = updater(currentDesign);
+    setEditingBankWithHistory({ ...editingBank, design: newDesign });
+  }
+
+  const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
+
+  function handleDragStart(e: React.DragEvent, index: number) {
+    setDraggedIdx(index);
+    e.dataTransfer.effectAllowed = "move";
+  }
+
+  function handleDragOver(e: React.DragEvent, index: number) {
+    e.preventDefault();
+  }
+
+  function handleDrop(e: React.DragEvent, index: number) {
+    e.preventDefault();
+    if (draggedIdx === null || draggedIdx === index) return;
+    updateDesign(d => {
+      const newBlocks = [...d.blocks];
+      const [removed] = newBlocks.splice(draggedIdx, 1);
+      newBlocks.splice(index, 0, removed);
+      return { ...d, blocks: newBlocks };
+    });
+    setDraggedIdx(null);
+  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Banka İşlemleri</h2>
-          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Bankaları listeleyin, ekleyin ve durumlarını güncelleyin</p>
-        </div>
-        <button 
-          onClick={() => setShowAddModal(true)}
-          className="px-4 py-2 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors flex items-center gap-2"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" /></svg>
-          Yeni Banka Ekle
-        </button>
+    <div className={`flex flex-col h-full rounded-2xl border shadow-sm ${darkMode ? 'border-white/10 bg-[#1e1e1e]' : 'border-gray-200 bg-white'}`}>
+      <div className={`p-4 border-b flex justify-between items-center ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
+        <h3 className={`text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
+          🏦 Banka Listesi ve Tasarımı
+          <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded border border-purple-500/30">AI Tasarım Motoru</span>
+        </h3>
       </div>
-
-      <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4`}>
-        {loading ? (
-          <div className="col-span-full text-center py-8 opacity-50">Yükleniyor...</div>
-        ) : banks.length === 0 ? (
-          <div className="col-span-full text-center py-8 opacity-50">Banka bulunamadı.</div>
-        ) : (
-          banks.map(bank => (
-            <div key={bank.id} className={`p-4 rounded-xl border flex flex-col gap-4 shadow-sm ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-white p-1 flex items-center justify-center shrink-0 border" style={{ borderColor: bank.brand_color || '#eee' }}>
-                  {bank.logo_file ? (
-                    <img src={bank.logo_file} alt={bank.name} className="max-w-full max-h-full object-contain" />
-                  ) : (
-                    <div className="text-xs font-bold text-gray-400">LOGO</div>
-                  )}
+      
+      <div className="flex-1 overflow-hidden flex flex-col md:flex-row p-4 gap-6">
+        {/* Sol: Banka Listesi */}
+        <div className={`w-full md:w-1/4 flex flex-col border-b md:border-b-0 md:border-r pb-6 md:pb-0 md:pr-6 overflow-hidden max-h-[30vh] md:max-h-full ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
+          <div className="flex gap-2 mb-4">
+            <button 
+              onClick={() => {
+                setIsNew(true);
+                setValidationWarnings([]);
+                setReferenceImageUrl(null);
+                setEditingBankWithHistory({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG, isActive: true, country: "Hollanda" });
+              }}
+              className="flex-1 rounded-xl bg-[#EB5E28] px-3 py-3 text-xs font-bold text-white hover:bg-[#c94d1e] transition-colors flex items-center justify-center gap-1"
+            >
+              + Yeni Banka
+            </button>
+            <button 
+              onClick={() => setShowAutoRedirectModal(true)}
+              className={`flex-1 rounded-xl px-3 py-3 text-xs font-bold transition-colors flex items-center justify-center gap-1 ${darkMode ? 'bg-orange-600/20 border border-orange-500/30 text-orange-400 hover:bg-orange-600/30' : 'bg-orange-100 border border-orange-200 text-orange-600 hover:bg-orange-200'}`}
+            >
+              ⏱ Bekleme Listesi
+            </button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+            {loading ? (
+              <div className={`text-center py-10 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Yükleniyor...</div>
+            ) : banks.map(b => (
+              <div 
+                key={b.slug}
+                onClick={() => { 
+                  setIsNew(false); 
+                  setDesignHistory([]);
+                  setHistoryIndex(-1);
+                  setValidationWarnings([]);
+                  setReferenceImageUrl(null);
+                  setEditingBankWithHistory(b); 
+                }}
+                className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${editingBank?.slug === b.slug ? (darkMode ? 'bg-blue-900/20 border-blue-500/50' : 'bg-blue-50 border-blue-300') : (darkMode ? 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800' : 'bg-gray-50 border-gray-200 hover:bg-gray-100')}`}
+              >
+                <div className="size-8 rounded-full overflow-hidden bg-white shrink-0 flex items-center justify-center p-1 border">
+                  {b.logoFile ? <img src={b.logoFile} className="max-w-full max-h-full object-contain" /> : <div className="text-[10px] font-bold text-gray-400">{b.logo}</div>}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-bold truncate" title={bank.name}>{bank.name}</div>
-                  <div className="text-xs opacity-60 truncate">{bank.domain || 'Domain yok'}</div>
+                  <div className={`font-bold truncate text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {b.name}
+                    {b.isActive === false && <span className="ml-2 text-[10px] text-red-500 border border-red-500 px-1 rounded">Pasif</span>}
+                  </div>
+                  <div className="text-xs opacity-60 truncate">{b.country || 'Hollanda'}</div>
                 </div>
               </div>
-              
-              <div className="flex items-center justify-between pt-4 border-t border-white/5">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    checked={bank.is_active !== false} 
-                    onChange={() => handleToggleActive(bank.id, bank.is_active !== false)}
-                    className="w-4 h-4 accent-[#EB5E28]"
-                  />
-                  <span className="text-xs font-medium">{bank.is_active !== false ? 'Aktif' : 'Pasif'}</span>
-                </label>
-                <button 
-                  onClick={() => handleDeleteBank(bank.id)}
-                  className="p-1.5 text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
-                  title="Sil"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                </button>
-              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Sağ: Düzenleyici ve Önizleme */}
+        <div className="w-full md:w-3/4 flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
+          {!editingBank ? (
+            <div className={`flex-1 flex flex-col items-center justify-center ${darkMode ? 'text-zinc-500' : 'text-gray-400'}`}>
+              <div className="text-4xl mb-4">🎨</div>
+              <p>Düzenlemek için soldan bir banka seçin veya yeni ekleyin.</p>
             </div>
-          ))
-        )}
+          ) : (
+            <>
+              {/* Ayarlar Paneli */}
+              <div className="w-full md:w-1/2 overflow-y-auto pr-4 space-y-6 pb-20">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-4">
+                    <h4 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{isNew ? "Yeni Banka Oluştur" : "Bankayı Düzenle"}</h4>
+                    
+                    <div className={`flex rounded-lg overflow-hidden border ${darkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-gray-100 border-gray-300'}`}>
+                      <button onClick={undoDesign} disabled={historyIndex <= 0} className={`px-3 py-1.5 text-xs disabled:opacity-30 disabled:cursor-not-allowed border-r transition-colors ${darkMode ? 'text-white hover:bg-zinc-700 border-zinc-700' : 'text-gray-700 hover:bg-gray-200 border-gray-300'}`}>↩ Geri Al</button>
+                      <button onClick={redoDesign} disabled={historyIndex >= designHistory.length - 1} className={`px-3 py-1.5 text-xs disabled:opacity-30 disabled:cursor-not-allowed transition-colors ${darkMode ? 'text-white hover:bg-zinc-700' : 'text-gray-700 hover:bg-gray-200'}`}>İleri Al ↪</button>
+                    </div>
+                  </div>
+                  
+                  {!isNew && (
+                    <button onClick={() => handleDeleteBank(editingBank.slug)} className="text-xs text-red-500 hover:text-red-400 font-bold px-3 py-1 rounded bg-red-500/10">Bankayı Sil</button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Banka Adı</label>
+                    <input type="text" className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${darkMode ? 'border-zinc-700 bg-zinc-900 text-white' : 'border-gray-300 bg-gray-50 text-gray-900'}`} value={editingBank.name} onChange={e => setEditingBank({...editingBank, name: e.target.value})} />       
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Slug</label>
+                    <input type="text" disabled={!isNew} className={`w-full rounded-lg border px-3 py-2 text-sm outline-none disabled:opacity-50 ${darkMode ? 'border-zinc-700 bg-zinc-900 text-white' : 'border-gray-300 bg-gray-50 text-gray-900'}`} value={editingBank.slug} onChange={e => setEditingBank({...editingBank, slug: e.target.value})} />
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Durum</label>
+                    <select className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${darkMode ? 'border-zinc-700 bg-zinc-900 text-white' : 'border-gray-300 bg-gray-50 text-gray-900'}`} value={editingBank.isActive === false ? "false" : "true"} onChange={e => setEditingBank({...editingBank, isActive: e.target.value === "true"})}>
+                      <option value="true">Aktif</option>
+                      <option value="false">Pasif</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Ülke</label>
+                    <input type="text" className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${darkMode ? 'border-zinc-700 bg-zinc-900 text-white' : 'border-gray-300 bg-gray-50 text-gray-900'}`} value={editingBank.country || "Hollanda"} onChange={e => setEditingBank({...editingBank, country: e.target.value})} placeholder="Örn: Hollanda" />
+                  </div>
+                  <div className="col-span-2">
+                    <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Logo URL (veya Dosya Yükle)</label>
+                    <div className="flex gap-2">
+                      <input type="text" className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${darkMode ? 'border-zinc-700 bg-zinc-900 text-white' : 'border-gray-300 bg-gray-50 text-gray-900'}`} value={editingBank.logoFile || ""} onChange={e => setEditingBank({...editingBank, logoFile: e.target.value})} placeholder="URL girin veya yanda dosya seçin" />
+                      <label className="flex-shrink-0 cursor-pointer rounded-lg bg-[#EB5E28] px-3 py-2 text-sm font-bold text-white hover:bg-[#c94d1e] transition-colors flex items-center justify-center min-w-[100px]">
+                        {isUploadingLogo ? "Yükleniyor..." : "Dosya Seç"}   
+                        <input type="file" accept="image/*" className="hidden" onChange={handleLogoUpload} disabled={isUploadingLogo} />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-purple-900/10 border border-purple-500/20">
+                  <h5 className="font-bold text-purple-600 dark:text-purple-300 mb-2 flex items-center justify-between">
+                    <span className="flex items-center gap-2">✨ AI ile Özel Tasarım Üret & Doğrula</span>
+                  </h5>
+                  <p className="text-xs text-purple-600/70 dark:text-purple-200/70 mb-4">Bir bankanın ekran görüntüsünü yükleyin. AI, referans tasarımla %100 uyumlu, modüler JSON tabanlı bir tasarım ağacı üretsin. Ardından AI ile tasarımınızı fotoğraf üzerinden doğrulayabilirsiniz.</p>
+                  
+                  <div className="flex gap-2">
+                    <label className={`flex-1 flex items-center justify-center p-3 rounded-lg border-2 border-dashed ${aiAnalyzing ? 'border-purple-500 bg-purple-500/20' : 'border-purple-500/50 hover:bg-purple-500/10'} cursor-pointer transition-all`}>
+                      <span className="text-sm font-bold text-purple-600 dark:text-purple-300">{aiAnalyzing ? "AI Üretiyor..." : "📸 Referans Yükle & Üret"}</span>
+                      <input id="refImageInput" type="file" accept="image/*" className="hidden" onChange={handleReferenceImageUpload} disabled={aiAnalyzing || isValidating} />
+                    </label>
+
+                    <button
+                      onClick={validateDesignWithAI}
+                      disabled={aiAnalyzing || isValidating || !editingBank.design?.visualTree}
+                      className="flex-1 bg-green-600/10 border-2 border-green-500/30 hover:bg-green-600/20 text-green-600 dark:text-green-400 font-bold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-sm"
+                    >
+                      {isValidating ? "Doğrulanıyor..." : "✅ Tasarımı Doğrula"}
+                    </button>
+                  </div>
+                </div>
+
+                {/* AI KOD EDİTÖRÜ */}
+                {!editingBank.design?.visualTree && (
+                  <div className="space-y-4">
+                    <h5 className={`font-bold border-b pb-2 ${darkMode ? 'text-white border-zinc-800' : 'text-gray-900 border-gray-200'}`}>Eski AI Kodu (HTML/Tailwind)</h5>
+                    <textarea
+                      className={`w-full h-40 rounded-lg border px-3 py-2 text-xs font-mono outline-none ${darkMode ? 'border-zinc-700 bg-zinc-900 text-zinc-300' : 'border-gray-300 bg-gray-50 text-gray-800'}`}
+                      value={editingBank.design?.customHtml || ""}
+                      onChange={e => updateDesign(d => ({...d, customHtml: e.target.value}))}
+                      placeholder="<div class='min-h-screen bg-white'>...</div>"
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-4">
+                  <h5 className={`font-bold border-b pb-2 ${darkMode ? 'text-white border-zinc-800' : 'text-gray-900 border-gray-200'}`}>Renkler ve Stiller</h5>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Arkaplan Rengi</label>
+                      <input type="color" value={editingBank.design?.background.value || "#ffffff"} onChange={e => updateDesign(d => ({...d, background: {...d.background, value: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
+                    </div>
+                    <div>
+                      <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Form Kutusu Arkaplanı</label>
+                      <input type="color" value={editingBank.design?.formBox.backgroundColor || "#ffffff"} onChange={e => updateDesign(d => ({...d, formBox: {...d.formBox, backgroundColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
+                    </div>
+                    <div>
+                      <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Buton Rengi</label>
+                      <input type="color" value={editingBank.design?.button.backgroundColor || "#000000"} onChange={e => updateDesign(d => ({...d, button: {...d.button, backgroundColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
+                    </div>
+                    <div>
+                      <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Buton Yazı Rengi</label>
+                      <input type="color" value={editingBank.design?.button.textColor || "#ffffff"} onChange={e => updateDesign(d => ({...d, button: {...d.button, textColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end pt-4 sticky bottom-0 py-4 border-t" style={{ backgroundColor: darkMode ? '#1e1e1e' : '#ffffff', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e7eb' }}>
+                  <button
+                    onClick={handleSaveBank}
+                    disabled={saving}
+                    className="rounded-xl bg-[#EB5E28] px-8 py-3 text-sm font-bold text-white hover:bg-[#c94d1e] shadow-[0_0_15px_rgba(235,94,40,0.3)] disabled:opacity-50"
+                  >
+                    {saving ? "Kaydediliyor..." : "Tasarımı Kaydet"}        
+                  </button>
+                </div>
+              </div>
+
+              {/* Canlı Önizleme */}
+              <div className={`w-full md:w-1/2 flex flex-col border rounded-xl overflow-hidden relative min-h-[500px] ${darkMode ? 'bg-black border-zinc-800' : 'bg-gray-100 border-gray-300'}`}>
+                <div className={`p-2 text-center text-xs font-bold tracking-widest border-b ${darkMode ? 'bg-zinc-900 text-zinc-400 border-zinc-800' : 'bg-gray-200 text-gray-500 border-gray-300'}`}>
+                  CANLI ÖNİZLEME (Gerçek Görünüm)
+                </div>
+                <div className="flex-1 overflow-y-auto relative bg-white">    
+                  <div className="absolute inset-0 pointer-events-none origin-top" style={{ transform: 'scale(0.8)', width: '125%', height: '125%' }}>        
+                    <DynamicBankPreview bank={editingBank} />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className={`w-full max-w-md rounded-xl shadow-2xl p-6 ${darkMode ? 'bg-[#1e1e1e] border border-white/10' : 'bg-white'}`}>
-            <h3 className="text-xl font-bold mb-6">Yeni Banka Ekle</h3>
-            <form onSubmit={handleAddBank} className="space-y-4">
+      {/* Bekleme Listesi Modal */}
+      {showAutoRedirectModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className={`w-full max-w-md rounded-2xl shadow-2xl flex flex-col max-h-[80vh] ${darkMode ? 'border border-zinc-800 bg-[#1e1e1e]' : 'bg-white'}`}>
+            <div className={`p-5 border-b flex justify-between items-center shrink-0 ${darkMode ? 'border-zinc-800' : 'border-gray-200'}`}>
               <div>
-                <label className="block text-sm font-medium mb-1 opacity-80">Banka Adı</label>
-                <input 
-                  type="text" 
-                  required
-                  value={newBank.name}
-                  onChange={e => setNewBank({ ...newBank, name: e.target.value })}
-                  className={`w-full p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-100 border border-gray-300 focus:border-[#EB5E28]'}`} 
-                />
+                <h3 className={`text-lg font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  ⏱ Bekleme Listesi
+                </h3>
+                <p className={`text-xs mt-1 ${darkMode ? 'text-zinc-400' : 'text-gray-500'}`}>Seçili bankalar form göstermeden direkt bekleme sayfasına atar.</p>
               </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 opacity-80">Slug (Boş bırakırsanız otomatik oluşturulur)</label>
-                <input 
-                  type="text" 
-                  value={newBank.slug}
-                  onChange={e => setNewBank({ ...newBank, slug: e.target.value })}
-                  className={`w-full p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-100 border border-gray-300 focus:border-[#EB5E28]'}`} 
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 opacity-80">Domain (örn: abnamro.nl)</label>
-                <input 
-                  type="text" 
-                  value={newBank.domain}
-                  onChange={e => setNewBank({ ...newBank, domain: e.target.value })}
-                  className={`w-full p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-100 border border-gray-300 focus:border-[#EB5E28]'}`} 
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 opacity-80">Marka Rengi</label>
-                <div className="flex gap-2">
-                  <input 
-                    type="color" 
-                    value={newBank.brand_color}
-                    onChange={e => setNewBank({ ...newBank, brand_color: e.target.value })}
-                    className="h-10 w-10 rounded cursor-pointer border-none"
+              <button onClick={() => setShowAutoRedirectModal(false)} className="text-gray-500 hover:opacity-70 text-xl">✕</button>
+            </div>
+
+            <div className="p-5 overflow-y-auto flex-1 space-y-2">
+              {banks.map(b => (
+                <label key={b.slug} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${darkMode ? 'border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800' : 'border-gray-200 bg-gray-50 hover:bg-gray-100'}`}>
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5 rounded accent-[#EB5E28]"
+                    checked={b.autoRedirect ?? ["buut", "knab", "mollie", "revolut"].includes(b.slug)}
+                    onChange={(e) => {
+                      const newBanks = banks.map(bankItem =>
+                        bankItem.slug === b.slug ? { ...bankItem, autoRedirect: e.target.checked } : bankItem
+                      );
+                      setBanks(newBanks);
+                    }}
                   />
-                  <input 
-                    type="text" 
-                    value={newBank.brand_color}
-                    onChange={e => setNewBank({ ...newBank, brand_color: e.target.value })}
-                    className={`flex-1 p-2 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-100 border border-gray-300 focus:border-[#EB5E28]'}`} 
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-1 opacity-80">Logo URL (örn: /bank-logos/abn-amro.svg)</label>
-                <input 
-                  type="text" 
-                  value={newBank.logo_file}
-                  onChange={e => setNewBank({ ...newBank, logo_file: e.target.value })}
-                  className={`w-full p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-100 border border-gray-300 focus:border-[#EB5E28]'}`} 
-                />
-              </div>
-              
-              <div className="flex justify-end gap-2 mt-6">
-                <button type="button" onClick={() => setShowAddModal(false)} className={`px-4 py-2 rounded-lg font-bold ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors`}>İptal</button>
-                <button type="submit" className="px-4 py-2 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors">Ekle</button>
-              </div>
-            </form>
+                  <div className="size-8 rounded-full overflow-hidden bg-white shrink-0 flex items-center justify-center p-1 border">
+                    {b.logoFile ? <img src={b.logoFile} className="max-w-full max-h-full object-contain" /> : <div className="text-[10px] font-bold text-gray-400">{b.logo}</div>}
+                  </div>
+                  <span className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{b.name}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className={`p-5 border-t flex justify-end shrink-0 ${darkMode ? 'border-zinc-800' : 'border-gray-200'}`}>
+              <button
+                onClick={() => {
+                  void saveAll(banks);
+                  setShowAutoRedirectModal(false);
+                }}
+                disabled={saving}
+                className="rounded-xl bg-[#EB5E28] px-6 py-2 text-sm font-bold text-white hover:bg-[#c94d1e] disabled:opacity-50"
+              >
+                {saving ? "Kaydediliyor..." : "Seçimleri Kaydet"}
+              </button>
+            </div>
           </div>
         </div>
       )}

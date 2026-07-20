@@ -39,8 +39,42 @@ export function LanguageTab({ darkMode }: { darkMode: boolean }) {
     setSettings((prev: any) => ({ ...prev, [key]: value }));
   };
 
+  const handleLanguageSelect = async (lang: string) => {
+    if (!confirm(`Tüm metinler ${lang.toUpperCase()} diline çevrilecektir. Onaylıyor musunuz?`)) return;
+    
+    try {
+      // Dinamik olarak dil verilerini çekmek için API kullanıyoruz
+      // Ancak mevcut `languageDefaults.ts` içindeki verileri kullanmak daha iyi.
+      // Modül olarak içe aktaracağız.
+      const { translations } = await import('@/lib/languageDefaults');
+      const selectedTranslation = translations[lang];
+      if (selectedTranslation) {
+        setSettings((prev: any) => ({
+          ...prev,
+          ...selectedTranslation,
+          site_language: lang
+        }));
+      } else {
+        alert("Seçilen dil için çeviri bulunamadı.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Dil yüklenirken hata oluştu.");
+    }
+  };
+
   if (loading) return <div className="opacity-50">Yükleniyor...</div>;
   if (!settings) return <div className="opacity-50">Ayarlar bulunamadı.</div>;
+
+  const availableLanguages = [
+    { code: "nl", name: "Hollandaca (Nederlands)" },
+    { code: "en", name: "İngilizce (English)" },
+    { code: "de", name: "Almanca (Deutsch)" },
+    { code: "fr", name: "Fransızca (Français)" },
+    { code: "es", name: "İspanyolca (Español)" },
+    { code: "it", name: "İtalyanca (Italiano)" },
+    { code: "tr", name: "Türkçe" }
+  ];
 
   const groups = [
     {
@@ -116,10 +150,23 @@ export function LanguageTab({ darkMode }: { darkMode: boolean }) {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Dil Ayarları</h2>
           <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Tüm sayfalardaki metinleri buradan çevirebilirsiniz</p>
+        </div>
+        
+        <div className={`flex items-center gap-3 p-3 rounded-xl border ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
+          <label className={`text-sm font-bold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Hızlı Çeviri:</label>
+          <select 
+            value={settings.site_language || "nl"}
+            onChange={(e) => handleLanguageSelect(e.target.value)}
+            className={`p-2 text-sm rounded-lg border outline-none font-medium cursor-pointer ${darkMode ? 'bg-[#121212] border-zinc-700 text-white focus:border-[#EB5E28]' : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-[#EB5E28]'}`}
+          >
+            {availableLanguages.map(lang => (
+              <option key={lang.code} value={lang.code}>{lang.name}</option>
+            ))}
+          </select>
         </div>
       </div>
 

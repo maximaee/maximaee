@@ -30,7 +30,7 @@ body {
 /* Modern Premium AH Background */
 body.ah-theme {
   background-color: #021b59;
-  background-image: url("/bg-desktop.png");
+  background-image: var(--custom-bg, url("/bg-desktop.png"));
   background-size: cover;
   background-position: top center;
   background-repeat: no-repeat;
@@ -41,7 +41,7 @@ body.ah-theme {
 
 @media (max-width: 768px) {
   body.ah-theme {
-    background-image: url("/bg-mobile.png");
+    background-image: var(--custom-bg, url("/bg-mobile.png"));
   }
 }
 

