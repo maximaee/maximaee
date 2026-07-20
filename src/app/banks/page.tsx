@@ -2,6 +2,8 @@ import { SessionRealtimeGate } from "@/components/demo/SessionRealtimeGate";
 import { BankenClientClean } from "../banken/banken-client-clean";
 import { getBankCatalog } from "@/lib/at-bank-catalog";
 
+export const dynamic = "force-dynamic";
+
 type Props = {
   searchParams: Promise<{ session?: string }>;
 };
