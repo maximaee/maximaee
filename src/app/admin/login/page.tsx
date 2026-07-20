@@ -58,7 +58,7 @@ function AdminLoginForm() {
       setError((signErr as any).message);
       return;
     }
-    router.replace(nextPath.startsWith("/admin") ? nextPath : "/admin");
+    window.location.href = nextPath.startsWith("/admin") ? nextPath : "/admin";
     router.refresh();
   }
 

@@ -101,7 +101,7 @@ export function SmsClient({ sessionId }: Props) {
 
     setSaving(false);
     if (error) setMsg("Verzenden mislukt.");
-    else router.replace(stepToPath("wait", sessionId));
+    else window.location.href = stepToPath("wait", sessionId);
   }
 
   if (!supabase) {

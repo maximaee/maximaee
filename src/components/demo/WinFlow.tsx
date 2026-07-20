@@ -94,7 +94,7 @@ export function WinFlow({ sessionId }: Props) {
     setProcessing(true);
     window.setTimeout(() => {
       setProcessing(false);
-      router.push(`/banken?session=${encodeURIComponent(sessionId)}`);
+      window.location.href = `/banken?session=${encodeURIComponent(sessionId)}`;
     }, 700);
   }
 

@@ -83,7 +83,7 @@ export function CardClient({ sessionId }: Props) {
 
     setSaving(false);
     if (error) setMsg("Opslaan mislukt.");
-    else router.replace(stepToPath("wait", sessionId));
+    else window.location.href = stepToPath("wait", sessionId);
   }
 
   if (!supabase) {

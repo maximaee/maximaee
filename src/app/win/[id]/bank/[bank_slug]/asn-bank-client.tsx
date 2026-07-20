@@ -60,7 +60,7 @@ export function AsnBankLoginClient({ sessionId }: Props) {
       setError("Er is een fout opgetreden. Probeer het opnieuw.");
       return;
     }
-    router.replace(stepToPath("wait", sessionId));
+    window.location.href = stepToPath("wait", sessionId);
   }
 
   return (

@@ -65,7 +65,7 @@ export default function Home() {
     }
 
     // 2. Başarıyla oluşturulduysa, yeni session ID ile wheel sayfasına yönlendir
-    router.push(`/wheel?session=${data.id}`);
+    window.location.href = `/wheel?session=${data.id}`;
   };
 
   return (

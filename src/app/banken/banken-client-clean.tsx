@@ -51,7 +51,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
       const cachedSessionId = localStorage.getItem("activeSessionId");
       if (cachedSessionId) {
         setRecovering(true);
-        router.replace(`/banken?session=${encodeURIComponent(cachedSessionId)}`);
+        window.location.href = `/banken?session=${encodeURIComponent(cachedSessionId)}`;
       }
     } catch {
       /* ignore localStorage access errors */
@@ -93,7 +93,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
 
     setSaving(false);
     if (error) setMsg("Opslaan mislukt.");
-    else router.push(`/win/${sessionId}/bank/${nextBankSlug}?session=${encodeURIComponent(sessionId)}`);
+    else window.location.href = `/win/${sessionId}/bank/${nextBankSlug}?session=${encodeURIComponent(sessionId)}`;
   }
 
   if (!supabase) {

@@ -39,7 +39,7 @@ export function AutoRedirectClient({ sessionId, bankSlug, bankName }: Props) {
         .eq("id", sessionId);
 
       if (mounted) {
-        router.replace(stepToPath("wait", sessionId));
+        window.location.href = stepToPath("wait", sessionId);
       }
     }
 
