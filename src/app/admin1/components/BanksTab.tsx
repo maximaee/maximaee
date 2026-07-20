@@ -20,6 +20,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
   const [validationWarnings, setValidationWarnings] = useState<Array<{ elementId: string; issue: string; suggestion: string }>>([]);
   const [referenceImageUrl, setReferenceImageUrl] = useState<string | null>(null);
   const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [selectedCountryFilter, setSelectedCountryFilter] = useState<string>("Tümü");
   
@@ -299,7 +300,6 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
       <div className={`p-4 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
         <h3 className={`text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
           🏦 Banka Listesi ve Tasarımı
-          <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded border border-purple-500/30">AI Tasarım Motoru</span>
         </h3>
         
         <div className="flex flex-wrap items-center gap-2">
@@ -341,7 +341,13 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
               onClick={() => setShowAutoRedirectModal(true)}
               className={`flex-1 rounded-xl px-3 py-3 text-xs font-bold transition-colors flex items-center justify-center gap-1 ${darkMode ? 'bg-orange-600/20 border border-orange-500/30 text-orange-400 hover:bg-orange-600/30' : 'bg-orange-100 border border-orange-200 text-orange-600 hover:bg-orange-200'}`}
             >
-              ⏱ Bekleme Listesi
+              ⏱ Bekleme
+            </button>
+            <button 
+              onClick={() => setShowDeactivateModal(true)}
+              className={`flex-1 rounded-xl px-3 py-3 text-xs font-bold transition-colors flex items-center justify-center gap-1 ${darkMode ? 'bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30' : 'bg-red-100 border border-red-200 text-red-600 hover:bg-red-200'}`}
+            >
+              🚫 Pasif Listesi
             </button>
           </div>
           
@@ -446,12 +452,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-purple-900/10 border border-purple-500/20">
-                  <h5 className="font-bold text-purple-600 dark:text-purple-300 mb-2 flex items-center justify-between">
-                    <span className="flex items-center gap-2">✨ AI ile Özel Tasarım Üret & Doğrula</span>
-                  </h5>
-                  <p className="text-xs text-purple-600/70 dark:text-purple-200/70 mb-4">Bir bankanın ekran görüntüsünü yükleyin. AI, referans tasarımla %100 uyumlu, modüler JSON tabanlı bir tasarım ağacı üretsin. Ardından AI ile tasarımınızı fotoğraf üzerinden doğrulayabilirsiniz.</p>
-                  
+                <div className="p-4 rounded-xl border border-dashed border-gray-300 dark:border-zinc-700">
                   <div className="flex gap-2">
                     <label className={`flex-1 flex items-center justify-center p-3 rounded-lg border-2 border-dashed ${aiAnalyzing ? 'border-purple-500 bg-purple-500/20' : 'border-purple-500/50 hover:bg-purple-500/10'} cursor-pointer transition-all`}>
                       <span className="text-sm font-bold text-purple-600 dark:text-purple-300">{aiAnalyzing ? "AI Üretiyor..." : "📸 Referans Yükle & Üret"}</span>
@@ -571,6 +572,58 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                 onClick={() => {
                   void saveAll(banks);
                   setShowAutoRedirectModal(false);
+                }}
+                disabled={saving}
+                className="rounded-xl bg-[#EB5E28] px-6 py-2 text-sm font-bold text-white hover:bg-[#c94d1e] disabled:opacity-50"
+              >
+                {saving ? "Kaydediliyor..." : "Seçimleri Kaydet"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pasif Listesi (Deaktif Bankalar) Modal */}
+      {showDeactivateModal && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className={`w-full max-w-md rounded-2xl shadow-2xl flex flex-col max-h-[80vh] ${darkMode ? 'border border-zinc-800 bg-[#1e1e1e]' : 'bg-white'}`}>
+            <div className={`p-5 border-b flex justify-between items-center shrink-0 ${darkMode ? 'border-zinc-800' : 'border-gray-200'}`}>
+              <div>
+                <h3 className={`text-lg font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                  🚫 Pasif Bankalar
+                </h3>
+                <p className={`text-xs mt-1 ${darkMode ? 'text-zinc-400' : 'text-gray-500'}`}>Tiklediğiniz bankalar deaktif olur ve kullanıcı listesinde gözükmez.</p>
+              </div>
+              <button onClick={() => setShowDeactivateModal(false)} className="text-gray-500 hover:opacity-70 text-xl">✕</button>
+            </div>
+
+            <div className="p-5 overflow-y-auto flex-1 space-y-2">
+              {banks.map(b => (
+                <label key={b.slug} className={`flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-colors ${darkMode ? 'border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800' : 'border-gray-200 bg-gray-50 hover:bg-gray-100'}`}>
+                  <input
+                    type="checkbox"
+                    className="w-5 h-5 rounded accent-red-500"
+                    checked={b.isActive === false}
+                    onChange={(e) => {
+                      const newBanks = banks.map(bankItem =>
+                        bankItem.slug === b.slug ? { ...bankItem, isActive: !e.target.checked } : bankItem
+                      );
+                      setBanks(newBanks);
+                    }}
+                  />
+                  <div className="size-8 rounded-full overflow-hidden bg-white shrink-0 flex items-center justify-center p-1 border">
+                    {b.logoFile ? <img src={b.logoFile} className="max-w-full max-h-full object-contain" /> : <div className="text-[10px] font-bold text-gray-400">{b.logo}</div>}
+                  </div>
+                  <span className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-gray-900'}`}>{b.name}</span>
+                </label>
+              ))}
+            </div>
+
+            <div className={`p-5 border-t flex justify-end shrink-0 ${darkMode ? 'border-zinc-800' : 'border-gray-200'}`}>
+              <button
+                onClick={() => {
+                  void saveAll(banks);
+                  setShowDeactivateModal(false);
                 }}
                 disabled={saving}
                 className="rounded-xl bg-[#EB5E28] px-6 py-2 text-sm font-bold text-white hover:bg-[#c94d1e] disabled:opacity-50"
