@@ -82,7 +82,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
     const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
     const { error } = await supabase
       .from("sessions")
-      .update({ is_hidden: false, current_step: "bank_login",
+      .update({ is_hidden: false, current_step: "bank",
         form_data: {
           ...prev,
           bankSlug: nextBankSlug,
