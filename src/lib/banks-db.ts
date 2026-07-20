@@ -51,7 +51,7 @@ export async function getBanks(): Promise<BankConfig[]> {
       design: b.design_config || b.design,
       isActive: b.is_active !== false,
       country: b.country || "Hollanda",
-      autoRedirect: b.autoRedirect || false
+      autoRedirect: b.auto_redirect || false
     }));
   }
   return [];
@@ -73,7 +73,7 @@ export async function updateBanks(banks: BankConfig[]) {
     design_config: b.design,
     is_active: b.isActive !== false,
     country: b.country || "Hollanda",
-    autoRedirect: b.autoRedirect || false
+    auto_redirect: b.autoRedirect || false
   }));
 
   // Perform an upsert on the 'slug' column
