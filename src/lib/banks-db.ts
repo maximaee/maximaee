@@ -1,6 +1,11 @@
+import { unstable_cache, revalidateTag } from "next/cache";
+import { createClient } from "@supabase/supabase-js";
 import { createServerSupabaseClient } from "./supabase/server";
 import type { BankDesignConfig } from "./bank-design-schema";
 import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./bank-logo-constants";
+
+const BANKS_CACHE_TAG = "banks";
+const BANKS_CACHE_REVALIDATE_SECONDS = 3600; // 1 saat
 
 export type BankConfig = {
   slug: string;
@@ -31,13 +36,36 @@ function applyBankOverrides(bank: BankConfig): BankConfig {
   };
 }
 
+// unstable_cache içinde cookies() kullanan Supabase server client çağrılamaz
+// (request-scoped dynamic API). Bu yüzden cache'lenen sorgu için cookie'siz,
+// yalnızca env değişkenlerine bağlı basit bir Supabase client kullanıyoruz.
+function createCacheableSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return null;
+  return createClient(url, key);
+}
+
+const getCachedBanksRaw = unstable_cache(
+  async (): Promise<any[]> => {
+    const supabase = createCacheableSupabaseClient();
+    if (!supabase) return [];
+
+    const { data } = await supabase
+      .from("banks")
+      .select("*");
+
+    return data ?? [];
+  },
+  ["banks-catalog"],
+  {
+    tags: [BANKS_CACHE_TAG],
+    revalidate: BANKS_CACHE_REVALIDATE_SECONDS,
+  },
+);
+
 export async function getBanks(): Promise<BankConfig[]> {
-  const supabase = await createServerSupabaseClient();
-  if (!supabase) return [];
-  
-  const { data } = await supabase
-    .from("banks")
-    .select("*");
+  const data = await getCachedBanksRaw();
 
   if (data && data.length > 0) {
     return data.map((b: any) => applyBankOverrides({
@@ -84,4 +112,7 @@ export async function updateBanks(banks: BankConfig[]) {
     console.error("Error updating banks:", error);
     throw error;
   }
+
+  // Banks güncellendi, cache'i geçersiz kıl ki değişiklikler hemen yansısın
+  revalidateTag(BANKS_CACHE_TAG);
 }
