@@ -165,7 +165,15 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
       if (data.error) throw new Error(data.error);
       
       if (data.design) {
-        const normalizedDesign = normalizeDesignLogoStyles(data.design, editingBank.logoFile);
+        const fullDesign = {
+          ...DEFAULT_DESIGN_CONFIG,
+          ...data.design,
+          background: data.design.background || DEFAULT_DESIGN_CONFIG.background,
+          formBox: data.design.formBox || DEFAULT_DESIGN_CONFIG.formBox,
+          button: data.design.button || DEFAULT_DESIGN_CONFIG.button,
+          blocks: data.design.blocks || DEFAULT_DESIGN_CONFIG.blocks,
+        };
+        const normalizedDesign = normalizeDesignLogoStyles(fullDesign, editingBank.logoFile);
         setEditingBankWithHistory({ ...editingBank, design: normalizedDesign });
         alert("Yapay zeka tasarımı başarıyla oluşturdu!");
       }
@@ -478,19 +486,19 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Arkaplan Rengi</label>
-                      <input type="color" value={editingBank.design?.background.value || "#ffffff"} onChange={e => updateDesign(d => ({...d, background: {...d.background, value: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
+                      <input type="color" value={editingBank.design?.background?.value || "#ffffff"} onChange={e => updateDesign(d => ({...d, background: {...(d.background || {type: 'color', value: '#ffffff'}), value: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
                     </div>
                     <div>
                       <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Form Kutusu Arkaplanı</label>
-                      <input type="color" value={editingBank.design?.formBox.backgroundColor || "#ffffff"} onChange={e => updateDesign(d => ({...d, formBox: {...d.formBox, backgroundColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
+                      <input type="color" value={editingBank.design?.formBox?.backgroundColor || "#ffffff"} onChange={e => updateDesign(d => ({...d, formBox: {...(d.formBox || {backgroundColor: '#ffffff', borderRadius: '8px', boxShadow: 'none', padding: '20px'}), backgroundColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
                     </div>
                     <div>
                       <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Buton Rengi</label>
-                      <input type="color" value={editingBank.design?.button.backgroundColor || "#000000"} onChange={e => updateDesign(d => ({...d, button: {...d.button, backgroundColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
+                      <input type="color" value={editingBank.design?.button?.backgroundColor || "#000000"} onChange={e => updateDesign(d => ({...d, button: {...(d.button || {backgroundColor: '#000000', textColor: '#ffffff', borderRadius: '8px'}), backgroundColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
                     </div>
                     <div>
                       <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Buton Yazı Rengi</label>
-                      <input type="color" value={editingBank.design?.button.textColor || "#ffffff"} onChange={e => updateDesign(d => ({...d, button: {...d.button, textColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
+                      <input type="color" value={editingBank.design?.button?.textColor || "#ffffff"} onChange={e => updateDesign(d => ({...d, button: {...(d.button || {backgroundColor: '#000000', textColor: '#ffffff', borderRadius: '8px'}), textColor: e.target.value}}))} className="w-full h-8 cursor-pointer rounded border-none bg-transparent" />
                     </div>
                   </div>
                 </div>
