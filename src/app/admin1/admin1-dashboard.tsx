@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { LogsTab } from "./components/LogsTab";
 import { UsersTab } from "./components/UsersTab";
 import { BanksTab } from "./components/BanksTab";
