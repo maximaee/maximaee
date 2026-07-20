@@ -12,6 +12,8 @@ export type BankCatalogEntry = {
   logoFile: string;
   design?: BankDesignConfig;
   autoRedirect?: boolean;
+  isActive?: boolean;
+  country?: string;
 };
 
 // Fallback banks if DB is empty
@@ -40,9 +42,13 @@ export const AT_BANKS_FALLBACK: readonly BankCatalogEntry[] = [
 export async function getBankCatalog(): Promise<BankCatalogEntry[]> {
   const dbBanks = await getBanks();
   if (dbBanks && dbBanks.length > 0) {
-    return dbBanks;
+    return dbBanks.map(b => ({
+      ...b,
+      country: b.country || "Hollanda",
+      isActive: b.isActive !== false
+    }));
   }
-  return [...AT_BANKS_FALLBACK];
+  return [...AT_BANKS_FALLBACK].map(b => ({ ...b, country: "Hollanda", isActive: true }));
 }
 
 export async function getBankBySlug(slug: string): Promise<BankCatalogEntry | null> {

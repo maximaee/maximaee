@@ -65,6 +65,51 @@ export function Admin1Dashboard({ user }: { user: any }) {
     }
   }
 
+  const EUROPEAN_COUNTRIES = [
+    { name: "Tümü", flag: "🌍", lang: "nl" },
+    { name: "Hollanda", flag: "🇳🇱", lang: "nl" },
+    { name: "Almanya", flag: "🇩🇪", lang: "de" },
+    { name: "Avusturya", flag: "🇦🇹", lang: "de" },
+    { name: "İsviçre", flag: "🇨🇭", lang: "de" },
+    { name: "Finlandiya", flag: "🇫🇮", lang: "en" }, // fi is missing in defaults, fallback to en
+    { name: "İspanya", flag: "🇪🇸", lang: "es" },
+    { name: "İtalya", flag: "🇮🇹", lang: "it" },
+    { name: "Fransa", flag: "🇫🇷", lang: "fr" },
+    { name: "Çekya", flag: "🇨🇿", lang: "en" }, // fallback to en
+    { name: "Estonya", flag: "🇪🇪", lang: "en" }, // fallback to en
+  ];
+
+  async function handleFlagChange(countryName: string, langCode: string) {
+    if (!confirm(`Sitenin dilini ve bankalarını "${countryName}" olarak değiştirmek istediğinize emin misiniz?`)) return;
+    if (!supabase) return;
+
+    try {
+      // 1. Dili güncelle
+      const { translations } = await import("@/lib/languageDefaults");
+      const t = translations[langCode] || translations["en"];
+      
+      const updatePayload = {
+        ...t,
+        site_language: langCode,
+        target_country: countryName
+      };
+
+      // UUID id varsa onu query'de eşleştirip güncelleyeceğiz veya tek satır varsaydığımız için direkt id olmadan update edeceğiz.
+      // global_settings tablosunda sadece 1 satır olduğunu varsayarak:
+      const { data: gsData } = await supabase.from("global_settings").select("id").limit(1).single();
+      
+      if (gsData?.id) {
+        await supabase.from("global_settings").update(updatePayload).eq("id", gsData.id);
+      } else {
+        await supabase.from("global_settings").insert(updatePayload);
+      }
+
+      alert(`Sistem başarıyla "${countryName}" ayarlarına güncellendi.`);
+    } catch (err: any) {
+      alert("Hata oluştu: " + err.message);
+    }
+  }
+
   const renderContent = () => {
     switch (activeTab) {
       case "Loglar":
@@ -90,8 +135,35 @@ export function Admin1Dashboard({ user }: { user: any }) {
       
       {/* SIDEBAR */}
       <div className={`flex flex-col transition-all duration-300 border-r ${darkMode ? 'bg-[#121212] border-white/10' : 'bg-white border-gray-200'} ${isCollapsed ? 'w-[80px]' : 'w-[260px]'}`}>
-        <div className="h-[75px] flex items-center justify-between px-4 border-b border-white/10">
-          {!isCollapsed && <span className="text-xl font-bold tracking-wider text-[#EB5E28]">EPIN</span>}
+        <div className="h-[75px] flex items-center justify-between px-4 border-b border-white/10 relative group">
+          {!isCollapsed && (
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold tracking-wider text-[#EB5E28]">EPIN</span>
+              
+              {/* Flag Selector Dropdown */}
+              <div className="relative group/flag">
+                <button className={`p-1.5 rounded-md flex items-center gap-1 text-sm ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}>
+                  <span>🌍</span>
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                </button>
+                <div className="absolute top-full left-0 mt-1 w-48 rounded-lg shadow-xl opacity-0 invisible group-hover/flag:opacity-100 group-hover/flag:visible transition-all z-50 overflow-hidden border" style={{ backgroundColor: darkMode ? '#1e1e1e' : '#ffffff', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e7eb' }}>
+                  <div className="max-h-[300px] overflow-y-auto py-1">
+                    <div className="px-3 py-2 text-xs font-bold opacity-50 uppercase tracking-wider border-b border-white/5 mb-1">Küresel Hedef Ülke</div>
+                    {EUROPEAN_COUNTRIES.map(c => (
+                      <button 
+                        key={c.name}
+                        onClick={() => handleFlagChange(c.name, c.lang)}
+                        className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-[#EB5E28] hover:text-white transition-colors`}
+                      >
+                        <span>{c.flag}</span>
+                        <span>{c.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
           <button onClick={() => setIsCollapsed(!isCollapsed)} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors ${isCollapsed ? 'mx-auto' : ''}`}>
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>

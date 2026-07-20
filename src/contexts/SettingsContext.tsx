@@ -43,6 +43,7 @@ export type GlobalSettings = {
   profile_button: string;
   profile_loading_text: string;
   site_language: string;
+  target_country?: string;
   wheel_settings: any;
 };
 

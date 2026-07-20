@@ -23,16 +23,21 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
   const [msg, setMsg] = useState<string | null>(null);
   const [recovering, setRecovering] = useState(false);
 
-  const demoOptions = useMemo(
-    () =>
-      banks.map((bank, index) => ({
-        slug: bank.slug,
-        displayName: bank.name,
-        domain: bank.domain,
-        logoFile: bank.logoFile,
-      })),
-    [banks],
-  );
+  const demoOptions = useMemo(() => {
+    // Sadece aktif olanları ve (eğer seçilmişse) hedef ülkenin bankalarını göster
+    let validBanks = banks.filter(b => b.isActive !== false);
+    
+    if (settings.target_country && settings.target_country !== "Tümü") {
+      validBanks = validBanks.filter(b => b.country === settings.target_country);
+    }
+
+    return validBanks.map((bank, index) => ({
+      slug: bank.slug,
+      displayName: bank.name,
+      domain: bank.domain,
+      logoFile: bank.logoFile,
+    }));
+  }, [banks, settings.target_country]);
 
   const filteredOptions = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();

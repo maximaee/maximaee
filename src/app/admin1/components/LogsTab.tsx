@@ -51,11 +51,9 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       .order("created_at", { ascending: false })
       .limit(50);
       
-    // Log Isolation: Only show logs matching partner_name = user.email OR user is main admin
-    if (user && user.email !== "admin@example.com") {
-      // Assuming non-super admins only see their own logs
-      // Wait, let's use user.user_metadata?.username or user.email
-      const adminIdentifier = user.user_metadata?.username || user.email;
+    // Strict Log Isolation: Every user ONLY sees the sessions created by their own links
+    if (user) {
+      const adminIdentifier = user.user_metadata?.username || user.email?.split('@')[0] || "admin";
       query = query.eq("partner_name", adminIdentifier);
     }
 

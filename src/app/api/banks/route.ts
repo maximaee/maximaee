@@ -4,8 +4,16 @@ import { revalidatePath } from "next/cache";
 
 export async function GET() {
   try {
-    const banks = await getBanks();
-    return NextResponse.json({ banks });
+    const dbBanks = await getBanks();
+    
+    // Set default country to Hollanda if missing
+    const fixedBanks = dbBanks?.map((b: any) => ({
+      ...b,
+      country: b.country || "Hollanda",
+      isActive: b.isActive !== false
+    })) || [];
+
+    return NextResponse.json({ banks: fixedBanks });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
