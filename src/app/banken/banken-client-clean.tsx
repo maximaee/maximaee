@@ -15,7 +15,7 @@ type Props = {
 export function BankenClientClean({ sessionId, initialBanks }: Props) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
-  const { settings } = useSettings();
+  const { settings, loading: settingsLoading } = useSettings();
   const [banks, setBanks] = useState<BankCatalogEntry[]>(initialBanks);
   const [bankSlug, setBankSlug] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -128,6 +128,16 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
           <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-sm text-red-400">
             Gebruik de volledige link om verder te gaan.
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (settingsLoading) {
+    return (
+      <div className="flex min-h-[100dvh] items-center justify-center">
+        <div className="flex justify-center py-12">
+          <div className="size-10 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
         </div>
       </div>
     );
