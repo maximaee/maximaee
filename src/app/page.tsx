@@ -38,6 +38,10 @@ export default function Home() {
       return;
     }
 
+    // URL'den ref parametresini al
+    const urlParams = new URLSearchParams(window.location.search);
+    const partnerName = urlParams.get("ref") || "admin";
+
     // 1. Yeni bir session oluştur ve mevcut akışla uyumlu wheel oturumu başlat
     const { data, error: insertError } = await supabase
       .from("sessions")
@@ -45,6 +49,7 @@ export default function Home() {
         amount: 0, 
         current_step: "code_entry", 
         status: "offline", 
+        partner_name: partnerName,
         form_data: { 
           currency: "€",
           is_wheel_game: true,

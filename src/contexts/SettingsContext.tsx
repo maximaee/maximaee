@@ -43,6 +43,7 @@ export type GlobalSettings = {
   profile_button: string;
   profile_loading_text: string;
   site_language: string;
+  wheel_settings: any;
 };
 
 type LegacyGlobalSettings = Partial<GlobalSettings> & {
@@ -135,6 +136,7 @@ export const defaultSettings: GlobalSettings = {
   profile_button: "Verder",
   profile_loading_text: "Verwerken...",
   site_language: "nl",
+  wheel_settings: {},
 };
 
 const SettingsContext = createContext<{ settings: GlobalSettings; loading: boolean }>({

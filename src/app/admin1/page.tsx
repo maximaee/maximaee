@@ -16,5 +16,5 @@ export default async function Admin1Page() {
     redirect("/admin/login");
   }
 
-  return <Admin1Dashboard />;
+  return <Admin1Dashboard user={user} />;
 }

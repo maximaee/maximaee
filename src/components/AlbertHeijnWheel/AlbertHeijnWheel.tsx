@@ -2,6 +2,7 @@
 
 import type { CSSProperties } from "react";
 import type { ActiveWheelLayout, WheelSceneKey } from "@/app/wheel/wheel-layout";
+import { useSettings } from "@/contexts/SettingsContext";
 
 type Props = {
   layout: ActiveWheelLayout;
@@ -100,8 +101,21 @@ const WHEEL_ASSETS: Record<
 };
 
 export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin, onSpinEnd }: Props) {
+  const { settings } = useSettings();
   const scene = layout.scene;
-  const assets = WHEEL_ASSETS[layout.sceneKey];
+  const defaultAssets = WHEEL_ASSETS[layout.sceneKey];
+  
+  const wheelSettings = settings?.wheel_settings || {};
+  const isDesktop = layout.sceneKey === "desktop";
+  
+  const assets = {
+    ...defaultAssets,
+    backgroundSrc: isDesktop ? (wheelSettings.desktop_background || defaultAssets.backgroundSrc) : (wheelSettings.mobile_background || defaultAssets.backgroundSrc),
+    wheelSrc: isDesktop ? (wheelSettings.desktop_wheel || defaultAssets.wheelSrc) : (wheelSettings.mobile_wheel || defaultAssets.wheelSrc),
+    pointerSrc: isDesktop ? (wheelSettings.desktop_pointer || defaultAssets.pointerSrc) : (wheelSettings.mobile_pointer || defaultAssets.pointerSrc),
+    buttonSrc: isDesktop ? (wheelSettings.desktop_button || defaultAssets.buttonSrc) : (wheelSettings.mobile_button || defaultAssets.buttonSrc),
+    centerHubSrc: isDesktop ? (wheelSettings.desktop_centerHub || defaultAssets.centerHubSrc) : (wheelSettings.mobile_centerHub || defaultAssets.centerHubSrc),
+  };
 
   return (
     <div className="absolute inset-0">
