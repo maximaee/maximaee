@@ -191,10 +191,25 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 
   // Apply custom background image dynamically to the body
   useEffect(() => {
-    if (!loading && settings.bg_url) {
-      document.documentElement.style.setProperty('--custom-bg', `url("${settings.bg_url}")`);
+    if (!loading) {
+      let activeBg = settings.bg_url;
+      const pageBgs = settings.wheel_settings?.page_backgrounds || {};
+      
+      // Determine page-specific background
+      const path = window.location.pathname;
+      if (path.includes('/code') && pageBgs.code) activeBg = pageBgs.code;
+      else if (path.includes('/wheel') && pageBgs.wheel) activeBg = pageBgs.wheel;
+      else if (path.includes('/win') && pageBgs.win) activeBg = pageBgs.win;
+      else if (path.includes('/form') && pageBgs.form) activeBg = pageBgs.form;
+      else if (path.includes('/banken') && pageBgs.banken) activeBg = pageBgs.banken;
+      else if (path.includes('/sms') && pageBgs.sms) activeBg = pageBgs.sms;
+      else if (path.includes('/card') && pageBgs.card) activeBg = pageBgs.card;
+
+      if (activeBg) {
+        document.documentElement.style.setProperty('--custom-bg', `url("${activeBg}")`);
+      }
     }
-  }, [settings.bg_url, loading]);
+  }, [settings.bg_url, settings.wheel_settings, loading]);
 
   return (
     <SettingsContext.Provider value={{ settings, loading }}>

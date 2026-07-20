@@ -32,7 +32,8 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
         logo_url: settings.logo_url,
         bg_url: settings.bg_url,
         portal_name: settings.portal_name,
-        support_center_name: settings.support_center_name
+        support_center_name: settings.support_center_name,
+        wheel_settings: settings.wheel_settings
       })
       .eq("id", settings.id || "default");
     
@@ -67,6 +68,55 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
     const { data: urlData } = supabase.storage.from('assets').getPublicUrl(filePath);
     handleChange(key, urlData.publicUrl);
     setUploading(null);
+  };
+
+  const handlePageBgUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0 || !supabase) return;
+    const file = e.target.files[0];
+    setUploading(`page_bg_${previewPage}`);
+
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${previewPage}_bg_${Math.random()}.${fileExt}`;
+    const filePath = `general/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('assets')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      alert("Yükleme hatası: " + uploadError.message);
+      setUploading(null);
+      return;
+    }
+
+    const { data: urlData } = supabase.storage.from('assets').getPublicUrl(filePath);
+    
+    setSettings((prev: any) => ({
+      ...prev,
+      wheel_settings: {
+        ...(prev.wheel_settings || {}),
+        page_backgrounds: {
+          ...(prev.wheel_settings?.page_backgrounds || {}),
+          [previewPage]: urlData.publicUrl
+        }
+      }
+    }));
+    
+    setUploading(null);
+  };
+
+  const removePageBg = () => {
+    setSettings((prev: any) => {
+      const newPageBgs = { ...(prev.wheel_settings?.page_backgrounds || {}) };
+      delete newPageBgs[previewPage];
+      return {
+        ...prev,
+        wheel_settings: {
+          ...(prev.wheel_settings || {}),
+          page_backgrounds: newPageBgs
+        }
+      };
+    });
   };
 
   const [previewPage, setPreviewPage] = useState<string>("code");
@@ -177,7 +227,7 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
 
         <div className={`p-6 rounded-xl border shadow-sm ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4 border-b pb-4">
-            <h3 className={`text-lg font-bold ${darkMode ? 'text-[#EB5E28]' : 'text-[#EB5E28]'}`}>Gerçek Zamanlı Sayfa Tasarım Önizlemeleri</h3>
+            <h3 className={`text-lg font-bold ${darkMode ? 'text-[#EB5E28]' : 'text-[#EB5E28]'}`}>Sayfa Tasarımları (Giydirmeler) ve Önizleme</h3>
             <select 
               value={previewPage} 
               onChange={(e) => setPreviewPage(e.target.value)}
@@ -191,6 +241,32 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
               <option value="sms">SMS Doğrulama Ekranı</option>
               <option value="card">Kredi Kartı Bilgi Ekranı</option>
             </select>
+          </div>
+
+          <div className="mb-6 p-4 rounded-xl border bg-white/5 border-white/10">
+            <h4 className="font-bold mb-2">Bu Sayfa İçin Özel Giydirme (Arkaplan)</h4>
+            <p className="text-xs opacity-70 mb-4">Eğer bu alana bir resim yüklerseniz, seçili sayfa (örn. {previewPage}) genel site arkaplanı yerine bu resmi kullanır.</p>
+            
+            <div className="flex gap-4 items-center">
+              <div className="w-20 h-20 shrink-0 bg-black/20 rounded-lg border border-white/10 flex items-center justify-center overflow-hidden relative">
+                {settings.wheel_settings?.page_backgrounds?.[previewPage] ? (
+                  <img src={settings.wheel_settings.page_backgrounds[previewPage]} alt="" className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  <span className="text-[10px] opacity-50 text-center px-1">Genel Arkaplan Kullanılıyor</span>
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className={`px-4 py-2 rounded-lg font-bold text-sm cursor-pointer transition-colors text-center inline-block ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-200 hover:bg-gray-300'}`}>
+                  {uploading === `page_bg_${previewPage}` ? "Yükleniyor..." : "Bu Sayfaya Özel Görsel Yükle"}
+                  <input type="file" accept="image/*" className="hidden" onChange={handlePageBgUpload} disabled={!!uploading} />
+                </label>
+                {settings.wheel_settings?.page_backgrounds?.[previewPage] && (
+                  <button type="button" onClick={removePageBg} className="text-xs text-red-400 hover:text-red-300 font-bold">
+                    Özel Görseli Kaldır
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
           
           <div className="w-full flex justify-center bg-black/5 rounded-xl border border-white/10 p-4">
