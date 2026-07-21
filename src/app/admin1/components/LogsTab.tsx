@@ -49,26 +49,22 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
 
   const load = useCallback(async () => {
     if (!supabase) return;
-    setLoading(true);
     let query = supabase
       .from("sessions")
       .select(SESSION_LIST_COLUMNS)
       .neq("is_hidden", true)
-      .order("created_at", { ascending: false })
-      .limit(50);
-      
-    // Strict Log Isolation: Every user ONLY sees the sessions created by their own links
-    if (user) {
-      const adminIdentifier = user.user_metadata?.username || user.email?.split('@')[0] || "admin";
-      query = query.eq("partner_name", adminIdentifier);
+      .order("created_at", { ascending: false });
+
+    // Sadece super_admin olmayanlar için filtrele
+    const username = user?.user_metadata?.username || user?.email?.split('@')[0];
+    if (username !== "super_admin") {
+      query = query.eq("partner_name", username);
     }
 
-    const { data } = await query;
-    
+    const { data } = await query.limit(50);
     const fetchedRows = (data as DemoSession[]) ?? [];
     setRows(fetchedRows);
     setLogCount(fetchedRows.length);
-    setLoading(false);
   }, [supabase, user]);
 
   useEffect(() => {

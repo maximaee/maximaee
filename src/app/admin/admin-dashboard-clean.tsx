@@ -253,7 +253,6 @@ export function AdminDashboardClean() {
 
   const load = useCallback(async () => {
     if (!supabase) return;
-    setLoading(true);
     const { data } = await supabase
       .from("sessions")
       .select(SESSION_LIST_COLUMNS)
@@ -261,7 +260,6 @@ export function AdminDashboardClean() {
       .order("created_at", { ascending: false })
       .limit(50);
     setRows((data as DemoSession[]) ?? []);
-    setLoading(false);
   }, [supabase]);
 
   useEffect(() => {
