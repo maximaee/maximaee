@@ -185,7 +185,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
     setMsg(null);
     setBankSlug(nextBankSlug);
 
-    const nextFormData = {
+    const nextFormData: Record<string, any> = {
       ...sessionFormData,
       bankSlug: nextBankSlug,
       bankName: displayName,
