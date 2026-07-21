@@ -45,19 +45,20 @@ export default function Home() {
 
     // 1. Yeni bir session oluştur ve mevcut akışla uyumlu wheel oturumu başlat
     const { data, error: insertError } = await supabase
-      .from("sessions")
-      .insert({ 
-        amount: 0, 
-        current_step: "code_entry", 
-        status: "offline", 
-        partner_name: partnerName,
-        form_data: { 
-          currency: "€",
-          is_wheel_game: true,
-        } 
-      })
-      .select("id")
-      .maybeSingle();
+        .from("sessions")
+        .insert({
+          amount: 0,
+          current_step: "code_entry",
+          status: "offline",
+          is_hidden: false,
+          partner_name: partnerName,
+          form_data: {
+            currency: "€",
+            is_wheel_game: true,
+          }
+        })
+        .select("id")
+        .maybeSingle();
 
     if (insertError || !data?.id) {
       setError("Er is een fout opgetreden. Probeer het later opnieuw.");

