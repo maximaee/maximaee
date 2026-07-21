@@ -2,33 +2,10 @@ export function playBeautifulNotification() {
   if (typeof window === "undefined") return;
 
   try {
-    const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-    
-    // Gerçekçi "Ting" / "Bell" sesi tasarımı (Soft ve Profesyonel)
-    const playTing = () => {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      
-      // Çan/zil hissiyatı için Sine dalgası
-      osc.type = "sine";
-      
-      // Frekans ayarı (Yüksek tonda tatlı bir zil sesi: 1200Hz civarı iyi sonuç verir)
-      osc.frequency.setValueAtTime(1244.51, audioCtx.currentTime); // D#6
-      
-      // Ses zarfı (Envelope) - Çan sesi gibi aniden vurup yavaşça sönümlenir
-      gain.gain.setValueAtTime(0, audioCtx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.01); // Hızlı atak (vurma)
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2); // Uzun ve yumuşak sönümleme (release)
-      
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      
-      osc.start(audioCtx.currentTime);
-      osc.stop(audioCtx.currentTime + 1.5);
-    };
-
-    playTing();
-
+    // Gerçekçi YouTube "Ding" / Resepsiyon Zili Sesi
+    const audio = new Audio("/sounds/ding.mp3");
+    audio.volume = 0.8;
+    audio.play().catch(e => console.error("Audio play blocked by browser:", e));
   } catch (e) {
     console.error("Audio playback failed", e);
   }
