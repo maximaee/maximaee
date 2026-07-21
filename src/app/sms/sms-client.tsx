@@ -102,7 +102,7 @@ export function SmsClient({ sessionId }: Props) {
     if (error) setMsg("Verzenden mislukt.");
     else {
       setSessionFormData(nextFormData);
-      router.push(stepToPath("wait", sessionId);
+      router.push(stepToPath("wait", sessionId));
     }
   }
 
