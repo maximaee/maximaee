@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
@@ -46,6 +47,7 @@ type Props = {
 };
 
 export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
+  const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [theme, setTheme] = useState<BankTheme | null>(null);
 
