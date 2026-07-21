@@ -268,10 +268,14 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
     const loadChat = () => {
       supabase
         .from("chat_messages")
-        .select("*")
+        .select("id,session_id,sender,content,image_url,created_at")
         .eq("session_id", chatSessionId)
         .order("created_at", { ascending: true })
-        .then(({ data }) => {
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("admin chat load error:", error);
+            return;
+          }
           if (data) {
             setChatMessages((prev) => {
               if (prev.length !== data.length) {
@@ -354,12 +358,30 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
     setPastedImagePreview(null);
     setIsUploadingImage(false);
 
-    await supabase.from("chat_messages").insert({
-      session_id: chatSessionId,
-      sender: "admin",
-      message: msg || "",
-      image_url: imageUrl,
-    });
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .insert({
+        session_id: chatSessionId,
+        sender: "admin",
+        content: msg || "",
+        image_url: imageUrl,
+      })
+      .select("id,session_id,sender,content,image_url,created_at")
+      .single();
+
+    if (error) {
+      console.error("admin chat send error:", error);
+      setChatInput(msg);
+      alert("Mesaj gönderilemedi: " + error.message);
+      return;
+    }
+
+    if (data) {
+      setChatMessages((prev) => {
+        if (prev.find((m) => m.id === data.id)) return prev;
+        return [...prev, data];
+      });
+    }
   }
 
   const handlePaste = (e: React.ClipboardEvent) => {
@@ -738,7 +760,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                           <img src={m.image_url} alt="Ek" className="max-h-48 w-full object-cover" />
                         </div>
                       )}
-                      {m.message && <p>{m.message}</p>}
+                      {m.content && <p>{m.content}</p>}
                     </div>
                   </div>
                 ))

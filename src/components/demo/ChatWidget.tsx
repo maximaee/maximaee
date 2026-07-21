@@ -9,7 +9,7 @@ type ChatMessage = {
   id: string;
   session_id: string;
   sender: "user" | "admin";
-  message: string;
+  content: string;
   image_url?: string | null;
   created_at: string;
 };
@@ -52,10 +52,10 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
     if (isOpen) {
       supabase
         .from("chat_messages")
-        .select("id,session_id,sender,message,image_url,created_at")
+        .select("id,session_id,sender,content,image_url,created_at")
         .eq("session_id", sessionId)
-        .limit(50)
         .order("created_at", { ascending: true })
+        .limit(50)
         .then(({ data }) => {
           if (data) setMessages(data as ChatMessage[]);
         });
@@ -89,16 +89,33 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !supabase) return;
+    if (!newMessage.trim() || !supabase || !sessionId) return;
 
     const msg = newMessage.trim();
     setNewMessage("");
 
-    await supabase.from("chat_messages").insert({
-      session_id: sessionId,
-      sender: "user",
-      message: msg,
-    });
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .insert({
+        session_id: sessionId,
+        sender: "user",
+        content: msg,
+      })
+      .select("id,session_id,sender,content,image_url,created_at")
+      .single();
+
+    if (error) {
+      console.error("chat send error:", error);
+      setNewMessage(msg);
+      return;
+    }
+
+    if (data) {
+      setMessages((prev) => {
+        if (prev.find((m) => m.id === data.id)) return prev;
+        return [...prev, data as ChatMessage];
+      });
+    }
   };
 
   return (
@@ -151,7 +168,7 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
                           <img src={m.image_url} alt="Chat Attachment" className="max-h-52 w-full object-cover rounded-xl" />
                         </div>
                       )}
-                      {m.message && <p className="leading-relaxed">{m.message}</p>}
+                      {m.content && <p className="leading-relaxed">{m.content}</p>}
                     </div>
                   </div>
                 ))

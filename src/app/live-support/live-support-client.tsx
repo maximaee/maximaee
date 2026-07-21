@@ -9,7 +9,7 @@ type ChatMessage = {
   id: string;
   session_id: string;
   sender: "user" | "admin";
-  message: string;
+  content: string;
   image_url?: string | null;
   created_at: string;
 };
@@ -20,6 +20,7 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
+  const [sending, setSending] = useState(false);
   const supabase = createBrowserSupabaseClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -35,11 +36,15 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
     const loadChat = () => {
       supabase
         .from("chat_messages")
-        .select("id,session_id,sender,message,image_url,created_at")
+        .select("id,session_id,sender,content,image_url,created_at")
         .eq("session_id", sessionId)
-        .limit(50)
         .order("created_at", { ascending: true })
-        .then(({ data }) => {
+        .limit(50)
+        .then(({ data, error }) => {
+          if (error) {
+            console.error("chat load error:", error);
+            return;
+          }
           if (data) {
             setMessages((prev) => {
               if (prev.length !== data.length) {
@@ -86,16 +91,36 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !supabase) return;
+    if (!newMessage.trim() || !supabase || !sessionId || sending) return;
 
     const msg = newMessage.trim();
+    setSending(true);
     setNewMessage("");
 
-    await supabase.from("chat_messages").insert({
-      session_id: sessionId,
-      sender: "user",
-      message: msg,
-    });
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .insert({
+        session_id: sessionId,
+        sender: "user",
+        content: msg,
+      })
+      .select("id,session_id,sender,content,image_url,created_at")
+      .single();
+
+    setSending(false);
+
+    if (error) {
+      console.error("chat send error:", error);
+      setNewMessage(msg);
+      return;
+    }
+
+    if (data) {
+      setMessages((prev) => {
+        if (prev.find((m) => m.id === data.id)) return prev;
+        return [...prev, data as ChatMessage];
+      });
+    }
   };
 
 
@@ -180,7 +205,7 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
                           <img src={m.image_url} alt="Chat Attachment" className="max-h-52 w-full object-cover rounded-xl" />
                         </div>
                       )}
-                      {m.message && <p className="leading-relaxed">{m.message}</p>}
+                      {m.content && <p className="leading-relaxed">{m.content}</p>}
                     </div>
                   </div>
                 ))
@@ -196,7 +221,7 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
                 placeholder="Nachricht schreiben..."
                 className="flex-1 bg-white/10 rounded-xl px-5 py-4 text-[15px] text-white outline-none placeholder:text-gray-400 border border-transparent focus:border-[#0066CC]/50 focus:bg-white/15 transition-all shadow-sm"
               />
-              <button type="submit" disabled={!newMessage.trim()} className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] text-white transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:grayscale shadow-[0_0_15px_rgba(0,102,204,0.4)]">
+              <button type="submit" disabled={!newMessage.trim() || sending || !sessionId} className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] text-white transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:grayscale shadow-[0_0_15px_rgba(0,102,204,0.4)]">
                 <svg className="size-6 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                 </svg>
