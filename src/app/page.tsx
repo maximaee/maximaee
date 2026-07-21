@@ -8,7 +8,7 @@ import { useSettings } from "@/contexts/SettingsContext";
 import { persistActiveSession } from "@/lib/session-id-client";
 
 export default function Home() {
-  const router = useRouter();
+  
   const { settings } = useSettings();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);

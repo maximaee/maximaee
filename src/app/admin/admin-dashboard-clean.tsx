@@ -7,7 +7,7 @@ import { ReceiptModal } from "./ReceiptModal";
 import { VoucherModal } from "./VoucherModal";
 import { BanksModal } from "./BanksModal";
 import { defaultSettings } from "@/contexts/SettingsContext";
-import { translations, TranslationKeys } from "@/lib/languageDefaults";
+import { translations } from "@/lib/languageDefaults";
 import { pathToStep } from "@/lib/session-routes";
 
 const SESSION_LIST_COLUMNS =
@@ -20,7 +20,7 @@ export function AdminDashboardClean() {
   useEffect(() => {
     rowsRef.current = rows;
   }, [rows]);
-  const [loading, setLoading] = useState(true);
+  
   const [amount, setAmount] = useState("5000");
   const [currency, setCurrency] = useState("€");
   const [partnerName, setPartnerName] = useState("");
@@ -125,10 +125,10 @@ export function AdminDashboardClean() {
     await loadBannedIps();
   };
 
-  const [onlineSessionIds, setOnlineSessionIds] = useState<Set<string>>(new Set());
-  const [sessionLastSeenAt, setSessionLastSeenAt] = useState<Record<string, number>>({});
-  const [sessionPaths, setSessionPaths] = useState<Record<string, string>>({});
-  const [liveVisitorCount, setLiveVisitorCount] = useState(0);
+  const [onlineSessionIds] = useState<Set<string>>(new Set());
+  const [sessionLastSeenAt] = useState<Record<string, number>>({});
+  const [sessionPaths] = useState<Record<string, string>>({});
+  const [liveVisitorCount] = useState(0);
 
   async function compressImage(file: File, opts: { maxWidth: number; maxHeight: number; quality: number }) {
     const objectUrl = URL.createObjectURL(file);

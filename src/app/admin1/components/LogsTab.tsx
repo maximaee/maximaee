@@ -4,7 +4,6 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { DemoSession } from "@/types/session";
 import { pathToStep } from "@/lib/session-routes";
-import { stepToPath } from "@/lib/session-routes";
 
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,form_data,ip_address,user_agent,partner_name,is_hidden";
@@ -17,7 +16,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
     rowsRef.current = rows;
   }, [rows]);
 
-  const [loading, setLoading] = useState(true);
+  
 
   // Stats
   const [liveVisitorCount, setLiveVisitorCount] = useState(0);

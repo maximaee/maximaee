@@ -19,11 +19,11 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
   const isOpenRef = useRef(isOpen);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [unreadCount, setUnreadCount] = useState(0);
+  
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
   const supabase = createBrowserSupabaseClient();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const pathname = usePathname();
+  
 
   useEffect(() => {
     const handleOpenChat = () => setIsOpen(true);

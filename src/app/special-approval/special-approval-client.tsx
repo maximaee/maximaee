@@ -2,9 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
-import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
-import type { SessionStep } from "@/types/session";
 
 import { Linkify } from "@/components/ui/Linkify";
 

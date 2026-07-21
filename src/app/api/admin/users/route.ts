@@ -11,7 +11,7 @@ const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
   }
 });
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers();
     

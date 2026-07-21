@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { getBanks } from "@/lib/banks-db";
 import { createClient } from "@supabase/supabase-js";
 
 export async function GET() {

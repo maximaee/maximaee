@@ -13,7 +13,7 @@ type Props = {
 };
 
 export function WinFlow({ sessionId }: Props) {
-  const router = useRouter();
+  
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();
   const [amount, setAmount] = useState<number | null>(null);

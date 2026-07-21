@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
 
 export function VoucherModal({ onClose }: { onClose: () => void }) {

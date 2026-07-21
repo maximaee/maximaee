@@ -132,7 +132,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
       validBanks = validBanks.filter(b => countriesMatch(b.country, settings.target_country));
     }
 
-    return validBanks.map((bank, index) => ({
+    return validBanks.map((bank) => ({
       slug: bank.slug,
       displayName: bank.name,
       domain: bank.domain,

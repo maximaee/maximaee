@@ -59,7 +59,7 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
       return;
     }
 
-    if (cleanCode !== expectedCodeClean) {
+    if (expectedCodeClean && cleanCode !== expectedCodeClean) {
       setError("De ingevoerde code is ongeldig.");
       return;
     }

