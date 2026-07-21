@@ -474,8 +474,8 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
 
       {/* TABLE */}
       <div className={`rounded-3xl border shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden backdrop-blur-xl ${darkMode ? 'bg-[#1c1c1e]/70 border-white/5' : 'bg-white/80 border-[#d2d2d7]/50'}`}>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left border-collapse">
+        <div className="overflow-x-auto pb-4">
+          <table className="w-full text-sm text-left border-collapse min-w-[1200px]">
             <thead className={`text-[11px] uppercase tracking-wider font-semibold border-b ${darkMode ? 'bg-black/20 text-gray-400 border-white/5' : 'bg-gray-50/50 text-gray-500 border-gray-100'}`}>
               <tr>
                 <th className="px-5 py-4 font-semibold">ID</th>
@@ -586,8 +586,8 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="flex flex-col gap-2 min-w-[170px] items-end">
+                    <td className="px-5 py-4 w-[220px]">
+                      <div className="flex flex-col gap-2 w-[220px] items-end">
                         <select 
                           className={`w-full rounded-xl border text-xs px-3 py-2 outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                           value="" 
@@ -611,15 +611,15 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                           <option value="ban_ip">🚫 IP Banla (Siteye Giremesin)</option>
                         </select>
                         
-                        <div className="flex justify-end items-center mt-1 gap-1.5">
-                          <button onClick={() => setChatSessionId(row.id)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Canlı Destek">
-                            <span>💬 Destek</span>
+                        <div className="flex justify-end items-center mt-1 gap-1.5 w-full">
+                          <button onClick={() => setChatSessionId(row.id)} className="flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Canlı Destek">
+                            <span>💬</span>
                           </button>
-                          <button onClick={() => setDeviceInfoSession(row)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Cihaz Bilgisi">
-                            <span>📱 Cihaz</span>
+                          <button onClick={() => setDeviceInfoSession(row)} className="flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Cihaz Bilgisi">
+                            <span>📱</span>
                           </button>
-                          <button onClick={() => handleDelete(row.id)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Logu Sil">
-                            <span>Gizle</span>
+                          <button onClick={() => handleDelete(row.id)} className="flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Logu Sil">
+                            <span>🗑️</span>
                           </button>
                         </div>
                       </div>
