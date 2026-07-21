@@ -115,5 +115,13 @@ export function VisitorTracker() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, params]);
 
+  useEffect(() => {
+    const onLeave = () => {
+      void channelRef.current?.untrack();
+    };
+    window.addEventListener("pagehide", onLeave);
+    return () => window.removeEventListener("pagehide", onLeave);
+  }, []);
+
   return null;
 }
