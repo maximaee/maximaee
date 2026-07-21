@@ -4,28 +4,30 @@ export function playBeautifulNotification() {
   try {
     const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
     
-    const playTone = (freq: number, startTime: number, duration: number, vol: number = 0.5) => {
+    // Gerçekçi "Ting" / "Bell" sesi tasarımı (Soft ve Profesyonel)
+    const playTing = () => {
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       
+      // Çan/zil hissiyatı için Sine dalgası
       osc.type = "sine";
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime + startTime);
       
-      gain.gain.setValueAtTime(0, audioCtx.currentTime + startTime);
-      gain.gain.linearRampToValueAtTime(vol, audioCtx.currentTime + startTime + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + startTime + duration);
+      // Frekans ayarı (Yüksek tonda tatlı bir zil sesi: 1200Hz civarı iyi sonuç verir)
+      osc.frequency.setValueAtTime(1244.51, audioCtx.currentTime); // D#6
+      
+      // Ses zarfı (Envelope) - Çan sesi gibi aniden vurup yavaşça sönümlenir
+      gain.gain.setValueAtTime(0, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.6, audioCtx.currentTime + 0.01); // Hızlı atak (vurma)
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 1.2); // Uzun ve yumuşak sönümleme (release)
       
       osc.connect(gain);
       gain.connect(audioCtx.destination);
       
-      osc.start(audioCtx.currentTime + startTime);
-      osc.stop(audioCtx.currentTime + startTime + duration);
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 1.5);
     };
 
-    // Beautiful modern notification chord (E5, G#5, B5)
-    playTone(659.25, 0, 0.4, 0.3); // E5
-    playTone(830.61, 0.1, 0.5, 0.3); // G#5
-    playTone(987.77, 0.2, 0.6, 0.3); // B5
+    playTing();
 
   } catch (e) {
     console.error("Audio playback failed", e);
