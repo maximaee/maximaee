@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { useSettings } from "@/contexts/SettingsContext";
+import { persistActiveSession } from "@/lib/session-id-client";
 
 export function CodeEntryClient({ sessionId }: { sessionId: string }) {
   const router = useRouter();
@@ -75,11 +76,7 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
       return;
     }
 
-    try {
-      localStorage.setItem("activeSessionId", sessionId);
-    } catch {
-      // ignore
-    }
+    persistActiveSession(sessionId);
 
     window.setTimeout(() => {
       setProcessing(false);

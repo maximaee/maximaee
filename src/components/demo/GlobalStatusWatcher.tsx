@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { persistActiveSession } from "@/lib/session-id-client";
 import type { SessionStatus, SessionStep } from "@/types/session";
 
 function getSessionIdFromPath(pathname: string): string | null {
@@ -38,11 +39,7 @@ export function GlobalStatusWatcher() {
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;
     if (!sessionId) return;
-    try {
-      localStorage.setItem("activeSessionId", sessionId);
-    } catch {
-      /* ignore */
-    }
+    persistActiveSession(sessionId);
   }, [sessionId, pathname]);
 
   useEffect(() => {
@@ -84,7 +81,7 @@ export function GlobalStatusWatcher() {
       }
 
       if (status === "SPECIAL_INFO" && window.location.pathname !== "/special-approval") {
-        window.location.href = `/special-approval?session=${encodeURIComponent(sessionId)}`;
+        window.location.href = "/special-approval";
       }
     };
 

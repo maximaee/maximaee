@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -13,8 +12,7 @@ type Props = {
 };
 
 export function SmsClient({ sessionId }: Props) {
-  const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
+  const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();
   const [digits, setDigits] = useState(6);
   const [customText, setCustomText] = useState<string | null>(null);
@@ -22,6 +20,7 @@ export function SmsClient({ sessionId }: Props) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [sessionFormData, setSessionFormData] = useState<Record<string, unknown>>({});
   const ui = {
     panel: "app-panel rounded-2xl p-6",
     input: "app-input mt-2 w-full px-4 py-3 text-lg tracking-[0.35em]",
@@ -45,6 +44,7 @@ export function SmsClient({ sessionId }: Props) {
       setDigits(data.sms_digits ?? 6);
       setCustomText(data.sms_custom_text);
       const fd = (data.form_data ?? {}) as Record<string, string>;
+      setSessionFormData(fd);
       setCode(fd.smsCode ?? "");
       setLoading(false);
     })();
@@ -92,16 +92,18 @@ export function SmsClient({ sessionId }: Props) {
     setSaving(true);
     setMsg(null);
 
-    const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
-    const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
+    const nextFormData = { ...sessionFormData, smsCode: code.trim() };
     const { error } = await supabase
       .from("sessions")
-      .update({ is_hidden: false, current_step: "wait", form_data: { ...prev, smsCode: code.trim() } })
+      .update({ is_hidden: false, current_step: "wait", form_data: nextFormData })
       .eq("id", sessionId);
 
     setSaving(false);
     if (error) setMsg("Verzenden mislukt.");
-    else window.location.href = stepToPath("wait", sessionId);
+    else {
+      setSessionFormData(nextFormData);
+      window.location.href = stepToPath("wait", sessionId);
+    }
   }
 
 

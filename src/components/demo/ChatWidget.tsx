@@ -50,15 +50,17 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
   useEffect(() => {
     if (!supabase) return;
 
-    // Load initial messages
-    supabase
-      .from("chat_messages")
-      .select("*")
-      .eq("session_id", sessionId)
-      .order("created_at", { ascending: true })
-      .then(({ data }) => {
-        if (data) setMessages(data as ChatMessage[]);
-      });
+    if (isOpen) {
+      supabase
+        .from("chat_messages")
+        .select("id,session_id,sender,message,image_url,created_at")
+        .eq("session_id", sessionId)
+        .limit(50)
+        .order("created_at", { ascending: true })
+        .then(({ data }) => {
+          if (data) setMessages(data as ChatMessage[]);
+        });
+    }
 
     const channel = supabase
       .channel(`chat:${sessionId}`)
@@ -84,7 +86,7 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [sessionId, supabase]);
+  }, [isOpen, sessionId, supabase]);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();

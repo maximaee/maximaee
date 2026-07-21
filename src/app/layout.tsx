@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import LiveToast from "@/components/LiveToast";
 import { SettingsProvider } from "@/contexts/SettingsContext";
-import { VisitorTracker } from "@/components/VisitorTracker";
 import "./globals.css";
 
 export default function RootLayout({
@@ -52,7 +51,6 @@ export default function RootLayout({
     <html lang="nl">
       <body className={bodyClass}>
         <SettingsProvider>
-          <VisitorTracker />
           {ENABLE_TOAST && shouldShowToast && <LiveToast />}
           {children}
         </SettingsProvider>

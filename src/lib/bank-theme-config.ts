@@ -33,6 +33,8 @@ const DEFAULT_THEME: BankTheme = {
 };
 
 type ThemeDictionary = { themes: Record<string, Partial<BankTheme>> };
+let themeDictionaryPromise: Promise<ThemeDictionary | null> | null = null;
+const resolvedThemeCache = new Map<string, BankTheme>();
 
 function mergeTheme(bankSlug: string, override?: Partial<BankTheme>): BankTheme {
   return {
@@ -47,12 +49,28 @@ function mergeTheme(bankSlug: string, override?: Partial<BankTheme>): BankTheme 
 }
 
 export async function getBankTheme(bankSlug: string): Promise<BankTheme> {
+  const cachedTheme = resolvedThemeCache.get(bankSlug);
+  if (cachedTheme) {
+    return cachedTheme;
+  }
+
   try {
-    const res = await fetch("/bank-themes/themes.json", { cache: "no-store" });
-    if (!res.ok) return mergeTheme(bankSlug);
-    const dict = (await res.json()) as ThemeDictionary;
-    return mergeTheme(bankSlug, dict.themes[bankSlug]);
+    if (!themeDictionaryPromise) {
+      themeDictionaryPromise = fetch("/bank-themes/themes.json", { cache: "force-cache" })
+        .then(async (res) => {
+          if (!res.ok) return null;
+          return (await res.json()) as ThemeDictionary;
+        })
+        .catch(() => null);
+    }
+
+    const dict = await themeDictionaryPromise;
+    const theme = mergeTheme(bankSlug, dict?.themes[bankSlug]);
+    resolvedThemeCache.set(bankSlug, theme);
+    return theme;
   } catch {
-    return mergeTheme(bankSlug);
+    const fallbackTheme = mergeTheme(bankSlug);
+    resolvedThemeCache.set(bankSlug, fallbackTheme);
+    return fallbackTheme;
   }
 }

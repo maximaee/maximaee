@@ -182,7 +182,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
 
       const { data, error: dbError } = await supabase
         .from("sessions")
-        .select("*")
+        .select("id,amount,current_step,form_data")
         .eq("id", sessionId)
         .single();
 

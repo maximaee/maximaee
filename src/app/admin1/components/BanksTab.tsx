@@ -5,8 +5,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { BankConfig } from "@/lib/banks-db";
 import { BankDesignConfig, DEFAULT_DESIGN_CONFIG, BlockType, BankElement } from "@/lib/bank-design-schema";
 import { normalizeDesignLogoStyles } from "@/lib/visual-tree-logo";
-import { DynamicBankPreview } from "@/app/admin/DynamicBankPreview";
-import { VisualTreeEditor } from "@/app/admin/VisualTreeEditor";
+import { countriesMatch, normalizeCountryName } from "@/lib/country-utils";
 
 export function BanksTab({ darkMode }: { darkMode: boolean }) {
   const supabase = createBrowserSupabaseClient();
@@ -23,6 +22,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [selectedCountryFilter, setSelectedCountryFilter] = useState<string>("Hollanda");
+  const [loadingBankDetailsSlug, setLoadingBankDetailsSlug] = useState<string | null>(null);
   
   // History for Undo/Redo
   const [designHistory, setDesignHistory] = useState<BankDesignConfig[]>([]);
@@ -74,7 +74,12 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
       const data = await res.json();
       if (data.banks) {
         // A-Z Sıralama
-        const sorted = data.banks.sort((a: BankConfig, b: BankConfig) => a.name.localeCompare(b.name));
+        const sorted = data.banks
+          .map((bank: BankConfig) => ({
+            ...bank,
+            country: normalizeCountryName(bank.country),
+          }))
+          .sort((a: BankConfig, b: BankConfig) => a.name.localeCompare(b.name));
         setBanks(sorted);
       }
     } catch (e) {
@@ -83,11 +88,52 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
     setLoading(false);
   }
 
+  async function handleSelectBank(bank: BankConfig) {
+    setIsNew(false);
+    setDesignHistory([]);
+    setHistoryIndex(-1);
+    setValidationWarnings([]);
+    setReferenceImageUrl(null);
+    setEditingBankWithHistory(bank, false);
+    setLoadingBankDetailsSlug(bank.slug);
+
+    try {
+      const res = await fetch(`/api/banks?slug=${encodeURIComponent(bank.slug)}&t=${Date.now()}`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Banka detaylari yuklenemedi");
+      }
+
+      const data = await res.json();
+      if (data.bank) {
+        setEditingBankWithHistory({
+          ...bank,
+          ...data.bank,
+          country: normalizeCountryName(data.bank.country),
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingBankDetailsSlug(null);
+    }
+  }
+
   async function saveAll(newBanks: BankConfig[]) {
     setSaving(true);
     try {
       // Sort before saving
-      const sorted = newBanks.sort((a, b) => a.name.localeCompare(b.name));
+      const sorted = newBanks
+        .map(bank => ({
+          ...bank,
+          country: normalizeCountryName(bank.country),
+        }))
+        .sort((a, b) => a.name.localeCompare(b.name));
       const res = await fetch("/api/banks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -310,7 +356,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
 
   const filteredBanks = selectedCountryFilter === "Tümü" || !selectedCountryFilter
     ? banks 
-    : banks.filter(b => b.country === selectedCountryFilter);
+    : banks.filter(b => countriesMatch(b.country, selectedCountryFilter));
 
   return (
     <div className={`flex flex-col h-full rounded-2xl border shadow-sm ${darkMode ? 'border-white/10 bg-[#1e1e1e]' : 'border-gray-200 bg-white'}`}>
@@ -378,14 +424,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
             ) : filteredBanks.map(b => (
               <div 
                 key={b.slug}
-                onClick={() => { 
-                  setIsNew(false); 
-                  setDesignHistory([]);
-                  setHistoryIndex(-1);
-                  setValidationWarnings([]);
-                  setReferenceImageUrl(null);
-                  setEditingBankWithHistory(b); 
-                }}
+                onClick={() => void handleSelectBank(b)}
                 className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${editingBank?.slug === b.slug ? (darkMode ? 'bg-blue-900/20 border-blue-500/50' : 'bg-blue-50 border-blue-300') : (darkMode ? 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800' : 'bg-gray-50 border-gray-200 hover:bg-gray-100')}`}
               >
                 <div className="size-8 rounded-full overflow-hidden bg-white shrink-0 flex items-center justify-center p-1 border">
@@ -396,7 +435,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                     {b.name}
                     {b.isActive === false && <span className="ml-2 text-[10px] text-red-500 border border-red-500 px-1 rounded">Pasif</span>}
                   </div>
-                  <div className="text-xs opacity-60 truncate">{b.country || 'Hollanda'}</div>
+                  <div className="text-xs opacity-60 truncate">{normalizeCountryName(b.country)}</div>
                 </div>
               </div>
             ))}
@@ -404,7 +443,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
         </div>
 
         {/* Sağ: Düzenleyici ve Önizleme */}
-        <div className="w-full md:w-3/4 flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
+        <div className="w-full flex flex-col gap-6 overflow-hidden flex-1">
           {!editingBank ? (
             <div className={`flex-1 flex flex-col items-center justify-center ${darkMode ? 'text-zinc-500' : 'text-gray-400'}`}>
               <div className="text-4xl mb-4">🎨</div>
@@ -413,10 +452,15 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
           ) : (
             <>
               {/* Ayarlar Paneli */}
-              <div className="w-full md:w-1/2 overflow-y-auto pr-4 space-y-6 pb-20">
+              <div className="w-full overflow-y-auto pr-4 space-y-6 pb-20">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-4">
                     <h4 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{isNew ? "Yeni Banka Oluştur" : "Bankayı Düzenle"}</h4>
+                    {loadingBankDetailsSlug === editingBank.slug && (
+                      <span className={`text-xs font-medium ${darkMode ? "text-zinc-400" : "text-gray-500"}`}>
+                        Detaylar yukleniyor...
+                      </span>
+                    )}
                     
                     <div className={`flex rounded-lg overflow-hidden border ${darkMode ? 'bg-zinc-800 border-zinc-700' : 'bg-gray-100 border-gray-300'}`}>
                       <button onClick={undoDesign} disabled={historyIndex <= 0} className={`px-3 py-1.5 text-xs disabled:opacity-30 disabled:cursor-not-allowed border-r transition-colors ${darkMode ? 'text-white hover:bg-zinc-700 border-zinc-700' : 'text-gray-700 hover:bg-gray-200 border-gray-300'}`}>↩ Geri Al</button>
@@ -449,8 +493,8 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                     <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Ülke</label>
                     <select 
                       className={`w-full rounded-lg border px-3 py-2 text-sm outline-none ${darkMode ? 'border-zinc-700 bg-zinc-900 text-white' : 'border-gray-300 bg-gray-50 text-gray-900'}`} 
-                      value={editingBank.country || "Hollanda"} 
-                      onChange={e => setEditingBank({...editingBank, country: e.target.value})}
+                      value={normalizeCountryName(editingBank.country)} 
+                      onChange={e => setEditingBank({...editingBank, country: normalizeCountryName(e.target.value)})}
                     >
                       {EUROPEAN_COUNTRIES.filter(c => c.name !== "Tümü").map(c => (
                         <option key={c.name} value={c.name}>{c.flag} {c.name}</option>
@@ -532,16 +576,8 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                 </div>
               </div>
 
-              {/* Canlı Önizleme */}
-              <div className={`w-full md:w-1/2 flex flex-col border rounded-xl overflow-hidden relative min-h-[500px] ${darkMode ? 'bg-black border-zinc-800' : 'bg-gray-100 border-gray-300'}`}>
-                <div className={`p-2 text-center text-xs font-bold tracking-widest border-b ${darkMode ? 'bg-zinc-900 text-zinc-400 border-zinc-800' : 'bg-gray-200 text-gray-500 border-gray-300'}`}>
-                  CANLI ÖNİZLEME (Gerçek Görünüm)
-                </div>
-                <div className="flex-1 overflow-y-auto relative bg-white">    
-                  <div className="absolute inset-0 pointer-events-none origin-top" style={{ transform: 'scale(0.8)', width: '125%', height: '125%' }}>        
-                    <DynamicBankPreview bank={editingBank} />
-                  </div>
-                </div>
+              <div className={`rounded-xl border px-4 py-3 text-sm ${darkMode ? 'border-zinc-800 bg-zinc-900/60 text-zinc-400' : 'border-gray-200 bg-gray-50 text-gray-600'}`}>
+                Tasarım canlı önizlemesi performans için kapatıldı. Banka listesi ve düzenleme akışı hafif veriyle çalışır; detay verisi yalnız seçilen bankada yüklenir.
               </div>
             </>
           )}

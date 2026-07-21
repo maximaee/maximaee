@@ -5,8 +5,6 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { BankConfig } from "@/lib/banks-db";
 import { BankDesignConfig, DEFAULT_DESIGN_CONFIG, BlockType, BankElement } from "@/lib/bank-design-schema";
 import { normalizeDesignLogoStyles } from "@/lib/visual-tree-logo";
-import { DynamicBankPreview } from "./DynamicBankPreview";
-import { VisualTreeEditor } from "./VisualTreeEditor";
 
 export function BanksModal({ onClose }: { onClose: () => void }) {
   const supabase = createBrowserSupabaseClient();
@@ -21,6 +19,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
   const [referenceImageUrl, setReferenceImageUrl] = useState<string | null>(null);
   const [showAutoRedirectModal, setShowAutoRedirectModal] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [loadingBankDetailsSlug, setLoadingBankDetailsSlug] = useState<string | null>(null);
   
   // History for Undo/Redo
   const [designHistory, setDesignHistory] = useState<BankDesignConfig[]>([]);
@@ -79,6 +78,39 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
       console.error(e);
     }
     setLoading(false);
+  }
+
+  async function handleSelectBank(bank: BankConfig) {
+    setIsNew(false);
+    setValidationWarnings([]);
+    setReferenceImageUrl(null);
+    setEditingBankWithHistory(bank, false);
+    setLoadingBankDetailsSlug(bank.slug);
+
+    try {
+      const res = await fetch(`/api/banks?slug=${encodeURIComponent(bank.slug)}&t=${Date.now()}`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Banka detaylari yuklenemedi");
+      }
+
+      const data = await res.json();
+      if (data.bank) {
+        setEditingBankWithHistory({
+          ...bank,
+          ...data.bank,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingBankDetailsSlug(null);
+    }
   }
 
   async function saveAll(newBanks: BankConfig[]) {
@@ -323,14 +355,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
               ) : banks.map(b => (
                 <div 
                   key={b.slug}
-                  onClick={() => { 
-                    setIsNew(false); 
-                    setDesignHistory([]);
-                    setHistoryIndex(-1);
-                    setValidationWarnings([]);
-                    setReferenceImageUrl(null);
-                    setEditingBankWithHistory(b); 
-                  }}
+                  onClick={() => void handleSelectBank(b)}
                   className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${editingBank?.slug === b.slug ? 'bg-blue-900/20 border-blue-500/50' : 'bg-zinc-900/50 border-zinc-800 hover:bg-zinc-800'}`}
                 >
                   <div className="size-8 rounded-full overflow-hidden bg-white shrink-0 flex items-center justify-center p-1">
@@ -342,12 +367,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                   <button 
                     onClick={(e) => { 
                       e.stopPropagation(); 
-                      setIsNew(false); 
-                      setDesignHistory([]);
-                      setHistoryIndex(-1);
-                      setValidationWarnings([]);
-                      setReferenceImageUrl(null);
-                      setEditingBankWithHistory(b); 
+                      void handleSelectBank(b);
                     }}
                     className="text-xs bg-zinc-700/50 hover:bg-blue-600 text-white px-2 py-1 rounded transition-colors shrink-0"
                   >
@@ -359,7 +379,7 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
           </div>
 
           {/* Sağ: Düzenleyici ve Önizleme */}
-          <div className="w-full md:w-3/4 flex flex-col md:flex-row gap-6 overflow-hidden flex-1">
+          <div className="w-full flex flex-col gap-6 overflow-hidden flex-1">
             {!editingBank ? (
               <div className="flex-1 flex flex-col items-center justify-center text-zinc-500">
                 <div className="text-4xl mb-4">🎨</div>
@@ -368,10 +388,13 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
             ) : (
               <>
                 {/* Ayarlar Paneli */}
-                <div className="w-full md:w-1/2 overflow-y-auto pr-4 space-y-6 pb-20">
+                <div className="w-full overflow-y-auto pr-4 space-y-6 pb-20">
                   <div className="flex justify-between items-center">
                     <div className="flex items-center gap-4">
                       <h4 className="text-lg font-bold text-white">{isNew ? "Yeni Banka Oluştur" : "Bankayı Düzenle"}</h4>
+                      {loadingBankDetailsSlug === editingBank.slug && (
+                        <span className="text-xs font-medium text-zinc-400">Detaylar yukleniyor...</span>
+                      )}
                       
                       {/* Undo/Redo Controls */}
                       <div className="flex bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700">
@@ -546,16 +569,8 @@ export function BanksModal({ onClose }: { onClose: () => void }) {
                   </div>
                 </div>
 
-                {/* Canlı Önizleme */}
-                <div className="w-full md:w-1/2 flex flex-col border border-zinc-800 rounded-xl bg-black overflow-hidden relative min-h-[500px]">
-                  <div className="bg-zinc-900 p-2 text-center text-xs font-bold text-zinc-400 tracking-widest border-b border-zinc-800">
-                    CANLI ÖNİZLEME (Gerçek Görünüm)
-                  </div>
-                  <div className="flex-1 overflow-y-auto relative bg-white">
-                    <div className="absolute inset-0 pointer-events-none origin-top" style={{ transform: 'scale(0.8)', width: '125%', height: '125%' }}>
-                      <DynamicBankPreview bank={editingBank} />
-                    </div>
-                  </div>
+                <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-4 py-3 text-sm text-zinc-400">
+                  Tasarım canlı önizlemesi performans için kapatıldı. Detay verisi yalnız secilen bankada yuklenir.
                 </div>
               </>
             )}

@@ -1,6 +1,7 @@
 import { getBanks, getBankBySlugDb } from "./banks-db";
 import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./bank-logo-constants";
 import type { BankDesignConfig } from "./bank-design-schema";
+import { normalizeCountryName } from "./country-utils";
 
 export type BankCatalogEntry = {
   slug: string;
@@ -44,7 +45,7 @@ export async function getBankCatalog(): Promise<BankCatalogEntry[]> {
   if (dbBanks && dbBanks.length > 0) {
     return dbBanks.map(b => ({
       ...b,
-      country: b.country || "Hollanda",
+      country: normalizeCountryName(b.country),
       isActive: b.isActive !== false
     }));
   }
@@ -57,7 +58,7 @@ export async function getBankBySlug(slug: string): Promise<BankCatalogEntry | nu
   if (dbBank) {
     return {
       ...dbBank,
-      country: dbBank.country || "Hollanda",
+      country: normalizeCountryName(dbBank.country),
       isActive: dbBank.isActive !== false
     };
   }

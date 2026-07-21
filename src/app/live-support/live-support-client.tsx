@@ -30,13 +30,13 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
   }, [isChatOpen, messages]);
 
   useEffect(() => {
-    if (!supabase || !sessionId) return;
+    if (!supabase || !sessionId || !isChatOpen) return;
 
-    // Load initial messages
     supabase
       .from("chat_messages")
-      .select("*")
+      .select("id,session_id,sender,message,image_url,created_at")
       .eq("session_id", sessionId)
+      .limit(50)
       .order("created_at", { ascending: true })
       .then(({ data }) => {
         if (data) setMessages(data as ChatMessage[]);
@@ -62,7 +62,7 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [sessionId, supabase]);
+  }, [isChatOpen, sessionId, supabase]);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();

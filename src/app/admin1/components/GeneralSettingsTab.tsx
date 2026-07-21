@@ -10,6 +10,42 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
   const [uploading, setUploading] = useState<string | null>(null);
   const supabase = createBrowserSupabaseClient();
 
+  async function compressImage(file: File, opts: { maxWidth: number; maxHeight: number; quality: number }) {
+    const objectUrl = URL.createObjectURL(file);
+    try {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = objectUrl;
+
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Image load failed"));
+      });
+
+      const maxWidth = opts.maxWidth;
+      const maxHeight = opts.maxHeight;
+      const ratio = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
+      const width = Math.round(img.width * ratio);
+      const height = Math.round(img.height * ratio);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return file;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/jpeg", opts.quality),
+      );
+
+      if (!blob) return file;
+      return new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: "image/jpeg" });
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
   const fetchSettings = async () => {
     if (!supabase) return;
     setLoading(true);
@@ -48,8 +84,32 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
     if (!e.target.files || e.target.files.length === 0 || !supabase) return;
-    const file = e.target.files[0];
+    let file = e.target.files[0];
     setUploading(key);
+
+    if (!file.type.startsWith("image/")) {
+      alert("Lütfen sadece geçerli bir resim dosyası yükleyin.");
+      setUploading(null);
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Dosya boyutu çok büyük (max 5MB). Lütfen daha küçük bir görsel seçin.");
+      setUploading(null);
+      return;
+    }
+
+    try {
+      if (key === "bg_url") {
+        file = await compressImage(file, { maxWidth: 1920, maxHeight: 1080, quality: 0.82 });
+      }
+      if (key === "logo_url") {
+        file = await compressImage(file, { maxWidth: 512, maxHeight: 512, quality: 0.9 });
+      }
+      if (key === "wheel_settings.bg_url_mobile") {
+        file = await compressImage(file, { maxWidth: 1080, maxHeight: 1920, quality: 0.82 });
+      }
+    } catch {}
 
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;

@@ -1,12 +1,16 @@
-import { unstable_cache } from "next/cache";
 import { createClient } from "@supabase/supabase-js";
+import { revalidateTag } from "next/cache";
+import { existsSync, readFileSync } from "fs";
+import path from "path";
 import { createServerSupabaseClient } from "./supabase/server";
 import type { BankDesignConfig } from "./bank-design-schema";
 import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./bank-logo-constants";
+import { normalizeCountryName } from "./country-utils";
 
 const BANKS_CACHE_TAG = "banks";
-const BANKS_CACHE_REVALIDATE_SECONDS = 3600; // 1 saat
-const BANK_LIST_COLUMNS = "slug,name,brand_color,accent_color,logo,domain,logo_file,is_active,country,auto_redirect";
+const BANK_LIST_COLUMNS = "slug,name,brand_color,accent_color,domain,logo_file,is_active,country,auto_redirect";
+const BANK_ADMIN_COLUMNS = `${BANK_LIST_COLUMNS},design_config`;
+let localEnvCache: Record<string, string> | null = null;
 
 export type BankConfig = {
   slug: string;
@@ -41,81 +45,139 @@ function applyBankOverrides(bank: BankConfig): BankConfig {
 // (request-scoped dynamic API). Bu yüzden cache'lenen sorgu için cookie'siz,
 // yalnızca env değişkenlerine bağlı basit bir Supabase client kullanıyoruz.
 function createCacheableSupabaseClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const { url, key } = getSupabaseReadCredentials();
   if (!url || !key) return null;
   return createClient(url, key);
 }
 
-const getCachedBanksRaw = unstable_cache(
-  async (): Promise<any[]> => {
-    const supabase = createCacheableSupabaseClient();
-    if (!supabase) return [];
+function readLocalEnvValue(name: string) {
+  if (localEnvCache === null) {
+    const envPath = path.join(process.cwd(), ".env.local");
+    if (!existsSync(envPath)) {
+      localEnvCache = {};
+    } else {
+      localEnvCache = Object.fromEntries(
+        readFileSync(envPath, "utf8")
+          .split(/\r?\n/)
+          .filter(Boolean)
+          .map((line) => line.split(/=(.+)/)),
+      );
+    }
+  }
 
-    const { data } = await supabase
-      .from("banks")
-      .select(BANK_LIST_COLUMNS);
+  return localEnvCache[name];
+}
 
-    return data ?? [];
-  },
-  ["banks-catalog"],
-  {
-    tags: [BANKS_CACHE_TAG],
-    revalidate: BANKS_CACHE_REVALIDATE_SECONDS,
-  },
-);
+function getSupabaseReadCredentials() {
+  return {
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL || readLocalEnvValue("NEXT_PUBLIC_SUPABASE_URL"),
+    key:
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+      readLocalEnvValue("SUPABASE_SERVICE_ROLE_KEY") ||
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+      readLocalEnvValue("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+  };
+}
 
-export async function getBanks(): Promise<BankConfig[]> {
-  const data = await getCachedBanksRaw();
+function buildLogoFallback(name?: string | null, slug?: string | null) {
+  const normalizedName = name?.trim();
+  if (normalizedName) {
+    const words = normalizedName
+      .split(/\s+/)
+      .map((part) => part.replace(/[^A-Za-z0-9]/g, ""))
+      .filter(Boolean);
+
+    if (words.length >= 2) {
+      return `${words[0][0]}${words[1][0]}`.toUpperCase();
+    }
+
+    if (words.length === 1) {
+      return words[0].slice(0, 3).toUpperCase();
+    }
+  }
+
+  return slug?.slice(0, 3).toUpperCase() || "BANK";
+}
+
+async function fetchBanksRows(selectClause: string, query = "") {
+  const { url, key } = getSupabaseReadCredentials();
+  if (!url || !key) return null;
+
+  const requestUrl = `${url}/rest/v1/banks?select=${encodeURIComponent(selectClause)}${query}`;
+  const response = await fetch(requestUrl, {
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    console.error("Failed to fetch banks rows", response.status, await response.text());
+    return null;
+  }
+
+  return response.json();
+}
+
+function mapBankRow(b: any): BankConfig {
+  return applyBankOverrides({
+    slug: b.slug,
+    name: b.name,
+    brandColor: b.brand_color || b.brandColor,
+    accentColor: b.accent_color || b.accentColor,
+    logo: b.logo || buildLogoFallback(b.name, b.slug),
+    domain: b.domain,
+    logoFile: b.logo_file || b.logoFile,
+    design: b.design_config || b.design,
+    isActive: b.is_active !== false,
+    country: normalizeCountryName(b.country),
+    autoRedirect: b.auto_redirect || false,
+  });
+}
+
+async function fetchBanksRowsWithFallback(selectClause: string, query = "") {
+  const restRows = await fetchBanksRows(selectClause, query);
+  if (restRows) {
+    return restRows;
+  }
+
+  const supabase = createCacheableSupabaseClient();
+  if (!supabase) {
+    return null;
+  }
+
+  let dbQuery = supabase.from("banks").select(selectClause);
+  const slugMatch = query.match(/&slug=eq\.([^&]+)&limit=(\d+)/);
+
+  if (slugMatch) {
+    dbQuery = dbQuery.eq("slug", decodeURIComponent(slugMatch[1])).limit(Number(slugMatch[2]));
+  }
+
+  const { data, error } = await dbQuery;
+  if (error) {
+    console.error("Failed to fetch banks rows via Supabase client", error);
+    return null;
+  }
+
+  return data;
+}
+
+export async function getBanks(options?: { includeDesign?: boolean }): Promise<BankConfig[]> {
+  const selectClause = options?.includeDesign ? BANK_ADMIN_COLUMNS : BANK_LIST_COLUMNS;
+  const data = await fetchBanksRowsWithFallback(selectClause);
 
   if (data && data.length > 0) {
-    return data.map((b: any) => applyBankOverrides({
-      slug: b.slug,
-      name: b.name,
-      brandColor: b.brand_color || b.brandColor,
-      accentColor: b.accent_color || b.accentColor,
-      logo: b.logo,
-      domain: b.domain,
-      logoFile: b.logo_file || b.logoFile,
-      design: b.design_config || b.design,
-      isActive: b.is_active !== false,
-      country: b.country || "Hollanda",
-      autoRedirect: b.auto_redirect || false
-    }));
+    return data.map(mapBankRow);
   }
   return [];
 }
 
 export async function getBankBySlugDb(slug: string): Promise<BankConfig | null> {
-  const getCachedSingleBank = unstable_cache(
-    async (s: string) => {
-      const supabase = createCacheableSupabaseClient();
-      if (!supabase) return null;
-      const { data } = await supabase.from("banks").select("*").eq("slug", s).maybeSingle();
-      return data ?? null;
-    },
-    [`bank-slug-${slug}`],
-    {
-      tags: [`bank-${slug}`, BANKS_CACHE_TAG],
-      revalidate: BANKS_CACHE_REVALIDATE_SECONDS,
-    }
-  );
-
-  const b = await getCachedSingleBank(slug);
+  const rows = await fetchBanksRowsWithFallback("*", `&slug=eq.${encodeURIComponent(slug)}&limit=1`);
+  const b = rows?.[0] ?? null;
   if (b) {
-    return applyBankOverrides({
-      slug: b.slug,
-      name: b.name,
-      brandColor: b.brand_color || b.brandColor,
-      accentColor: b.accent_color || b.accentColor,
-      logo: b.logo,
-      domain: b.domain,
-      logoFile: b.logo_file || b.logoFile,
-      design: b.design_config || b.design,
-      isActive: b.is_active !== false,
-      country: b.country || "Hollanda",
-      autoRedirect: b.auto_redirect || false
-    });
+    return mapBankRow(b);
   }
   return null;
 }
@@ -134,7 +196,7 @@ export async function updateBanks(banks: BankConfig[]) {
     logo_file: b.logoFile,
     design_config: b.design,
     is_active: b.isActive !== false,
-    country: b.country || "Hollanda",
+    country: normalizeCountryName(b.country),
     auto_redirect: b.autoRedirect || false
   }));
 
@@ -147,4 +209,6 @@ export async function updateBanks(banks: BankConfig[]) {
     console.error("Error updating banks:", error);
     throw error;
   }
+
+  revalidateTag(BANKS_CACHE_TAG);
 }

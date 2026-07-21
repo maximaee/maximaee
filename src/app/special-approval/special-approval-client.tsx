@@ -29,35 +29,14 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
     if (!effectiveSessionId || isRedirecting.current) return;
     if (!supabase) return;
 
-    const exitNow = (nextStep: string) => {
-      // EÄŸer hedef hala bu sayfaysa veya zaten yÃ¶nlendirme varsa dur
-      if (!nextStep || nextStep === "special_approval" || isRedirecting.current) return;
-      
-      isRedirecting.current = true; 
-      const targetPath = stepToPath(nextStep as SessionStep, effectiveSessionId);
-      
-      console.log("DÃ¶ngÃ¼ kÄ±rÄ±ldÄ±, fÄ±rlatÄ±lÄ±yor:", targetPath);
-      
-      // window.location.replace tarayÄ±cÄ± geÃ§miÅŸini temizler
-      window.location.replace(targetPath);
-    };
-
     const syncStatus = async () => {
-      if (isRedirecting.current) return;
-
       const { data } = await supabase
         .from("sessions")
-        .select("current_step,form_data")
+        .select("form_data")
         .eq("id", effectiveSessionId)
         .maybeSingle();
       
       if (!data || isRedirecting.current) return;
-
-      // Admin adÄ±mÄ± deÄŸiÅŸtirdiÄŸi an bu sayfadan kurtul
-      if (data.current_step && data.current_step !== "special_approval") {
-        exitNow(data.current_step);
-        return;
-      }
 
       const fd = (data.form_data ?? {}) as Record<string, any>;
       setMessage(fd.specialNoticeText ?? fd.customMessage ?? "LÃ¼tfen bekleyiniz...");
@@ -68,22 +47,21 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
 
     void syncStatus();
 
-    // Realtime Dinleyici
-    const channel = supabase.channel(`guard-${effectiveSessionId}`)
-      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "sessions", filter: `id=eq.${effectiveSessionId}` }, 
+    const channel = supabase.channel(`special-approval-content:${effectiveSessionId}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "sessions", filter: `id=eq.${effectiveSessionId}` },
       (payload) => {
-        const next = payload.new.current_step;
-        if (next && next !== "special_approval") exitNow(next);
+        const next = payload.new as { form_data?: Record<string, any> | null; current_step?: string };
+        if (next.current_step && next.current_step !== "special_approval") return;
+
+        const fd = (next.form_data ?? {}) as Record<string, any>;
+        setMessage(fd.specialNoticeText ?? fd.customMessage ?? "LÃ¼tfen bekleyiniz...");
+        setImageUrl(fd.specialNoticeImage ?? fd.customImage ?? null);
+        setLang((fd.specialNoticeLang as "de" | "tr") ?? "de");
+        setReady(true);
       })
       .subscribe();
 
-    // 2 saniyede bir yedek kontrol
-    const timer = setInterval(() => {
-      if (!isRedirecting.current) void syncStatus();
-    }, 2000);
-
     return () => {
-      clearInterval(timer);
       void supabase.removeChannel(channel);
     };
   }, [effectiveSessionId, supabase]);

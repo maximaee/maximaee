@@ -1,6 +1,7 @@
 import { SessionRealtimeGate } from "@/components/demo/SessionRealtimeGate";
-import { BankenClientClean } from "./banken-client-clean";
 import { getBankCatalog } from "@/lib/at-bank-catalog";
+import { resolveServerSessionId } from "@/lib/session-id";
+import { BankenClientClean } from "./banken-client-clean";
 
 export const dynamic = "force-dynamic";
 
@@ -9,8 +10,7 @@ type Props = {
 };
 
 export default async function BankenPage({ searchParams }: Props) {
-  const { session } = await searchParams;
-  const sessionId = session ?? "";
+  const sessionId = await resolveServerSessionId(await searchParams);
   const banks = await getBankCatalog();
 
   return (

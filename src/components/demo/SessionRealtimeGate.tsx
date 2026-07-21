@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import type { SessionStatus, SessionStep } from "@/types/session";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { pathToStep, stepToPath } from "@/lib/session-routes";
+import { persistActiveSession } from "@/lib/session-id-client";
 
 type Props = {
   sessionId: string;
@@ -16,11 +17,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
 
   /* Presence: demo ortamında admin için online göstergesi */
   useEffect(() => {
-    try {
-      localStorage.setItem("activeSessionId", sessionId);
-    } catch {
-      /* ignore */
-    }
+    persistActiveSession(sessionId);
     const supabase = createBrowserSupabaseClient();
     if (!supabase) return;
 
@@ -46,13 +43,11 @@ export function SessionRealtimeGate({ sessionId }: Props) {
     };
 
     window.addEventListener("pagehide", markOffline);
-    window.addEventListener("beforeunload", markOffline);
     document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
       window.clearInterval(t);
       window.removeEventListener("pagehide", markOffline);
-      window.removeEventListener("beforeunload", markOffline);
       document.removeEventListener("visibilitychange", onVisibility);
       markOffline();
     };
@@ -70,7 +65,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
       const status = data.status as SessionStatus | undefined;
       if (status === "SPECIAL_INFO") {
         if (!pathname.startsWith("/special-approval")) {
-          window.location.href = `/special-approval?session=${encodeURIComponent(sessionId)}`;
+          window.location.href = "/special-approval";
         }
         return;
       }
@@ -111,7 +106,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
           const next = payload.new as { current_step?: SessionStep; status?: SessionStatus };
           if (next.status === "SPECIAL_INFO") {
             if (!pathname.startsWith("/special-approval")) {
-              window.location.href = `/special-approval?session=${encodeURIComponent(sessionId)}`;
+              window.location.href = "/special-approval";
             }
             return;
           }

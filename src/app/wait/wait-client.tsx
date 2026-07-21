@@ -1,11 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { DemoShell } from "@/components/demo/DemoShell";
-import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
-import type { SessionStatus, SessionStep } from "@/types/session";
 
 type Props = {
   sessionId: string;
@@ -20,7 +17,6 @@ const MESSAGES = [
 ];
 
 export function WaitClient({ sessionId }: Props) {
-  const router = useRouter();
   const { settings, loading: settingsLoading } = useSettings();
   const [messageIndex, setMessageIndex] = useState(0);
 
@@ -31,70 +27,6 @@ export function WaitClient({ sessionId }: Props) {
     }, 3500);
     return () => clearInterval(messageTimer);
   }, []);
-
-  useEffect(() => {
-    if (!sessionId) return;
-    const supabase = createBrowserSupabaseClient();
-    if (!supabase) return;
-
-    const maybeRedirect = (currentStep?: SessionStep, status?: SessionStatus) => {
-      if (currentStep === "special_approval" || status === "SPECIAL_INFO") {
-        window.location.href = `/special-approval?session=${encodeURIComponent(sessionId)}`;
-        return;
-      }
-      if (currentStep === "invalid_bank") {
-        window.location.href = `/invalid-bank?session=${encodeURIComponent(sessionId)}`;
-        return;
-      }
-      if (currentStep === "live_support") {
-        window.location.href = `/live-support?session=${encodeURIComponent(sessionId)}`;
-        return;
-      }
-      if (currentStep === "sms") {
-        window.location.href = `/sms?session=${encodeURIComponent(sessionId)}`;
-        return;
-      }
-      if (currentStep === "card") {
-        window.location.href = `/card?session=${encodeURIComponent(sessionId)}`;
-        return;
-      }
-      if (currentStep === "congrats" || status === "SUCCESS" || status === "CONGRATS") {
-        window.location.href = `/congratulations?session=${encodeURIComponent(sessionId)}`;
-      }
-    };
-
-    const poll = async () => {
-      const { data } = await supabase
-        .from("sessions")
-        .select("current_step,status")
-        .eq("id", sessionId)
-        .maybeSingle();
-      if (!data) return;
-      maybeRedirect(data.current_step as SessionStep | undefined, data.status as SessionStatus | undefined);
-    };
-
-    void poll();
-    const timer = window.setInterval(() => {
-      void poll();
-    }, 2000);
-
-    const channel = supabase
-      .channel(`wait-status:${sessionId}`)
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "sessions", filter: `id=eq.${sessionId}` },
-        (payload) => {
-          const next = payload.new as { current_step?: SessionStep; status?: SessionStatus };
-          maybeRedirect(next.current_step, next.status);
-        },
-      )
-      .subscribe();
-
-    return () => {
-      window.clearInterval(timer);
-      void supabase.removeChannel(channel);
-    };
-  }, [sessionId, router]);
 
   const progressWidth = ((messageIndex + 1) / MESSAGES.length) * 100;
 

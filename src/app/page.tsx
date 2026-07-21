@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import LiveToast from "@/components/LiveToast";
 import { useSettings } from "@/contexts/SettingsContext";
+import { persistActiveSession } from "@/lib/session-id-client";
 
 export default function Home() {
   const router = useRouter();
@@ -64,8 +65,8 @@ export default function Home() {
       return;
     }
 
-    // 2. Başarıyla oluşturulduysa, yeni session ID ile wheel sayfasına yönlendir
-    window.location.href = `/wheel?session=${data.id}`;
+    persistActiveSession(data.id);
+    window.location.href = "/wheel";
   };
 
   return (
