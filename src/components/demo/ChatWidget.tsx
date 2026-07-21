@@ -76,7 +76,7 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
           setMessages((prev) => [...prev, newMsg]);
           
           if (!isOpenRef.current && newMsg.sender === "admin") {
-            setUnreadCount((prev) => prev + 1);
+            // Unread count tracking removed as part of cleanup
           }
         }
       )
