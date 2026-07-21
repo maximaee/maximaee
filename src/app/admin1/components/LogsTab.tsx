@@ -669,10 +669,10 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                         </span>
                       )}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
-                      <div className="flex flex-col gap-2 min-w-[150px] items-end">
+                    <td className="px-3 py-4 whitespace-nowrap text-right">
+                      <div className="flex flex-col gap-2 w-full min-w-[180px] items-end justify-end ml-auto">
                         <select 
-                          className={`w-full max-w-[160px] rounded-xl border text-xs px-2 py-2 outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
+                          className={`w-full rounded-xl border text-xs px-3 py-2 outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                           value="" 
                           onChange={(e) => {
                             if (e.target.value) {
