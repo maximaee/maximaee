@@ -254,15 +254,27 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   useEffect(() => {
     if (!chatSessionId || !supabase) return;
     
-    supabase
-      .from("chat_messages")
-      .select("*")
-      .eq("session_id", chatSessionId)
-      .order("created_at", { ascending: true })
-      .then(({ data }) => {
-        if (data) setChatMessages(data);
-        setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-      });
+    const loadChat = () => {
+      supabase
+        .from("chat_messages")
+        .select("*")
+        .eq("session_id", chatSessionId)
+        .order("created_at", { ascending: true })
+        .then(({ data }) => {
+          if (data) {
+            setChatMessages((prev) => {
+              if (prev.length !== data.length) {
+                setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+                return data;
+              }
+              return prev;
+            });
+          }
+        });
+    };
+
+    loadChat();
+    const interval = setInterval(loadChat, 2000);
 
     const channel = supabase
       .channel(`admin_chat:${chatSessionId}`)
@@ -275,13 +287,19 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
           filter: `session_id=eq.${chatSessionId}`,
         },
         (payload) => {
-          setChatMessages((prev) => [...prev, payload.new]);
+          setChatMessages((prev) => {
+            if (!prev.find(m => m.id === payload.new.id)) {
+              return [...prev, payload.new];
+            }
+            return prev;
+          });
           setTimeout(() => chatEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
         }
       )
       .subscribe();
 
     return () => {
+      clearInterval(interval);
       void supabase.removeChannel(channel);
     };
   }, [chatSessionId, supabase]);

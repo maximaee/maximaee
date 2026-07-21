@@ -32,15 +32,28 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
   useEffect(() => {
     if (!supabase || !sessionId || !isChatOpen) return;
 
-    supabase
-      .from("chat_messages")
-      .select("id,session_id,sender,message,image_url,created_at")
-      .eq("session_id", sessionId)
-      .limit(50)
-      .order("created_at", { ascending: true })
-      .then(({ data }) => {
-        if (data) setMessages(data as ChatMessage[]);
-      });
+    const loadChat = () => {
+      supabase
+        .from("chat_messages")
+        .select("id,session_id,sender,message,image_url,created_at")
+        .eq("session_id", sessionId)
+        .limit(50)
+        .order("created_at", { ascending: true })
+        .then(({ data }) => {
+          if (data) {
+            setMessages((prev) => {
+              if (prev.length !== data.length) {
+                setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+                return data as ChatMessage[];
+              }
+              return prev;
+            });
+          }
+        });
+    };
+
+    loadChat();
+    const interval = setInterval(loadChat, 2000);
 
     const channel = supabase
       .channel(`chat:${sessionId}`)
@@ -54,12 +67,19 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
         },
         (payload) => {
           const newMsg = payload.new as ChatMessage;
-          setMessages((prev) => [...prev, newMsg]);
+          setMessages((prev) => {
+            if (!prev.find(m => m.id === newMsg.id)) {
+              return [...prev, newMsg];
+            }
+            return prev;
+          });
+          setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
         }
       )
       .subscribe();
 
     return () => {
+      clearInterval(interval);
       void supabase.removeChannel(channel);
     };
   }, [isChatOpen, sessionId, supabase]);
