@@ -27,7 +27,7 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
       }
       const { data, error: qErr } = await supabase
         .from("sessions")
-        .select("partner_name, participation_code")
+        .select("partner_name, participation_code, form_data")
         .eq("id", sessionId)
         .maybeSingle();
 
@@ -38,7 +38,8 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
         return;
       }
 
-      setPartnerName(data.partner_name || "partner");
+      const formData = data.form_data as Record<string, any>;
+      setPartnerName(formData?.partner_display_name || data.partner_name || "partner");
       setExpectedCode(data.participation_code || "");
       setLoading(false);
     })();

