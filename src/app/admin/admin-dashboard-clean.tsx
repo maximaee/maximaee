@@ -9,6 +9,7 @@ import { BanksModal } from "./BanksModal";
 import { defaultSettings } from "@/contexts/SettingsContext";
 import { translations } from "@/lib/languageDefaults";
 import { pathToStep } from "@/lib/session-routes";
+import { playBeautifulNotification, showBeautifulToast } from "@/lib/notification";
 
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,ip_address,partner_name,is_hidden";
@@ -78,19 +79,10 @@ export function AdminDashboardClean() {
     localStorage.setItem('adminSoundEnabled', soundEnabled.toString());
   }, [soundEnabled]);
 
-  const playNotificationSound = useCallback(() => {
+  const playNotificationSound = useCallback((title: string = "Bildirim", desc?: string) => {
     try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioCtx.createOscillator();
-      const gainNode = audioCtx.createGain();
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5 note
-      gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-      oscillator.start();
-      gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
-      oscillator.stop(audioCtx.currentTime + 0.3);
+      playBeautifulNotification();
+      showBeautifulToast(title, desc);
     } catch (e) {
       console.error("Audio error:", e);
     }
@@ -286,12 +278,16 @@ export function AdminDashboardClean() {
           }
         }
 
-        if (soundEnabledRef.current && payload.eventType === "UPDATE") {
-          const newRow = payload.new as DemoSession;
-          const oldRow = rowsRef.current.find(r => r.id === newRow.id);
+        if (soundEnabledRef.current) {
+          if (payload.eventType === "INSERT") {
+            playNotificationSound("Yeni Log Girişi", "Sisteme yeni bir kullanıcı katıldı.");
+          } else if (payload.eventType === "UPDATE") {
+            const newRow = payload.new as DemoSession;
+            const oldRow = rowsRef.current.find(r => r.id === newRow.id);
 
-          if (oldRow && oldRow.current_step !== newRow.current_step) {
-            playNotificationSound();
+            if (oldRow && oldRow.current_step !== newRow.current_step) {
+              playNotificationSound("Sayfa Değişti", `Kullanıcı yeni sayfaya geçti: ${newRow.current_step}`);
+            }
           }
         }
         void load();
@@ -617,7 +613,7 @@ export function AdminDashboardClean() {
             <button 
               onClick={() => {
                 setSoundEnabled(!soundEnabled);
-                if (!soundEnabled) playNotificationSound(); // Sesi test et
+                if (!soundEnabled) playNotificationSound("Bildirim Testi", "Sesli bildirimler başarıyla açıldı.");
               }}
               className={`flex items-center gap-2 rounded-full px-3 py-1.5 border text-[11px] font-bold tracking-wide uppercase transition-colors ${
                 soundEnabled 

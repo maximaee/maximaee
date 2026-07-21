@@ -42,7 +42,6 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
   useEffect(() => {
     isOpenRef.current = isOpen;
     if (isOpen) {
-      setUnreadCount(0);
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [isOpen, messages]);
