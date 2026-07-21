@@ -130,37 +130,42 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
     setUploading(null);
   };
 
-  if (loading) return <div className="opacity-50">Yükleniyor...</div>;
-  if (!settings) return <div className="opacity-50">Ayarlar bulunamadı.</div>;
+  if (loading) return <div className="opacity-50 p-8 text-center font-medium">Yükleniyor...</div>;
+  if (!settings) return <div className="opacity-50 p-8 text-center font-medium">Ayarlar bulunamadı.</div>;
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Genel Ayarlar</h2>
-          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Sitenin genel tasarımını, logo ve arkaplanını değiştirin</p>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-xl ${darkMode ? 'bg-white/10 text-white' : 'bg-black/5 text-black'}`}>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /></svg>
+          </div>
+          <div>
+            <h2 className={`text-2xl font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>Genel Ayarlar</h2>
+            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Sitenin genel tasarımını, logo ve arkaplanını değiştirin</p>
+          </div>
         </div>
       </div>
 
       <form onSubmit={handleSave} className="space-y-8">
-        <div className={`p-6 rounded-xl border shadow-sm ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-lg font-bold mb-6 border-b pb-2 ${darkMode ? 'border-white/10 text-[#EB5E28]' : 'border-gray-200 text-[#EB5E28]'}`}>Marka ve Tasarım</h3>
+        <div className={`p-8 rounded-3xl border shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl ${darkMode ? 'bg-[#1c1c1e]/70 border-white/5' : 'bg-white/80 border-[#d2d2d7]/50'}`}>
+          <h3 className={`text-lg font-bold mb-8 border-b pb-4 ${darkMode ? 'border-white/10 text-[#EB5E28]' : 'border-gray-200 text-[#EB5E28]'}`}>Marka ve Tasarım</h3>
           
-          <div className="space-y-6">
-            <div className="flex gap-4 items-start border-b border-white/5 pb-6">
-              <div className="w-24 h-24 shrink-0 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center p-2 overflow-hidden">
-                {settings.logo_url ? <img src={settings.logo_url} alt="" className="max-w-full max-h-full object-contain" /> : <span className="text-xs opacity-50">Logo Yok</span>}
+          <div className="space-y-8">
+            <div className="flex gap-5 items-center border-b border-black/5 dark:border-white/5 pb-8">
+              <div className={`w-24 h-24 shrink-0 rounded-2xl border flex items-center justify-center p-2 overflow-hidden shadow-inner ${darkMode ? 'bg-black/40 border-white/10' : 'bg-gray-100 border-gray-200'}`}>
+                {settings.logo_url ? <img src={settings.logo_url} alt="" className="max-w-full max-h-full object-contain drop-shadow-md" /> : <span className="text-xs opacity-50 font-medium">Logo Yok</span>}
               </div>
-              <div className="flex-1 space-y-2">
-                <label className="block text-xs font-bold opacity-70 uppercase tracking-wider">Site Logosu</label>
-                <div className="flex gap-2">
+              <div className="flex-1 space-y-2.5">
+                <label className={`block text-[11px] font-bold opacity-80 uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Site Logosu</label>
+                <div className="flex gap-3">
                   <input 
                     type="text"
                     value={settings.logo_url || ""}
                     onChange={e => handleChange("logo_url", e.target.value)}
-                    className={`flex-1 p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-300 focus:border-[#EB5E28]'}`}
+                    className={`flex-1 px-4 py-2.5 rounded-xl text-sm outline-none transition-all ${darkMode ? 'bg-black/20 text-white border border-white/10 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-200 focus:border-[#EB5E28]'}`}
                   />
-                  <label className={`px-4 py-3 rounded-lg font-bold text-sm cursor-pointer transition-colors ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-200 hover:bg-gray-300'}`}>
+                  <label className={`px-5 py-2.5 rounded-xl font-bold text-sm cursor-pointer transition-all active:scale-95 shadow-sm border ${darkMode ? 'bg-white/10 hover:bg-white/20 border-white/5 text-white' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}>
                     {uploading === "logo_url" ? "..." : "Yükle"}
                     <input type="file" accept="image/*" className="hidden" onChange={e => handleUpload(e, "logo_url")} disabled={!!uploading} />
                   </label>
@@ -168,20 +173,20 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
               </div>
             </div>
 
-            <div className="flex gap-4 items-start border-b border-white/5 pb-6">
-              <div className="w-24 h-24 shrink-0 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center p-2 overflow-hidden relative">
-                {settings.bg_url ? <img src={settings.bg_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" /> : <span className="text-xs opacity-50">Arkaplan Yok</span>}
+            <div className="flex gap-5 items-center border-b border-black/5 dark:border-white/5 pb-8">
+              <div className={`w-24 h-24 shrink-0 rounded-2xl border flex items-center justify-center overflow-hidden relative shadow-inner ${darkMode ? 'bg-black/40 border-white/10' : 'bg-gray-100 border-gray-200'}`}>
+                {settings.bg_url ? <img src={settings.bg_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-80" /> : <span className="text-xs opacity-50 font-medium">Arkaplan Yok</span>}
               </div>
-              <div className="flex-1 space-y-2">
-                <label className="block text-xs font-bold opacity-70 uppercase tracking-wider">Site Arkaplan Görseli (Masaüstü / Genel)</label>
-                <div className="flex gap-2">
+              <div className="flex-1 space-y-2.5">
+                <label className={`block text-[11px] font-bold opacity-80 uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Site Arkaplan Görseli (Masaüstü / Genel)</label>
+                <div className="flex gap-3">
                   <input 
                     type="text"
                     value={settings.bg_url || ""}
                     onChange={e => handleChange("bg_url", e.target.value)}
-                    className={`flex-1 p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-300 focus:border-[#EB5E28]'}`}
+                    className={`flex-1 px-4 py-2.5 rounded-xl text-sm outline-none transition-all ${darkMode ? 'bg-black/20 text-white border border-white/10 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-200 focus:border-[#EB5E28]'}`}
                   />
-                  <label className={`px-4 py-3 rounded-lg font-bold text-sm cursor-pointer transition-colors ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-200 hover:bg-gray-300'}`}>
+                  <label className={`px-5 py-2.5 rounded-xl font-bold text-sm cursor-pointer transition-all active:scale-95 shadow-sm border ${darkMode ? 'bg-white/10 hover:bg-white/20 border-white/5 text-white' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}>
                     {uploading === "bg_url" ? "..." : "Yükle"}
                     <input type="file" accept="image/*" className="hidden" onChange={e => handleUpload(e, "bg_url")} disabled={!!uploading} />
                   </label>
@@ -189,13 +194,13 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
               </div>
             </div>
 
-            <div className="flex gap-4 items-start border-b border-white/5 pb-6">
-              <div className="w-24 h-24 shrink-0 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center p-2 overflow-hidden relative">
-                {settings.wheel_settings?.bg_url_mobile ? <img src={settings.wheel_settings.bg_url_mobile} alt="" className="absolute inset-0 w-full h-full object-cover opacity-50" /> : <span className="text-xs opacity-50">Mobil Yok</span>}
+            <div className="flex gap-5 items-center border-b border-black/5 dark:border-white/5 pb-8">
+              <div className={`w-24 h-24 shrink-0 rounded-2xl border flex items-center justify-center overflow-hidden relative shadow-inner ${darkMode ? 'bg-black/40 border-white/10' : 'bg-gray-100 border-gray-200'}`}>
+                {settings.wheel_settings?.bg_url_mobile ? <img src={settings.wheel_settings.bg_url_mobile} alt="" className="absolute inset-0 w-full h-full object-cover opacity-80" /> : <span className="text-xs opacity-50 font-medium">Mobil Yok</span>}
               </div>
-              <div className="flex-1 space-y-2">
-                <label className="block text-xs font-bold opacity-70 uppercase tracking-wider">Site Arkaplan Görseli (Mobil - Opsiyonel)</label>
-                <div className="flex gap-2">
+              <div className="flex-1 space-y-2.5">
+                <label className={`block text-[11px] font-bold opacity-80 uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Site Arkaplan Görseli (Mobil - Opsiyonel)</label>
+                <div className="flex gap-3">
                   <input 
                     type="text"
                     value={settings.wheel_settings?.bg_url_mobile || ""}
@@ -205,9 +210,9 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
                         wheel_settings: { ...(prev.wheel_settings || {}), bg_url_mobile: e.target.value }
                       }));
                     }}
-                    className={`flex-1 p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-300 focus:border-[#EB5E28]'}`}
+                    className={`flex-1 px-4 py-2.5 rounded-xl text-sm outline-none transition-all ${darkMode ? 'bg-black/20 text-white border border-white/10 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-200 focus:border-[#EB5E28]'}`}
                   />
-                  <label className={`px-4 py-3 rounded-lg font-bold text-sm cursor-pointer transition-colors ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-gray-200 hover:bg-gray-300'}`}>
+                  <label className={`px-5 py-2.5 rounded-xl font-bold text-sm cursor-pointer transition-all active:scale-95 shadow-sm border ${darkMode ? 'bg-white/10 hover:bg-white/20 border-white/5 text-white' : 'bg-white hover:bg-gray-50 border-gray-200 text-gray-700'}`}>
                     {uploading === "bg_url_mobile" ? "..." : "Yükle"}
                     <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                       if (!e.target.files || e.target.files.length === 0 || !supabase) return;
@@ -234,23 +239,23 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6 pt-4">
               <div>
-                <label className="block text-xs font-bold mb-1 opacity-70 uppercase tracking-wider">Portal Adı</label>
+                <label className={`block text-[11px] font-bold mb-2 opacity-80 uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Portal Adı</label>
                 <input 
                   type="text"
                   value={settings.portal_name || ""}
                   onChange={e => handleChange("portal_name", e.target.value)}
-                  className={`w-full p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-300 focus:border-[#EB5E28]'}`}
+                  className={`w-full px-4 py-3 rounded-xl text-sm outline-none transition-all ${darkMode ? 'bg-black/20 text-white border border-white/10 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-200 focus:border-[#EB5E28]'}`}
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold mb-1 opacity-70 uppercase tracking-wider">Destek Merkezi Adı</label>
+                <label className={`block text-[11px] font-bold mb-2 opacity-80 uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Destek Merkezi Adı</label>
                 <input 
                   type="text"
                   value={settings.support_center_name || ""}
                   onChange={e => handleChange("support_center_name", e.target.value)}
-                  className={`w-full p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-300 focus:border-[#EB5E28]'}`}
+                  className={`w-full px-4 py-3 rounded-xl text-sm outline-none transition-all ${darkMode ? 'bg-black/20 text-white border border-white/10 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-200 focus:border-[#EB5E28]'}`}
                 />
               </div>
             </div>
@@ -258,15 +263,15 @@ export function GeneralSettingsTab({ darkMode }: { darkMode: boolean }) {
           </div>
         </div>
         
-        <div className="flex justify-end sticky bottom-6 z-10">
+        <div className="flex justify-end sticky bottom-6 z-20 pb-4">
           <button 
             type="submit" 
             disabled={saving}
-            className="px-8 py-3 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors shadow-lg disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-3.5 bg-[#EB5E28] text-white rounded-full font-bold tracking-wide hover:bg-[#c94d1e] transition-all duration-300 shadow-[0_0_15px_rgba(235,94,40,0.3)] hover:shadow-[0_0_25px_rgba(235,94,40,0.5)] active:scale-95 disabled:opacity-50 flex items-center gap-2"
           >
             {saving ? "Kaydediliyor..." : (
               <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                 Kaydet
               </>
             )}

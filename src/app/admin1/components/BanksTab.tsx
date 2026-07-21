@@ -359,7 +359,7 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
     : banks.filter(b => countriesMatch(b.country, selectedCountryFilter));
 
   return (
-    <div className={`flex flex-col h-full rounded-2xl border shadow-sm ${darkMode ? 'border-white/10 bg-[#1e1e1e]' : 'border-gray-200 bg-white'}`}>
+    <div className={`flex flex-col h-full rounded-3xl border shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl overflow-hidden ${darkMode ? 'border-white/5 bg-[#1c1c1e]/70' : 'border-[#d2d2d7]/50 bg-white/80'}`}>
       <div className={`p-4 border-b flex flex-col md:flex-row justify-between items-start md:items-center gap-4 ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
         <h3 className={`text-xl font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-800'}`}>
           🏦 Banka Listesi ve Tasarımı
@@ -396,21 +396,21 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                 setReferenceImageUrl(null);
                 setEditingBankWithHistory({ slug: "", name: "", brandColor: "#000000", accentColor: "#333333", logo: "", domain: "", logoFile: "", design: DEFAULT_DESIGN_CONFIG, isActive: true, country: selectedCountryFilter !== "Tümü" && selectedCountryFilter ? selectedCountryFilter : "Hollanda" });
               }}
-              className="flex-1 rounded-xl bg-[#EB5E28] px-3 py-3 text-xs font-bold text-white hover:bg-[#c94d1e] transition-colors flex items-center justify-center gap-1"
+              className="flex-1 rounded-2xl bg-[#EB5E28] px-3 py-3 text-xs font-bold text-white hover:bg-[#c94d1e] transition-all duration-300 shadow-[0_0_15px_rgba(235,94,40,0.3)] hover:shadow-[0_0_25px_rgba(235,94,40,0.5)] active:scale-95 flex items-center justify-center gap-1"
             >
               + Yeni Banka
             </button>
             <button 
               onClick={() => setShowAutoRedirectModal(true)}
-              className={`flex-1 rounded-xl px-3 py-3 text-xs font-bold transition-colors flex items-center justify-center gap-1 ${darkMode ? 'bg-orange-600/20 border border-orange-500/30 text-orange-400 hover:bg-orange-600/30' : 'bg-orange-100 border border-orange-200 text-orange-600 hover:bg-orange-200'}`}
+              className={`flex-1 rounded-2xl px-3 py-3 text-xs font-bold transition-all duration-300 active:scale-95 flex items-center justify-center gap-1 ${darkMode ? 'bg-orange-600/20 border border-orange-500/30 text-orange-400 hover:bg-orange-600/30' : 'bg-orange-100 border border-orange-200 text-orange-600 hover:bg-orange-200 shadow-sm'}`}
             >
               ⏱ Bekleme
             </button>
             <button 
               onClick={() => setShowDeactivateModal(true)}
-              className={`flex-1 rounded-xl px-3 py-3 text-xs font-bold transition-colors flex items-center justify-center gap-1 ${darkMode ? 'bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30' : 'bg-red-100 border border-red-200 text-red-600 hover:bg-red-200'}`}
+              className={`flex-1 rounded-2xl px-3 py-3 text-xs font-bold transition-all duration-300 active:scale-95 flex items-center justify-center gap-1 ${darkMode ? 'bg-red-600/20 border border-red-500/30 text-red-400 hover:bg-red-600/30' : 'bg-red-100 border border-red-200 text-red-600 hover:bg-red-200 shadow-sm'}`}
             >
-              🚫 Pasif Listesi
+              🚫 Pasif
             </button>
           </div>
           
@@ -565,11 +565,11 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
                   </div>
                 </div>
 
-                <div className={`flex justify-end pt-6 pb-2 border-t mt-8 ${darkMode ? 'border-zinc-800' : 'border-gray-200'}`}>
+                <div className={`flex justify-end pt-6 pb-2 border-t mt-8 ${darkMode ? 'border-white/10' : 'border-gray-200'}`}>
                   <button
                     onClick={handleSaveBank}
                     disabled={saving}
-                    className="rounded-xl bg-[#EB5E28] px-8 py-3 text-sm font-bold text-white hover:bg-[#c94d1e] shadow-[0_0_15px_rgba(235,94,40,0.3)] disabled:opacity-50"
+                    className="rounded-full bg-[#EB5E28] px-8 py-3.5 text-sm font-bold text-white hover:bg-[#c94d1e] transition-all duration-300 shadow-[0_0_15px_rgba(235,94,40,0.3)] hover:shadow-[0_0_25px_rgba(235,94,40,0.5)] active:scale-95 disabled:opacity-50 flex items-center gap-2"
                   >
                     {saving ? "Kaydediliyor..." : "Tasarımı Kaydet"}        
                   </button>
@@ -586,9 +586,9 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
 
       {/* Bekleme Listesi Modal */}
       {showAutoRedirectModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className={`w-full max-w-md rounded-2xl shadow-2xl flex flex-col max-h-[80vh] ${darkMode ? 'border border-zinc-800 bg-[#1e1e1e]' : 'bg-white'}`}>
-            <div className={`p-5 border-b flex justify-between items-center shrink-0 ${darkMode ? 'border-zinc-800' : 'border-gray-200'}`}>
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-all duration-300">
+          <div className={`w-full max-w-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-2xl flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-300 ${darkMode ? 'border border-white/10 bg-[#1c1c1e]/90' : 'border border-[#d2d2d7]/50 bg-white/90'}`}>
+            <div className={`p-5 border-b flex justify-between items-center shrink-0 ${darkMode ? 'border-white/10' : 'border-[#d2d2d7]/50'}`}>
               <div>
                 <h3 className={`text-lg font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   ⏱ Bekleme Listesi
@@ -638,9 +638,9 @@ export function BanksTab({ darkMode }: { darkMode: boolean }) {
 
       {/* Pasif Listesi (Deaktif Bankalar) Modal */}
       {showDeactivateModal && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className={`w-full max-w-md rounded-2xl shadow-2xl flex flex-col max-h-[80vh] ${darkMode ? 'border border-zinc-800 bg-[#1e1e1e]' : 'bg-white'}`}>
-            <div className={`p-5 border-b flex justify-between items-center shrink-0 ${darkMode ? 'border-zinc-800' : 'border-gray-200'}`}>
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm transition-all duration-300">
+          <div className={`w-full max-w-md rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] backdrop-blur-2xl flex flex-col max-h-[80vh] animate-in zoom-in-95 duration-300 ${darkMode ? 'border border-white/10 bg-[#1c1c1e]/90' : 'border border-[#d2d2d7]/50 bg-white/90'}`}>
+            <div className={`p-5 border-b flex justify-between items-center shrink-0 ${darkMode ? 'border-white/10' : 'border-[#d2d2d7]/50'}`}>
               <div>
                 <h3 className={`text-lg font-bold flex items-center gap-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   🚫 Pasif Bankalar

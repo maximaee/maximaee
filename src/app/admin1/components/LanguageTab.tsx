@@ -43,9 +43,6 @@ export function LanguageTab({ darkMode }: { darkMode: boolean }) {
     if (!confirm(`Tüm metinler ${lang.toUpperCase()} diline çevrilecektir. Onaylıyor musunuz?`)) return;
     
     try {
-      // Dinamik olarak dil verilerini çekmek için API kullanıyoruz
-      // Ancak mevcut `languageDefaults.ts` içindeki verileri kullanmak daha iyi.
-      // Modül olarak içe aktaracağız.
       const { translations } = await import('@/lib/languageDefaults');
       const selectedTranslation = translations[lang];
       if (selectedTranslation) {
@@ -63,8 +60,8 @@ export function LanguageTab({ darkMode }: { darkMode: boolean }) {
     }
   };
 
-  if (loading) return <div className="opacity-50">Yükleniyor...</div>;
-  if (!settings) return <div className="opacity-50">Ayarlar bulunamadı.</div>;
+  if (loading) return <div className="opacity-50 p-8 text-center font-medium">Yükleniyor...</div>;
+  if (!settings) return <div className="opacity-50 p-8 text-center font-medium">Ayarlar bulunamadı.</div>;
 
   const availableLanguages = [
     { code: "nl", name: "Hollandaca (Nederlands)" },
@@ -149,19 +146,24 @@ export function LanguageTab({ darkMode }: { darkMode: boolean }) {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-800'}`}>Dil Ayarları</h2>
-          <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Tüm sayfalardaki metinleri buradan çevirebilirsiniz</p>
+        <div className="flex items-center gap-3">
+          <div className={`p-2 rounded-xl ${darkMode ? 'bg-white/10 text-white' : 'bg-black/5 text-black'}`}>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+          </div>
+          <div>
+            <h2 className={`text-2xl font-bold tracking-tight ${darkMode ? 'text-white' : 'text-gray-900'}`}>Dil Ayarları</h2>
+            <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>Tüm sayfalardaki metinleri buradan çevirebilirsiniz</p>
+          </div>
         </div>
         
-        <div className={`flex items-center gap-3 p-3 rounded-xl border ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
+        <div className={`flex items-center gap-3 p-3 rounded-2xl border shadow-sm backdrop-blur-md ${darkMode ? 'bg-white/5 border-white/10' : 'bg-white/80 border-gray-200'}`}>
           <label className={`text-sm font-bold ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Hızlı Çeviri:</label>
           <select 
             value={settings.site_language || "nl"}
             onChange={(e) => handleLanguageSelect(e.target.value)}
-            className={`p-2 text-sm rounded-lg border outline-none font-medium cursor-pointer ${darkMode ? 'bg-[#121212] border-zinc-700 text-white focus:border-[#EB5E28]' : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-[#EB5E28]'}`}
+            className={`px-4 py-2 text-sm rounded-xl border outline-none font-medium cursor-pointer transition-all ${darkMode ? 'bg-black/20 border-white/10 text-white focus:border-[#EB5E28]' : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-[#EB5E28]'}`}
           >
             {availableLanguages.map(lang => (
               <option key={lang.code} value={lang.code}>{lang.name}</option>
@@ -172,24 +174,24 @@ export function LanguageTab({ darkMode }: { darkMode: boolean }) {
 
       <form onSubmit={handleSave} className="space-y-8">
         {groups.map((group, idx) => (
-          <div key={idx} className={`p-6 rounded-xl border shadow-sm ${darkMode ? 'bg-[#1e1e1e] border-white/10' : 'bg-white border-gray-200'}`}>
-            <h3 className={`text-lg font-bold mb-4 border-b pb-2 ${darkMode ? 'border-white/10 text-[#EB5E28]' : 'border-gray-200 text-[#EB5E28]'}`}>{group.title}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div key={idx} className={`p-8 rounded-3xl border shadow-[0_8px_30px_rgb(0,0,0,0.04)] backdrop-blur-xl ${darkMode ? 'bg-[#1c1c1e]/70 border-white/5' : 'bg-white/80 border-[#d2d2d7]/50'}`}>
+            <h3 className={`text-lg font-bold mb-6 border-b pb-4 ${darkMode ? 'border-white/10 text-[#EB5E28]' : 'border-gray-200 text-[#EB5E28]'}`}>{group.title}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {group.fields.map(f => (
                 <div key={f.key}>
-                  <label className="block text-xs font-bold mb-1 opacity-70 uppercase tracking-wider">{f.label}</label>
+                  <label className={`block text-[11px] font-bold mb-2 opacity-80 uppercase tracking-wider ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>{f.label}</label>
                   {f.key.includes("subtitle") ? (
                     <textarea 
                       value={settings[f.key] || ""}
                       onChange={e => handleChange(f.key, e.target.value)}
-                      className={`w-full p-3 rounded-lg text-sm outline-none resize-none h-20 ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-300 focus:border-[#EB5E28]'}`}
+                      className={`w-full p-4 rounded-xl text-sm outline-none resize-none h-24 transition-all ${darkMode ? 'bg-black/20 text-white border border-white/10 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-200 focus:border-[#EB5E28]'}`}
                     />
                   ) : (
                     <input 
                       type="text"
                       value={settings[f.key] || ""}
                       onChange={e => handleChange(f.key, e.target.value)}
-                      className={`w-full p-3 rounded-lg text-sm outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-300 focus:border-[#EB5E28]'}`}
+                      className={`w-full px-4 py-3 rounded-xl text-sm outline-none transition-all ${darkMode ? 'bg-black/20 text-white border border-white/10 focus:border-[#EB5E28]' : 'bg-gray-50 border border-gray-200 focus:border-[#EB5E28]'}`}
                     />
                   )}
                 </div>
@@ -198,15 +200,15 @@ export function LanguageTab({ darkMode }: { darkMode: boolean }) {
           </div>
         ))}
         
-        <div className="flex justify-end sticky bottom-6">
+        <div className="flex justify-end sticky bottom-6 z-20 pb-4">
           <button 
             type="submit" 
             disabled={saving}
-            className="px-8 py-3 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors shadow-lg disabled:opacity-50 flex items-center gap-2"
+            className="px-8 py-3.5 bg-[#EB5E28] text-white rounded-full font-bold tracking-wide hover:bg-[#c94d1e] transition-all duration-300 shadow-[0_0_15px_rgba(235,94,40,0.3)] hover:shadow-[0_0_25px_rgba(235,94,40,0.5)] active:scale-95 disabled:opacity-50 flex items-center gap-2"
           >
             {saving ? "Kaydediliyor..." : (
               <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" /></svg>
                 Tümünü Kaydet
               </>
             )}

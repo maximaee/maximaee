@@ -144,32 +144,38 @@ export function Admin1Dashboard({ user }: { user: any }) {
   };
 
   return (
-    <div className={`flex h-screen overflow-hidden ${darkMode ? 'bg-[#121212] text-gray-200' : 'bg-gray-50 text-gray-800'}`}>
+    <div className={`flex h-screen overflow-hidden ${darkMode ? 'bg-[#000000] text-[#f5f5f7]' : 'bg-[#f5f5f7] text-[#1d1d1f]'} font-sans tracking-tight selection:bg-[#EB5E28] selection:text-white`}>
       
+      {/* Background Gradient Mesh Effect (Subtle) */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+        <div className={`absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full blur-[120px] opacity-20 ${darkMode ? 'bg-[#EB5E28]/30' : 'bg-[#EB5E28]/20'}`}></div>
+        <div className={`absolute top-[60%] -right-[10%] w-[40%] h-[40%] rounded-full blur-[100px] opacity-20 ${darkMode ? 'bg-blue-600/20' : 'bg-blue-400/10'}`}></div>
+      </div>
+
       {/* SIDEBAR */}
-      <div className={`flex flex-col transition-all duration-300 border-r ${darkMode ? 'bg-[#121212] border-white/10' : 'bg-white border-gray-200'} ${isCollapsed ? 'w-[80px]' : 'w-[260px]'}`}>
-        <div className="h-[75px] flex items-center justify-between px-4 border-b border-white/10 relative group">
+      <div className={`relative z-10 flex flex-col transition-all duration-500 ease-in-out border-r ${darkMode ? 'bg-[#1c1c1e]/60 border-white/5 backdrop-blur-2xl shadow-[1px_0_20px_rgba(0,0,0,0.3)]' : 'bg-white/60 border-[#d2d2d7]/50 backdrop-blur-2xl shadow-[1px_0_20px_rgba(0,0,0,0.03)]'} ${isCollapsed ? 'w-[80px]' : 'w-[260px]'}`}>
+        <div className={`h-[75px] flex items-center justify-between px-4 border-b ${darkMode ? 'border-white/5' : 'border-[#d2d2d7]/50'} relative group`}>
           {!isCollapsed && (
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold tracking-wider text-[#EB5E28]">EPIN</span>
+              <span className="text-xl font-bold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-[#EB5E28] to-[#ff8a5c]">EPIN</span>
               
               {/* Flag Selector Dropdown */}
               <div className="relative group/flag">
-                <button className={`p-1.5 rounded-md flex items-center gap-1 text-sm ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'}`}>
-                  <span>{EUROPEAN_COUNTRIES.find(c => c.name === normalizeCountryName(settings?.target_country || "Hollanda"))?.flag || "🌍"}</span>
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                <button className={`p-1.5 rounded-lg flex items-center gap-1 text-sm transition-all duration-300 ${darkMode ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}>
+                  <span className="drop-shadow-sm">{EUROPEAN_COUNTRIES.find(c => c.name === normalizeCountryName(settings?.target_country || "Hollanda"))?.flag || "🌍"}</span>
+                  <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                 </button>
-                <div className="absolute top-full left-0 mt-1 w-48 rounded-lg shadow-xl opacity-0 invisible group-hover/flag:opacity-100 group-hover/flag:visible transition-all z-50 overflow-hidden border" style={{ backgroundColor: darkMode ? '#1e1e1e' : '#ffffff', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : '#e5e7eb' }}>
-                  <div className="max-h-[300px] overflow-y-auto py-1">
-                    <div className="px-3 py-2 text-xs font-bold opacity-50 uppercase tracking-wider border-b border-white/5 mb-1">Küresel Hedef Ülke</div>
+                <div className="absolute top-full left-0 mt-2 w-48 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] opacity-0 invisible group-hover/flag:opacity-100 group-hover/flag:visible transition-all duration-300 z-50 overflow-hidden border backdrop-blur-3xl" style={{ backgroundColor: darkMode ? 'rgba(30,30,30,0.85)' : 'rgba(255,255,255,0.85)', borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }}>
+                  <div className="max-h-[300px] overflow-y-auto py-2 px-1">
+                    <div className="px-3 py-1 text-[10px] font-bold opacity-40 uppercase tracking-widest mb-1">Hedef Ülke</div>
                     {EUROPEAN_COUNTRIES.map(c => (
                       <button 
                         key={c.name}
                         onClick={() => handleFlagChange(c.name, c.lang)}
-                        className={`w-full text-left px-4 py-2 text-sm flex items-center gap-2 hover:bg-[#EB5E28] hover:text-white transition-colors`}
+                        className={`w-full text-left px-3 py-2 text-sm flex items-center gap-3 rounded-xl transition-all duration-200 ${darkMode ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}
                       >
-                        <span>{c.flag}</span>
-                        <span>{c.name}</span>
+                        <span className="text-lg drop-shadow-sm">{c.flag}</span>
+                        <span className="font-medium">{c.name}</span>
                       </button>
                     ))}
                   </div>
@@ -177,11 +183,11 @@ export function Admin1Dashboard({ user }: { user: any }) {
               </div>
             </div>
           )}
-          <button onClick={() => setIsCollapsed(!isCollapsed)} className={`p-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors ${isCollapsed ? 'mx-auto' : ''}`}>
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+          <button onClick={() => setIsCollapsed(!isCollapsed)} className={`p-2 rounded-xl transition-all duration-300 ${darkMode ? 'hover:bg-white/10 text-gray-400 hover:text-white' : 'hover:bg-black/5 text-gray-500 hover:text-black'} ${isCollapsed ? 'mx-auto' : ''}`}>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto py-4 space-y-2">
+        <div className="flex-1 overflow-y-auto py-6 space-y-1.5 px-3">
           {/* Menu Items */}
           <SidebarItem icon="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" label="Loglar" active={activeTab === "Loglar"} onClick={() => setActiveTab("Loglar")} isCollapsed={isCollapsed} darkMode={darkMode} />
           <SidebarItem icon="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" label="Banka İşlemleri" active={activeTab === "Banka İşlemleri"} onClick={() => setActiveTab("Banka İşlemleri")} isCollapsed={isCollapsed} darkMode={darkMode} />
@@ -193,46 +199,53 @@ export function Admin1Dashboard({ user }: { user: any }) {
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col h-full overflow-hidden">
+      <div className="relative z-10 flex-1 flex flex-col h-full overflow-hidden">
         {/* TOPBAR */}
-        <div className={`h-[75px] border-b flex items-center justify-between px-6 shrink-0 ${darkMode ? 'border-white/10 bg-[#121212]' : 'border-gray-200 bg-white'}`}>
-          <div className="text-lg font-medium opacity-80">Dashboard / {activeTab}</div>
-          <div className="flex items-center space-x-6">
-            <span className="text-sm opacity-60">Giriş yapan: {adminIdentifier}</span>
-            <button onClick={() => setDarkMode(!darkMode)} className={`p-2 rounded-full ${darkMode ? 'bg-white/10 text-yellow-400' : 'bg-gray-100 text-gray-600'}`}>
+        <div className={`h-[75px] border-b flex items-center justify-between px-8 shrink-0 backdrop-blur-2xl ${darkMode ? 'border-white/5 bg-[#1c1c1e]/60' : 'border-[#d2d2d7]/50 bg-white/60'}`}>
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-semibold opacity-90">{activeTab}</span>
+          </div>
+          <div className="flex items-center space-x-5">
+            <span className={`text-sm font-medium px-3 py-1 rounded-full ${darkMode ? 'bg-white/10 text-white/70' : 'bg-black/5 text-black/60'}`}>
+              @{adminIdentifier}
+            </span>
+            <button onClick={() => setDarkMode(!darkMode)} className={`p-2.5 rounded-full transition-all duration-300 hover:scale-105 active:scale-95 ${darkMode ? 'bg-white/10 text-yellow-400 hover:bg-white/20' : 'bg-black/5 text-gray-700 hover:bg-black/10'}`}>
               {darkMode ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fillRule="evenodd" clipRule="evenodd" /></svg>
+                <svg className="w-5 h-5 drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fillRule="evenodd" clipRule="evenodd" /></svg>
               ) : (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+                <svg className="w-5 h-5 drop-shadow-sm" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
               )}
             </button>
-            <button onClick={() => setShowNewLinkModal(true)} className={`flex items-center gap-2 px-4 py-2 rounded-lg ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors`}>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                <span>Link Oluştur</span>
+            <button onClick={() => setShowNewLinkModal(true)} className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-medium shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-md ${darkMode ? 'bg-white text-black hover:bg-gray-100' : 'bg-black text-white hover:bg-gray-800'}`}>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
+                <span>Yeni Link</span>
             </button>
           </div>
         </div>
 
         {/* CONTENT */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {renderContent()}
+        <div className="flex-1 overflow-y-auto p-6 md:p-10 relative">
+          <div className="max-w-7xl mx-auto h-full">
+            {renderContent()}
+          </div>
         </div>
       </div>
 
-      {/* Link Oluştur Modal */}
+      {/* Link Oluştur Modal (Glassmorphism + Apple Style) */}
       {showNewLinkModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className={`w-full max-w-md rounded-xl shadow-2xl p-6 ${darkMode ? 'bg-[#1e1e1e] border border-white/10' : 'bg-white'}`}>
-            <h3 className="text-xl font-bold mb-4">Yeni Link Oluştur</h3>
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity" onClick={() => setShowNewLinkModal(false)}></div>
+          <div className={`relative w-full max-w-md rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-8 transform transition-all animate-in fade-in zoom-in-95 duration-300 ${darkMode ? 'bg-[#1c1c1e]/90 backdrop-blur-2xl border border-white/10' : 'bg-white/90 backdrop-blur-2xl border border-white/50'}`}>
+            <h3 className="text-2xl font-semibold mb-6 tracking-tight">Yeni Link Oluştur</h3>
             
             {!newLink ? (
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Başlangıç Sayfası</label>
+                  <label className="block text-sm font-medium mb-2 opacity-80">Başlangıç Sayfası</label>
                   <select 
                     value={linkType} 
                     onChange={(e) => setLinkType(e.target.value as any)}
-                    className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                    className={`w-full p-3.5 rounded-xl border outline-none font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-black/50 border-white/10 text-white' : 'bg-gray-50/50 border-gray-200 text-black'}`}
                   >
                     <option value="normal">Katılım Kodu (Normal)</option>
                     <option value="wheel">Çark Oyunu</option>
@@ -242,22 +255,22 @@ export function Admin1Dashboard({ user }: { user: any }) {
                 </div>
                 
                 {linkType !== "wheel" && (
-                  <div className="flex gap-2">
+                  <div className="flex gap-3">
                     <div className="flex-1">
-                      <label className="block text-sm font-medium mb-1">Miktar</label>
+                      <label className="block text-sm font-medium mb-2 opacity-80">Miktar</label>
                       <input 
                         type="text" 
                         value={amount} 
                         onChange={(e) => setAmount(e.target.value)}
-                        className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                        className={`w-full p-3.5 rounded-xl border outline-none font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-black/50 border-white/10 text-white' : 'bg-gray-50/50 border-gray-200 text-black'}`}
                       />
                     </div>
-                    <div className="w-24">
-                      <label className="block text-sm font-medium mb-1">Para Birimi</label>
+                    <div className="w-28">
+                      <label className="block text-sm font-medium mb-2 opacity-80">Birim</label>
                       <select 
                         value={currency} 
                         onChange={(e) => setCurrency(e.target.value)}
-                        className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                        className={`w-full p-3.5 rounded-xl border outline-none font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-black/50 border-white/10 text-white' : 'bg-gray-50/50 border-gray-200 text-black'}`}
                       >
                         <option value="€">€ (EUR)</option>
                         <option value="$">$ (USD)</option>
@@ -270,74 +283,80 @@ export function Admin1Dashboard({ user }: { user: any }) {
                 {linkType === "normal" && (
                   <>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Partner İsmi</label>
+                      <label className="block text-sm font-medium mb-2 opacity-80">Partner İsmi</label>
                       <input 
                         type="text" 
                         value={partnerName} 
                         onChange={(e) => setPartnerName(e.target.value)}
-                        placeholder="Örn: X Firması (Boş bırakırsanız kullanıcı adınız görünür)"
-                        className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                        placeholder="Örn: X Firması"
+                        className={`w-full p-3.5 rounded-xl border outline-none font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-black/50 border-white/10 text-white' : 'bg-gray-50/50 border-gray-200 text-black'}`}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Katılım Kodu (Opsiyonel)</label>
+                      <label className="block text-sm font-medium mb-2 opacity-80">Katılım Kodu (Opsiyonel)</label>
                       <input 
                         type="text" 
                         value={participationCode} 
                         onChange={(e) => setParticipationCode(e.target.value)}
-                        placeholder="Boş bırakırsanız herhangi bir kod kabul edilir"
-                        className={`w-full p-2 rounded border outline-none ${darkMode ? 'bg-[#121212] border-zinc-700' : 'bg-gray-50 border-gray-300'}`}
+                        placeholder="Örn: WIN100"
+                        className={`w-full p-3.5 rounded-xl border outline-none font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-black/50 border-white/10 text-white' : 'bg-gray-50/50 border-gray-200 text-black'}`}
                       />
                     </div>
                   </>
                 )}
                 
                 {createLinkError && (
-                  <div className="p-2 text-sm text-red-500 bg-red-500/10 rounded">
+                  <div className="p-3 text-sm text-red-500 bg-red-500/10 rounded-xl font-medium">
                     {createLinkError}
                   </div>
                 )}
                 
-                <div className="flex justify-end gap-2 mt-6">
+                <div className="flex justify-end gap-3 mt-8">
                   <button 
                     onClick={() => setShowNewLinkModal(false)} 
-                    className={`px-4 py-2 rounded-lg font-bold ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors`}
+                    className={`px-5 py-3 rounded-xl font-semibold transition-all hover:scale-105 active:scale-95 ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
                   >
-                    İptal
+                    Vazgeç
                   </button>
                   <button 
                     onClick={handleCreateLink}
                     disabled={creatingLink}
-                    className="px-4 py-2 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors disabled:opacity-50"
+                    className="px-6 py-3 bg-[#EB5E28] text-white rounded-xl font-semibold shadow-lg shadow-[#EB5E28]/30 hover:shadow-[#EB5E28]/50 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
                   >
-                    {creatingLink ? "Oluşturuluyor..." : "Oluştur"}
+                    {creatingLink ? "Oluşturuluyor..." : "Bağlantı Oluştur"}
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="space-y-4">
-                <p className="text-sm opacity-80">Linkiniz başarıyla oluşturuldu. Bu link üzerinden gelen kurbanlar loglarınızda görünecektir.</p>
+              <div className="space-y-6">
+                <div className="flex items-center justify-center w-16 h-16 mx-auto bg-green-500/10 text-green-500 rounded-full mb-4">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <p className="text-center font-medium opacity-80 text-lg">Bağlantı Hazır</p>
                 <div className="flex gap-2">
                   <input 
                     type="text" 
                     readOnly 
                     value={newLink} 
-                    className={`flex-1 p-3 rounded-lg text-sm font-mono outline-none ${darkMode ? 'bg-[#121212] text-white border border-zinc-700' : 'bg-gray-100 border border-gray-300'}`} 
+                    className={`flex-1 p-3.5 rounded-xl text-sm font-mono outline-none text-center ${darkMode ? 'bg-black/50 border-white/10 text-white' : 'bg-gray-50/50 border-gray-200 text-black'}`} 
                   />
-                  <button 
-                    onClick={() => navigator.clipboard.writeText(newLink)} 
-                    className="px-4 py-2 bg-[#EB5E28] text-white rounded-lg font-bold hover:bg-[#c94d1e] transition-colors"
-                  >
-                    Kopyala
-                  </button>
                 </div>
-                <div className="flex justify-end">
+                <div className="flex flex-col gap-3">
+                  <button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(newLink);
+                      alert("Kopyalandı!");
+                    }} 
+                    className="w-full py-3.5 bg-[#EB5E28] text-white rounded-xl font-semibold shadow-lg shadow-[#EB5E28]/30 hover:shadow-[#EB5E28]/50 transition-all hover:scale-[1.02] active:scale-95"
+                  >
+                    Bağlantıyı Kopyala
+                  </button>
                   <button 
                     onClick={() => {
                       setNewLink(null);
                       setShowNewLinkModal(false);
                     }} 
-                    className={`px-4 py-2 rounded-lg font-bold ${darkMode ? 'hover:bg-white/10' : 'hover:bg-gray-100'} transition-colors`}
+                    className={`w-full py-3.5 rounded-xl font-semibold transition-all hover:scale-[1.02] active:scale-95 ${darkMode ? 'bg-white/10 hover:bg-white/20' : 'bg-black/5 hover:bg-black/10'}`}
                   >
                     Kapat
                   </button>
@@ -354,11 +373,13 @@ export function Admin1Dashboard({ user }: { user: any }) {
 
 function SidebarItem({ icon, label, active, isCollapsed, darkMode, onClick }: { icon: string, label: string, active?: boolean, isCollapsed: boolean, darkMode: boolean, onClick: () => void }) {
   return (
-    <a href="#" onClick={(e) => { e.preventDefault(); onClick(); }} className={`flex items-center px-4 py-3 mx-3 rounded-lg transition-colors ${active ? (darkMode ? 'bg-[#EB5E28]/10 text-[#EB5E28]' : 'bg-[#EB5E28]/10 text-[#EB5E28]') : (darkMode ? 'text-gray-400 hover:text-white hover:bg-white/5' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100')}`}>
-      <svg className={`w-5 h-5 shrink-0 ${active ? 'text-[#EB5E28]' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={icon} />
-      </svg>
-      {!isCollapsed && <span className="ml-3 font-medium text-sm">{label}</span>}
+    <a href="#" onClick={(e) => { e.preventDefault(); onClick(); }} className={`flex items-center px-4 py-3.5 rounded-xl transition-all duration-300 group ${active ? (darkMode ? 'bg-white/10 shadow-sm' : 'bg-white shadow-sm border border-gray-200/50') : (darkMode ? 'hover:bg-white/5' : 'hover:bg-black/5')}`}>
+      <div className={`p-1.5 rounded-lg transition-colors ${active ? 'bg-[#EB5E28] text-white shadow-md' : (darkMode ? 'text-gray-400 group-hover:text-white' : 'text-gray-500 group-hover:text-black')}`}>
+        <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={active ? 2.5 : 2} d={icon} />
+        </svg>
+      </div>
+      {!isCollapsed && <span className={`ml-3 text-sm font-semibold tracking-wide transition-colors ${active ? (darkMode ? 'text-white' : 'text-black') : (darkMode ? 'text-gray-400 group-hover:text-white' : 'text-gray-600 group-hover:text-black')}`}>{label}</span>}
     </a>
   );
 }
