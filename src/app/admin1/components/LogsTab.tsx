@@ -153,35 +153,49 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       })
       .subscribe();
 
-    const presenceChannel = supabase.channel('online_visitors');
+    const presenceChannel = supabase.channel("online_visitors", {
+      config: { presence: { key: "admin1-logs" } },
+    });
     presenceChannel
-      .on('presence', { event: 'sync' }, () => {
+      .on("presence", { event: "sync" }, () => {
         const state = presenceChannel.presenceState();
         let count = 0;
         const activeIds = new Set<string>();
         const paths: Record<string, string> = {};
 
-        for (const [key, presences] of Object.entries(state)) {
-          const typedPresences = presences as Array<{ sessionId?: string; pathname?: string }>;
+        for (const [, presences] of Object.entries(state)) {
+          const typedPresences = presences as Array<{
+            sessionId?: string | null;
+            pathname?: string;
+          }>;
           if (typedPresences.length === 0) continue;
 
-          const hasVisitorPresence = typedPresences.some((p) =>
-            p.pathname ? !p.pathname.startsWith('/admin') : true,
+          const visitorPresences = typedPresences.filter(
+            (p) => !p.pathname?.startsWith("/admin"),
           );
-          if (hasVisitorPresence) count++;
+          if (visitorPresences.length === 0) continue;
 
-          for (const p of typedPresences) {
-            if (p.sessionId) {
-              activeIds.add(p.sessionId);
-              if (p.pathname) paths[p.sessionId] = p.pathname;
-            }
+          count += 1;
+
+          for (const p of visitorPresences) {
+            if (!p.sessionId) continue;
+            activeIds.add(p.sessionId);
+            if (p.pathname) paths[p.sessionId] = p.pathname;
           }
         }
         setLiveVisitorCount(count);
         setOnlineSessionIds(activeIds);
         setSessionPaths(paths);
       })
-      .subscribe();
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await presenceChannel.track({
+            pathname: "/admin",
+            role: "admin",
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
 
     return () => {
       void supabase.removeChannel(channel);

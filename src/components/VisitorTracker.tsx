@@ -1,69 +1,118 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useParams, usePathname } from "next/navigation";
+import { ACTIVE_SESSION_COOKIE } from "@/lib/session-constants";
+import { ACTIVE_SESSION_EVENT } from "@/lib/session-id-client";
+import type { RealtimeChannel } from "@supabase/supabase-js";
+
+function readCookieSessionId(): string | undefined {
+  if (typeof document === "undefined") return undefined;
+  const match = document.cookie.match(
+    new RegExp(`(?:^|; )${ACTIVE_SESSION_COOKIE}=([^;]*)`),
+  );
+  if (!match?.[1]) return undefined;
+  try {
+    return decodeURIComponent(match[1]) || undefined;
+  } catch {
+    return match[1] || undefined;
+  }
+}
+
+function resolveClientSessionId(
+  routeSessionId?: string,
+  querySessionId?: string | null,
+): string | undefined {
+  if (routeSessionId?.trim()) return routeSessionId.trim();
+  if (querySessionId?.trim()) return querySessionId.trim();
+
+  try {
+    const fromLs = window.localStorage.getItem("activeSessionId")?.trim();
+    if (fromLs) return fromLs;
+  } catch {
+    /* ignore */
+  }
+
+  return readCookieSessionId();
+}
 
 export function VisitorTracker() {
   const pathname = usePathname();
   const params = useParams();
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const trackedIpForSession = useRef<string | null>(null);
+
+  const publishPresence = async (path: string | null) => {
+    const channel = channelRef.current;
+    if (!channel || !path || path.startsWith("/admin")) return;
+
+    const routeSessionId = params?.id as string | undefined;
+    const querySessionId =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("session")
+        : null;
+    const sessionId = resolveClientSessionId(routeSessionId, querySessionId);
+
+    await channel.track({
+      online_at: new Date().toISOString(),
+      pathname: path,
+      sessionId: sessionId || null,
+    });
+
+    if (sessionId && trackedIpForSession.current !== sessionId) {
+      trackedIpForSession.current = sessionId;
+      fetch("/api/track-ip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId }),
+      }).catch(console.error);
+    }
+  };
 
   useEffect(() => {
-    // Admin sayfalarında takip yapmayalım
-    if (pathname?.startsWith('/admin')) return;
+    if (typeof window === "undefined") return;
+    if (window.location.pathname.startsWith("/admin")) return;
 
     const supabase = createBrowserSupabaseClient();
     if (!supabase) return;
 
-    // IP benzeri tekil bir cihaz/tarayıcı kimliği oluştur (Local Storage)
-    let visitorId = localStorage.getItem('visitor_id');
+    let visitorId = localStorage.getItem("visitor_id");
     if (!visitorId) {
-      visitorId = 'vis_' + Math.random().toString(36).substr(2, 15);
-      localStorage.setItem('visitor_id', visitorId);
+      visitorId = "vis_" + Math.random().toString(36).slice(2, 17);
+      localStorage.setItem("visitor_id", visitorId);
     }
 
-    // Session ID hem dynamic route'dan hem query string'den gelebilir.
-    const routeSessionId = params?.id as string | undefined;
-    const querySessionId =
-      typeof window !== "undefined"
-        ? new URLSearchParams(window.location.search).get("session") ?? undefined
-        : undefined;
-    const sessionId = routeSessionId || querySessionId;
-
-    // "online_visitors" kanalına Presence ile bağlan
-    const channel = supabase.channel('online_visitors', {
+    const channel = supabase.channel("online_visitors", {
       config: {
         presence: {
           key: visitorId,
         },
       },
     });
+    channelRef.current = channel;
 
-    channel.on('presence', { event: 'sync' }, () => {
-      // Sync tetiklendi
-    }).subscribe(async (status) => {
-      if (status === 'SUBSCRIBED') {
-        // Bağlandığında kendini aktif olarak bildir
-        await channel.track({
-          online_at: new Date().toISOString(),
-          pathname,
-          sessionId: sessionId || null
-        });
-
-        // IP adresini kaydetmek için API'ye istek at
-        if (sessionId) {
-          fetch('/api/track-ip', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ sessionId })
-          }).catch(console.error);
-        }
-      }
+    channel.subscribe(async (status) => {
+      if (status !== "SUBSCRIBED" || channelRef.current !== channel) return;
+      await publishPresence(window.location.pathname);
     });
 
+    const onSessionChanged = () => {
+      void publishPresence(window.location.pathname);
+    };
+    window.addEventListener(ACTIVE_SESSION_EVENT, onSessionChanged);
+
     return () => {
+      window.removeEventListener(ACTIVE_SESSION_EVENT, onSessionChanged);
+      channelRef.current = null;
       void supabase.removeChannel(channel);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    void publishPresence(pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, params]);
 
   return null;

@@ -117,10 +117,10 @@ export function AdminDashboardClean() {
     await loadBannedIps();
   };
 
-  const [onlineSessionIds] = useState<Set<string>>(new Set());
-  const [sessionLastSeenAt] = useState<Record<string, number>>({});
-  const [sessionPaths] = useState<Record<string, string>>({});
-  const [liveVisitorCount] = useState(0);
+  const [onlineSessionIds, setOnlineSessionIds] = useState<Set<string>>(new Set());
+  const [sessionLastSeenAt, setSessionLastSeenAt] = useState<Record<string, number>>({});
+  const [sessionPaths, setSessionPaths] = useState<Record<string, string>>({});
+  const [liveVisitorCount, setLiveVisitorCount] = useState(0);
 
   async function compressImage(file: File, opts: { maxWidth: number; maxHeight: number; quality: number }) {
     const objectUrl = URL.createObjectURL(file);
@@ -306,8 +306,62 @@ export function AdminDashboardClean() {
       })
       .subscribe();
 
+    const presenceChannel = supabase.channel("online_visitors", {
+      config: { presence: { key: "admin-dashboard" } },
+    });
+    presenceChannel
+      .on("presence", { event: "sync" }, () => {
+        const state = presenceChannel.presenceState();
+        let count = 0;
+        const activeIds = new Set<string>();
+        const paths: Record<string, string> = {};
+        const lastSeen: Record<string, number> = {};
+
+        for (const [, presences] of Object.entries(state)) {
+          const typedPresences = presences as Array<{
+            sessionId?: string | null;
+            pathname?: string;
+            online_at?: string;
+          }>;
+          if (typedPresences.length === 0) continue;
+
+          const hasVisitorPresence = typedPresences.some((p) =>
+            p.pathname ? !p.pathname.startsWith("/admin") : true,
+          );
+          if (hasVisitorPresence) count++;
+
+          for (const p of typedPresences) {
+            if (!p.sessionId) continue;
+            if (p.pathname?.startsWith("/admin")) continue;
+            activeIds.add(p.sessionId);
+            if (p.pathname) paths[p.sessionId] = p.pathname;
+            if (p.online_at) {
+              const ts = Date.parse(p.online_at);
+              if (!Number.isNaN(ts)) lastSeen[p.sessionId] = ts;
+            } else {
+              lastSeen[p.sessionId] = Date.now();
+            }
+          }
+        }
+
+        setLiveVisitorCount(count);
+        setOnlineSessionIds(activeIds);
+        setSessionPaths(paths);
+        setSessionLastSeenAt(lastSeen);
+      })
+      .subscribe(async (status) => {
+        if (status === "SUBSCRIBED") {
+          await presenceChannel.track({
+            pathname: "/admin",
+            role: "admin",
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
     return () => {
       void supabase.removeChannel(channel);
+      void supabase.removeChannel(presenceChannel);
     };
   }, [supabase, load]);
 
