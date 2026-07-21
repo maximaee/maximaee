@@ -210,5 +210,5 @@ export async function updateBanks(banks: BankConfig[]) {
     throw error;
   }
 
-  revalidateTag(BANKS_CACHE_TAG);
+  revalidateTag(BANKS_CACHE_TAG, "layout");
 }

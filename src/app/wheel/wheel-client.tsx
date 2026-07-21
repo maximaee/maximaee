@@ -326,7 +326,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
 
     // Çark durduktan sonra popup göstermeden direkt form sayfasına (isim soyisim) yönlendir
     setTimeout(() => {
-      window.location.href = `/win/${sessionId}`;
+      router.push(`/win/${sessionId}`);
     }, 700); // Kullanıcının çarkın nerede durduğunu görebilmesi için kısa bir gecikme
   };
 
@@ -363,7 +363,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
       prize: resultPrize?.text ?? null,
     });
     setShowPopup(false);
-    window.location.href = `/win/${sessionId}`;
+    router.push(`/win/${sessionId}`);
   };
 
   if (error) {

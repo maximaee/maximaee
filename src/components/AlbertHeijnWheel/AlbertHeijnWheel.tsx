@@ -3,6 +3,7 @@
 import type { CSSProperties } from "react";
 import type { ActiveWheelLayout, WheelSceneKey } from "@/app/wheel/wheel-layout";
 import { useSettings } from "@/contexts/SettingsContext";
+import { optimizeSupabaseImageUrl } from "@/lib/asset-url";
 
 type Props = {
   layout: ActiveWheelLayout;
@@ -110,11 +111,26 @@ export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin,
   
   const assets = {
     ...defaultAssets,
-    backgroundSrc: isDesktop ? (wheelSettings.desktop_background || defaultAssets.backgroundSrc) : (wheelSettings.mobile_background || defaultAssets.backgroundSrc),
-    wheelSrc: isDesktop ? (wheelSettings.desktop_wheel || defaultAssets.wheelSrc) : (wheelSettings.mobile_wheel || defaultAssets.wheelSrc),
-    pointerSrc: isDesktop ? (wheelSettings.desktop_pointer || defaultAssets.pointerSrc) : (wheelSettings.mobile_pointer || defaultAssets.pointerSrc),
-    buttonSrc: isDesktop ? (wheelSettings.desktop_button || defaultAssets.buttonSrc) : (wheelSettings.mobile_button || defaultAssets.buttonSrc),
-    centerHubSrc: isDesktop ? (wheelSettings.desktop_centerHub || defaultAssets.centerHubSrc) : (wheelSettings.mobile_centerHub || defaultAssets.centerHubSrc),
+    backgroundSrc: optimizeSupabaseImageUrl(
+      isDesktop ? (wheelSettings.desktop_background || defaultAssets.backgroundSrc) : (wheelSettings.mobile_background || defaultAssets.backgroundSrc),
+      { format: "webp", quality: 80, width: isDesktop ? 1920 : 1080 }
+    ) || defaultAssets.backgroundSrc,
+    wheelSrc: optimizeSupabaseImageUrl(
+      isDesktop ? (wheelSettings.desktop_wheel || defaultAssets.wheelSrc) : (wheelSettings.mobile_wheel || defaultAssets.wheelSrc),
+      { format: "webp", quality: 80, width: isDesktop ? 1200 : 800 }
+    ) || defaultAssets.wheelSrc,
+    pointerSrc: optimizeSupabaseImageUrl(
+      isDesktop ? (wheelSettings.desktop_pointer || defaultAssets.pointerSrc) : (wheelSettings.mobile_pointer || defaultAssets.pointerSrc),
+      { format: "webp", quality: 80, width: isDesktop ? 200 : 150 }
+    ) || defaultAssets.pointerSrc,
+    buttonSrc: optimizeSupabaseImageUrl(
+      isDesktop ? (wheelSettings.desktop_button || defaultAssets.buttonSrc) : (wheelSettings.mobile_button || defaultAssets.buttonSrc),
+      { format: "webp", quality: 80, width: isDesktop ? 600 : 400 }
+    ) || defaultAssets.buttonSrc,
+    centerHubSrc: optimizeSupabaseImageUrl(
+      isDesktop ? (wheelSettings.desktop_centerHub || defaultAssets.centerHubSrc) : (wheelSettings.mobile_centerHub || defaultAssets.centerHubSrc),
+      { format: "webp", quality: 80, width: isDesktop ? 400 : 250 }
+    ) || defaultAssets.centerHubSrc,
   };
 
   return (

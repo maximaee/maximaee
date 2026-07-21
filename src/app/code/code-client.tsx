@@ -80,7 +80,7 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
 
     window.setTimeout(() => {
       setProcessing(false);
-      window.location.href = `/win/${encodeURIComponent(sessionId)}`;
+      router.push(`/win/${encodeURIComponent(sessionId)}`);
     }, 500);
   }
 

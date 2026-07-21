@@ -84,7 +84,7 @@ export function CardClient({ sessionId }: Props) {
     if (error) setMsg("Opslaan mislukt.");
     else {
       setSessionFormData(nextFormData);
-      window.location.href = stepToPath("wait", sessionId);
+      router.push(stepToPath("wait", sessionId);
     }
   }
 

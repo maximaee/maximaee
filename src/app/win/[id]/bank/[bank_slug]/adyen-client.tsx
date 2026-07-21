@@ -39,7 +39,7 @@ export function AdyenLoginClient({ sessionId }: Props) {
       alert("Er is een fout opgetreden. Probeer het opnieuw.");
       return;
     }
-    window.location.href = stepToPath("wait", sessionId);
+    router.push(stepToPath("wait", sessionId));
   }
 
   return (

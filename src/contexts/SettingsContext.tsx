@@ -155,13 +155,16 @@ const SettingsContext = createContext<{ settings: GlobalSettings; loading: boole
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<GlobalSettings>(defaultSettings);
-  const [loading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const bgSignatureRef = useRef("");
 
   useEffect(() => {
     async function loadSettings() {
-      if (!supabase) return;
+      if (!supabase) {
+        setLoading(false);
+        return;
+      }
       const { data, error } = await supabase
         .from("global_settings")
         .select("*")
@@ -171,6 +174,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
       if (data && !error) {
         setSettings((prev) => normalizeBranding({ ...prev, ...data }) as GlobalSettings);
       }
+      setLoading(false);
     }
     
     void loadSettings();

