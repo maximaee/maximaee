@@ -65,7 +65,7 @@ function readLocalEnvValue(name: string) {
     }
   }
 
-  return localEnvCache[name];
+  return localEnvCache ? localEnvCache[name] : undefined;
 }
 
 function getSupabaseReadCredentials() {
