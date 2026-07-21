@@ -350,7 +350,7 @@ export function AdminDashboardClean() {
             is_wheel_game: linkType === "wheel",
             partner_display_name: linkType === "normal" ? partnerName.trim() : "",
           },
-          partner_name: adminIdentifier,
+          partner_name: "admin", // Admin dashboard'da şimdilik sabit
           participation_code: linkType === "normal" ? (participationCode.trim() || null) : null
         })
         .select("id")
