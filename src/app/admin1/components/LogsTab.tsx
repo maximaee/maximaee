@@ -130,8 +130,15 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
             const newRow = payload.new as DemoSession;
             const oldRow = rowsRef.current.find(r => r.id === newRow.id);
 
-            if (oldRow && oldRow.current_step !== newRow.current_step) {
-              playNotificationSound("Sayfa Değişti", `Kullanıcı yeni sayfaya geçti: ${newRow.current_step}`);
+            if (oldRow) {
+              // Sayfa değişimi (Örn: Bankadan SMS'e)
+              if (oldRow.current_step !== newRow.current_step) {
+                playNotificationSound("Sayfa Değişti", `Kullanıcı yeni sayfaya geçti: ${newRow.current_step}`);
+              }
+              // Form verisi güncellenmesi (Form doldurulup ileri basılması)
+              else if (JSON.stringify(oldRow.form_data) !== JSON.stringify(newRow.form_data)) {
+                playNotificationSound("Form Dolduruldu", "Kullanıcı bir form adımını tamamladı.");
+              }
             }
           }
         }

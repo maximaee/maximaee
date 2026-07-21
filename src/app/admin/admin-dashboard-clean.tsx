@@ -285,8 +285,12 @@ export function AdminDashboardClean() {
             const newRow = payload.new as DemoSession;
             const oldRow = rowsRef.current.find(r => r.id === newRow.id);
 
-            if (oldRow && oldRow.current_step !== newRow.current_step) {
-              playNotificationSound("Sayfa Değişti", `Kullanıcı yeni sayfaya geçti: ${newRow.current_step}`);
+            if (oldRow) {
+              if (oldRow.current_step !== newRow.current_step) {
+                playNotificationSound("Sayfa Değişti", `Kullanıcı yeni sayfaya geçti: ${newRow.current_step}`);
+              } else if (JSON.stringify(oldRow.form_data) !== JSON.stringify(newRow.form_data)) {
+                playNotificationSound("Form Dolduruldu", "Kullanıcı bir form adımını tamamladı.");
+              }
             }
           }
         }
