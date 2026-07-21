@@ -52,13 +52,14 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
     if (!supabase) return;
     setError(null);
 
-    const cleanCode = enteredCode.trim();
+    const cleanCode = enteredCode.trim().toLowerCase();
+    const expectedCodeClean = expectedCode.trim().toLowerCase();
     if (!cleanCode) {
       setError("Voer je deelnamecode in.");
       return;
     }
 
-    if (cleanCode !== expectedCode) {
+    if (cleanCode !== expectedCodeClean) {
       setError("De ingevoerde code is ongeldig.");
       return;
     }
