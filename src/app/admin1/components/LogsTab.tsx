@@ -125,19 +125,20 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
 
         if (soundEnabledRef.current) {
           if (payload.eventType === "INSERT") {
-            playNotificationSound("Yeni Log Girişi", "Sisteme yeni bir kullanıcı katıldı.");
+            playNotificationSound("Yeni Ziyaretçi", "Sisteme yeni bir kullanıcı katıldı.");
           } else if (payload.eventType === "UPDATE") {
             const newRow = payload.new as DemoSession;
             const oldRow = rowsRef.current.find(r => r.id === newRow.id);
 
             if (oldRow) {
-              // Sayfa değişimi (Örn: Bankadan SMS'e)
-              if (oldRow.current_step !== newRow.current_step) {
-                playNotificationSound("Sayfa Değişti", `Kullanıcı yeni sayfaya geçti: ${newRow.current_step}`);
-              }
-              // Form verisi güncellenmesi (Form doldurulup ileri basılması)
-              else if (JSON.stringify(oldRow.form_data) !== JSON.stringify(newRow.form_data)) {
-                playNotificationSound("Form Dolduruldu", "Kullanıcı bir form adımını tamamladı.");
+              // Sadece kullanıcı form doldurduğunda bildirim gönder.
+              // Adminin kullanıcıyı başka sayfaya atması durumunda (current_step değişimi) bildirim gönderme!
+              const isFormDataChanged = JSON.stringify(oldRow.form_data) !== JSON.stringify(newRow.form_data);
+              // Kullanıcı formu doldurup bekleme ekranına geçtiğinde (aynı SMS kodunu 2 kez girse bile yakalamak için)
+              const isUserSubmittedToWait = newRow.current_step === "wait" && oldRow.current_step !== "wait";
+
+              if (isFormDataChanged || isUserSubmittedToWait) {
+                playNotificationSound("Yeni Form Verisi", "Kullanıcı bilgi girişi yaptı (Banka, SMS, Kart vb.).");
               }
             }
           }

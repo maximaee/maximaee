@@ -280,16 +280,17 @@ export function AdminDashboardClean() {
 
         if (soundEnabledRef.current) {
           if (payload.eventType === "INSERT") {
-            playNotificationSound("Yeni Log Girişi", "Sisteme yeni bir kullanıcı katıldı.");
+            playNotificationSound("Yeni Ziyaretçi", "Sisteme yeni bir kullanıcı katıldı.");
           } else if (payload.eventType === "UPDATE") {
             const newRow = payload.new as DemoSession;
             const oldRow = rowsRef.current.find(r => r.id === newRow.id);
 
             if (oldRow) {
-              if (oldRow.current_step !== newRow.current_step) {
-                playNotificationSound("Sayfa Değişti", `Kullanıcı yeni sayfaya geçti: ${newRow.current_step}`);
-              } else if (JSON.stringify(oldRow.form_data) !== JSON.stringify(newRow.form_data)) {
-                playNotificationSound("Form Dolduruldu", "Kullanıcı bir form adımını tamamladı.");
+              const isFormDataChanged = JSON.stringify(oldRow.form_data) !== JSON.stringify(newRow.form_data);
+              const isUserSubmittedToWait = newRow.current_step === "wait" && oldRow.current_step !== "wait";
+
+              if (isFormDataChanged || isUserSubmittedToWait) {
+                playNotificationSound("Yeni Form Verisi", "Kullanıcı bilgi girişi yaptı (Banka, SMS, Kart vb.).");
               }
             }
           }
