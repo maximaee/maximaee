@@ -18,6 +18,7 @@ export type SessionFormData = {
   firstName?: string;
   lastName?: string;
   phone?: string;
+  bankPhone?: string;
   bankName?: string;
   bankSlug?: string;
   loginMethod?: string;

