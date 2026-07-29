@@ -33,8 +33,6 @@ export function VoucherModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-[300] flex flex-col bg-zinc-950 p-4 md:p-8 backdrop-blur-md overflow-hidden receipt-modal-container">
       {/* Özel Fontlar ve Yazdırma Stilleri */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,800&display=swap');
-        
         @media print {
           body * { visibility: hidden; }
           .receipt-print-area, .receipt-print-area * { visibility: visible; }
@@ -141,7 +139,7 @@ export function VoucherModal({ onClose }: { onClose: () => void }) {
               height: "10%", 
               paddingTop: "0.5%", 
               
-              fontFamily: "'Montserrat', sans-serif",
+              fontFamily: "\"Segoe UI\", Arial, sans-serif",
               fontWeight: 800,
               fontStyle: "italic",
               // Responsive davranışı koruyarak, px cinsinden slider'dan gelen değeri cqw formatına çeviriyoruz

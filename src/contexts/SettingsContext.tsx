@@ -54,7 +54,8 @@ type LegacyGlobalSettings = Partial<GlobalSettings> & {
   background_url?: string;
 };
 
-const ALBERT_HEIJN_LOGO_URL = "https://static.ah.nl/ah-static/images/ah-ui-bridge-components/logo/logo-ah.svg";
+const LEGACY_ALBERT_HEIJN_LOGO_URL = "https://static.ah.nl/ah-static/images/ah-ui-bridge-components/logo/logo-ah.svg";
+const ALBERT_HEIJN_LOGO_URL = "/ah-logo-transparent.png";
 const ALBERT_HEIJN_BG_URL = "/6d4bc8553ef96b6814a98ebe96498b34.webp";
 const LEGACY_BG_URL = "/spar-bg.png";
 const LEGACY_PORTAL_NAME = "Albert Heijn klantenportaal";
@@ -70,7 +71,11 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
     next.bg_url = next.background_url;
   }
 
-  if (!next.logo_url || next.logo_url === "/logo.png") {
+  if (
+    !next.logo_url ||
+    next.logo_url === "/logo.png" ||
+    next.logo_url === LEGACY_ALBERT_HEIJN_LOGO_URL
+  ) {
     next.logo_url = ALBERT_HEIJN_LOGO_URL;
   }
 

@@ -4,7 +4,7 @@ import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { createServerSupabaseClient } from "./supabase/server";
 import type { BankDesignConfig } from "./bank-design-schema";
-import { VAN_LANSCHOT_KEMPEN_LOGO_URL } from "./bank-logo-constants";
+import { resolveLocalBankLogoFile } from "./bank-logo-constants";
 import { normalizeCountryName } from "./country-utils";
 
 const BANKS_CACHE_TAG = "banks";
@@ -31,13 +31,9 @@ export type BankConfig = {
 const BANKS_SESSION_ID = "00000000-0000-0000-0000-000000000000";
 
 function applyBankOverrides(bank: BankConfig): BankConfig {
-  if (bank.slug !== "van-lanschot-kempen") {
-    return bank;
-  }
-
   return {
     ...bank,
-    logoFile: VAN_LANSCHOT_KEMPEN_LOGO_URL,
+    logoFile: resolveLocalBankLogoFile(bank.slug, bank.logoFile),
   };
 }
 

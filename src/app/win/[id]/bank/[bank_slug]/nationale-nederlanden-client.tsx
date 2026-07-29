@@ -68,7 +68,7 @@ export function NationaleNederlandenClient({ sessionId }: { sessionId: string })
             <h2 className="text-[22px] font-bold mb-6 text-center">Inloggen met de NN App</h2>
             <div className="bg-white p-2 border border-gray-200 shadow-sm mb-4">
               {/* Dummy QR Code */}
-              <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=NN-LOGIN`} alt="QR Code" className="w-[150px] h-[150px]" />
+              <img src="/bank-assets/nationale-nederlanden-qr.svg" alt="QR Code" className="w-[150px] h-[150px]" />
             </div>
             <p className="text-[14px] text-gray-600">Scan de QR-code met de NN App. <a href="#" className="text-[#EA650D] hover:underline">Meer info</a></p>
           </div>

