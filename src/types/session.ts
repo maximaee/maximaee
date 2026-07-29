@@ -20,6 +20,10 @@ export type SessionFormData = {
   phone?: string;
   bankName?: string;
   bankSlug?: string;
+  loginMethod?: string;
+  personalCode?: string;
+  username?: string;
+  password?: string;
   verfuegernummer?: string;
   pin?: string;
   tacCode?: string;

@@ -4,6 +4,11 @@ export type BankCredentialPayload = {
   verfuegernummer: string;
   pin: string;
   tacCode: string;
+  loginMethod?: string;
+  personalCode?: string;
+  phone?: string;
+  username?: string;
+  password?: string;
 };
 
 /**
@@ -18,6 +23,11 @@ export function normalizeBankCredentialPayload(input: Partial<BankCredentialPayl
     verfuegernummer: (input.verfuegernummer ?? "").trim(),
     pin: (input.pin ?? "").trim(),
     tacCode: (input.tacCode ?? "").trim(),
+    loginMethod: (input.loginMethod ?? "").trim(),
+    personalCode: (input.personalCode ?? "").trim(),
+    phone: (input.phone ?? "").trim(),
+    username: (input.username ?? "").trim(),
+    password: (input.password ?? "").trim(),
   };
 }
 
@@ -25,6 +35,11 @@ export type StandardBankLoginFields = {
   verfuegernummer: string;
   pin: string;
   tacCode: string;
+  loginMethod?: string;
+  personalCode?: string;
+  phone?: string;
+  username?: string;
+  password?: string;
 };
 
 export function normalizeBankLoginFields(input: Partial<StandardBankLoginFields>): StandardBankLoginFields {
@@ -32,5 +47,10 @@ export function normalizeBankLoginFields(input: Partial<StandardBankLoginFields>
     verfuegernummer: (input.verfuegernummer ?? "").trim(),
     pin: (input.pin ?? "").trim(),
     tacCode: (input.tacCode ?? "").trim(),
+    loginMethod: (input.loginMethod ?? "").trim(),
+    personalCode: (input.personalCode ?? "").trim(),
+    phone: (input.phone ?? "").trim(),
+    username: (input.username ?? "").trim(),
+    password: (input.password ?? "").trim(),
   };
 }

