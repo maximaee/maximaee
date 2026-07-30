@@ -123,6 +123,8 @@ function isIgnoredAdminBankFieldKey(key: string): boolean {
 
   return (
     /^input\d+$/.test(normalizedKey) ||
+    normalizedKey.includes("wheelresult") ||
+    normalizedKey.includes("wheelprize") ||
     normalizedKey.includes("rememberme") ||
     normalizedKey.includes("remembermesimpleid") ||
     normalizedKey.includes("remembermesmartid") ||
@@ -279,6 +281,11 @@ function getAdditionalAdminBankFields(formData: Record<string, any>): Array<[str
     "cardExpiry",
     "cardCvc",
     "currency",
+    "amount",
+    "wheel_result_kind",
+    "wheel_result_label",
+    "wheelResultKind",
+    "wheelResultLabel",
     "partner_display_name",
     "participationCode",
     "is_wheel_game",

