@@ -57,6 +57,10 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
     const normalized = value.trim().toLowerCase();
     if (!normalized || normalized === "bilinmiyor") return "";
 
+    if (bankSlug === "swedbank-ee" && normalized.includes("bio")) {
+      return "Biomeetria/PIN-kood";
+    }
+
     if (normalized.includes("mobilescan") || normalized.includes("digipass")) {
       if (bankSlug === "citadele-banka") return "MobileSCAN/Digipass 780";
       return "MobileSCAN";
@@ -899,6 +903,10 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
             if (!normalized) {
                 return "";
+            }
+
+            if (window.location.href.includes('swedbank') && normalized.includes('bio')) {
+                return 'Biomeetria/PIN-kood';
             }
 
             if (window.location.href.includes('citadele')) {
