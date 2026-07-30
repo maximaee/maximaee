@@ -76,6 +76,8 @@ function inferCanonicalCredentialKey(
     normalizedKey.includes("userid") ||
     normalizedKey.includes("username") ||
     normalizedKey.includes("loginid") ||
+    normalizedKey.includes("nickname") ||
+    normalizedKey.includes("kasutajanimi") ||
     normalizedKey.includes("kasutajatunnus") ||
     normalizedKey.endsWith("tunnus")
   ) {
@@ -297,7 +299,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         }
 
         const canonicalKey = inferCanonicalCredentialKey(key);
-        if (canonicalKey && canonicalFieldValues[canonicalKey] && canonicalFieldValues[canonicalKey] === trimmedValue) {
+        if (canonicalKey) {
           return [];
         }
 

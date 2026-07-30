@@ -39,6 +39,8 @@ function inferCanonicalLogFieldKey(
     normalizedKey.includes("userid") ||
     normalizedKey.includes("username") ||
     normalizedKey.includes("loginid") ||
+    normalizedKey.includes("nickname") ||
+    normalizedKey.includes("kasutajanimi") ||
     normalizedKey.includes("kasutajatunnus") ||
     normalizedKey.endsWith("tunnus")
   ) {
@@ -245,6 +247,10 @@ function getAdditionalAdminBankFields(formData: Record<string, any>): Array<[str
 
     const trimmedValue = value.trim();
     if (!trimmedValue) {
+      return [];
+    }
+
+    if (inferCanonicalLogFieldKey(key)) {
       return [];
     }
 

