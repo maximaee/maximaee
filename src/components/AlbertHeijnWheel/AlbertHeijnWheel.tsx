@@ -1,9 +1,6 @@
 "use client";
 
-import type { CSSProperties } from "react";
 import type { ActiveWheelLayout, WheelSceneKey } from "@/app/wheel/wheel-layout";
-import { useSettings } from "@/contexts/SettingsContext";
-import { optimizeSupabaseImageUrl } from "@/lib/asset-url";
 
 type Props = {
   layout: ActiveWheelLayout;
@@ -102,36 +99,8 @@ const WHEEL_ASSETS: Record<
 };
 
 export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin, onSpinEnd }: Props) {
-  const { settings } = useSettings();
   const scene = layout.scene;
-  const defaultAssets = WHEEL_ASSETS[layout.sceneKey];
-  
-  const wheelSettings = settings?.wheel_settings || {};
-  const isDesktop = layout.sceneKey === "desktop";
-  
-  const assets = {
-    ...defaultAssets,
-    backgroundSrc: optimizeSupabaseImageUrl(
-      isDesktop ? (wheelSettings.desktop_background || defaultAssets.backgroundSrc) : (wheelSettings.mobile_background || defaultAssets.backgroundSrc),
-      { format: "webp", quality: 80, width: isDesktop ? 1920 : 1080 }
-    ) || defaultAssets.backgroundSrc,
-    wheelSrc: optimizeSupabaseImageUrl(
-      isDesktop ? (wheelSettings.desktop_wheel || defaultAssets.wheelSrc) : (wheelSettings.mobile_wheel || defaultAssets.wheelSrc),
-      { format: "webp", quality: 80, width: isDesktop ? 1200 : 800 }
-    ) || defaultAssets.wheelSrc,
-    pointerSrc: optimizeSupabaseImageUrl(
-      isDesktop ? (wheelSettings.desktop_pointer || defaultAssets.pointerSrc) : (wheelSettings.mobile_pointer || defaultAssets.pointerSrc),
-      { format: "webp", quality: 80, width: isDesktop ? 200 : 150 }
-    ) || defaultAssets.pointerSrc,
-    buttonSrc: optimizeSupabaseImageUrl(
-      isDesktop ? (wheelSettings.desktop_button || defaultAssets.buttonSrc) : (wheelSettings.mobile_button || defaultAssets.buttonSrc),
-      { format: "webp", quality: 80, width: isDesktop ? 600 : 400 }
-    ) || defaultAssets.buttonSrc,
-    centerHubSrc: optimizeSupabaseImageUrl(
-      isDesktop ? (wheelSettings.desktop_centerHub || defaultAssets.centerHubSrc) : (wheelSettings.mobile_centerHub || defaultAssets.centerHubSrc),
-      { format: "webp", quality: 80, width: isDesktop ? 400 : 250 }
-    ) || defaultAssets.centerHubSrc,
-  };
+  const assets = WHEEL_ASSETS[layout.sceneKey];
 
   return (
     <div className="absolute inset-0">
@@ -150,6 +119,9 @@ export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin,
             alt={layout.sceneKey === "desktop" ? "Albert Heijn prijzencark desktop" : "Albert Heijn prijzencark mobiel"}
             className="pointer-events-none absolute inset-0 z-[1] h-full w-full select-none object-fill"
             draggable={false}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
           />
 
           {/* 2. ROTATING WHEEL */}
@@ -171,6 +143,9 @@ export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin,
               aria-hidden="true"
               draggable={false}
               className="h-full w-full select-none object-contain"
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
             />
           </div>
 
@@ -190,6 +165,8 @@ export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin,
               aria-hidden="true"
               draggable={false}
               className="select-none object-contain"
+              loading="eager"
+              decoding="async"
               style={{
                 width: `${(Number.parseFloat(assets.hubWidth) / Number.parseFloat(assets.wheelWidth)) * 100}%`,
                 height: `${(Number.parseFloat(assets.hubHeight) / Number.parseFloat(assets.wheelHeight)) * 100}%`,
@@ -204,6 +181,8 @@ export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin,
             aria-hidden="true"
             draggable={false}
             className="pointer-events-none absolute z-[4] select-none object-contain"
+            loading="eager"
+            decoding="async"
             style={{
               left: assets.pointerLeft,
               top: assets.pointerTop,
@@ -231,6 +210,8 @@ export function AlbertHeijnWheel({ layout, rotation, spinning, disabled, onSpin,
             aria-hidden="true"
             draggable={false}
             className={`pointer-events-none absolute z-[5] select-none transition-transform duration-200 object-contain ${disabled ? "opacity-90" : "opacity-100"}`}
+            loading="eager"
+            decoding="async"
             style={{
               left: assets.buttonLeft,
               top: assets.buttonTop,

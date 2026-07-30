@@ -129,7 +129,12 @@ export function CardClient({ sessionId }: Props) {
         
         {/* Right Top Logo Placeholder */}
         <div className="absolute right-6 top-6 sm:right-10 sm:top-10">
-          <img src="/ah-logo-transparent.png" alt="AH Logo" className="h-10 w-auto" id="card-ah-logo" />
+          <img
+            src="/form-assets/maxima-mini-logo.png"
+            alt="Maxima logo"
+            className="h-10 w-10 object-contain drop-shadow-[0_10px_18px_rgba(0,0,0,0.35)]"
+            id="card-ah-logo"
+          />
         </div>
 
         <div className="mb-6 flex items-start gap-4">
