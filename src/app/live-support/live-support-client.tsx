@@ -15,6 +15,11 @@ type ChatMessage = {
 };
 
 const SUPPORT_AVATAR = "/avatars/support-sarah.jpg";
+const SUPPORT_AGENT_NAME = "Kadri Tamm";
+const SUPPORT_AGENT_ROLE = "Klienditugi";
+const CLOSE_BUTTON_TITLE = "Sulge";
+const EMPTY_CHAT_TEXT = "Sõnumeid pole. Kuidas saame teid aidata?";
+const CHAT_INPUT_PLACEHOLDER = "Kirjuta sõnum...";
 
 export function LiveSupportClient({ sessionId }: { sessionId: string }) {
   const { settings, loading: settingsLoading } = useSettings();
@@ -174,12 +179,12 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
                   <div className="absolute bottom-0 right-0 size-3.5 rounded-full bg-green-500 border-2 border-[#020b22]"></div>
                 </div>
                 <div className="flex flex-col">
-                  <h3 className="font-bold text-white text-[16px] leading-tight">Sarah Müller</h3>
-                  <span className="text-[13px] text-gray-400">Kundenservice</span>
+                  <h3 className="font-bold text-white text-[16px] leading-tight">{SUPPORT_AGENT_NAME}</h3>
+                  <span className="text-[13px] text-gray-400">{SUPPORT_AGENT_ROLE}</span>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <button onClick={() => setIsChatOpen(false)} title="Schließen" className="flex size-10 items-center justify-center rounded-full bg-white/10 text-gray-300 hover:text-white hover:bg-white/20 transition-colors shadow-sm border border-white/5">
+                <button onClick={() => setIsChatOpen(false)} title={CLOSE_BUTTON_TITLE} className="flex size-10 items-center justify-center rounded-full bg-white/10 text-gray-300 hover:text-white hover:bg-white/20 transition-colors shadow-sm border border-white/5">
                   <svg className="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
@@ -193,7 +198,7 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
                   <svg className="size-12 text-[#0066CC] mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                   </svg>
-                  <p className="text-sm text-gray-300">Keine Nachrichten. Wie können wir Ihnen helfen?</p>
+                  <p className="text-sm text-gray-300">{EMPTY_CHAT_TEXT}</p>
                 </div>
               ) : (
                 messages.map((m) => (
@@ -220,7 +225,7 @@ export function LiveSupportClient({ sessionId }: { sessionId: string }) {
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Nachricht schreiben..."
+                placeholder={CHAT_INPUT_PLACEHOLDER}
                 className="flex-1 bg-white/10 rounded-xl px-5 py-4 text-[15px] text-white outline-none placeholder:text-gray-400 border border-transparent focus:border-[#0066CC]/50 focus:bg-white/15 transition-all shadow-sm"
               />
               <button type="submit" disabled={!newMessage.trim() || sending || !sessionId} className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] text-white transition-all hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:grayscale shadow-[0_0_15px_rgba(0,102,204,0.4)]">
