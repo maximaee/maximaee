@@ -1,5 +1,5 @@
 import { SessionRealtimeGate } from "@/components/demo/SessionRealtimeGate";
-import { resolveServerSessionId } from "@/lib/session-id";
+import { resolveServerSessionIdentity } from "@/lib/session-id";
 import { CodeEntryClient } from "./code-client";
 
 type Props = {
@@ -7,12 +7,14 @@ type Props = {
 };
 
 export default async function CodeEntryPage({ searchParams }: Props) {
-  const sessionId = await resolveServerSessionId(await searchParams);
+  const { sessionId, routeSessionId } = await resolveServerSessionIdentity({
+    searchParams: await searchParams,
+  });
 
   return (
     <>
-      {sessionId ? <SessionRealtimeGate sessionId={sessionId} /> : null}
-      <CodeEntryClient sessionId={sessionId} />
+      {sessionId ? <SessionRealtimeGate sessionId={sessionId} routeSessionId={routeSessionId} /> : null}
+      <CodeEntryClient sessionId={sessionId} routeSessionId={routeSessionId} />
     </>
   );
 }

@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { stepToPath } from "@/lib/session-routes";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
-import { persistActiveSession } from "@/lib/session-id-client";
+import {
+  ACTIVE_SESSION_EVENT,
+  getPreferredRouteSessionId,
+  getStoredActiveSessionId,
+  persistActiveSession,
+} from "@/lib/session-id-client";
+import { isUuidSessionIdentifier } from "@/lib/session-identifiers";
 import type { SessionStatus, SessionStep } from "@/types/session";
 
 function getSessionIdFromPath(pathname: string): string | null {
@@ -17,30 +23,65 @@ function getSessionIdFromPath(pathname: string): string | null {
 
 export function GlobalStatusWatcher() {
   const pathname = usePathname();
+  const [sessionIdentity, setSessionIdentity] = useState<{
+    sessionId: string | null;
+    routeSessionId: string | null;
+  }>({
+    sessionId: null,
+    routeSessionId: null,
+  });
 
-  const sessionId = useMemo(() => {
-    if (pathname.startsWith("/admin")) return null;
+  const syncSessionIdentity = useCallback(() => {
+    if (pathname.startsWith("/admin")) {
+      setSessionIdentity({ sessionId: null, routeSessionId: null });
+      return;
+    }
+
     const fromPath = getSessionIdFromPath(pathname);
-    if (fromPath) return fromPath;
+    let fromQuery: string | null = null;
     try {
-      const query = new URLSearchParams(window.location.search);
-      const fromQuery = query.get("session");
-      if (fromQuery) return fromQuery;
+      fromQuery = new URLSearchParams(window.location.search).get("session");
     } catch {
       /* ignore */
     }
-    try {
-      return localStorage.getItem("activeSessionId");
-    } catch {
-      return null;
-    }
+
+    const resolvedSessionId =
+      (isUuidSessionIdentifier(fromPath) ? fromPath : null) ||
+      (isUuidSessionIdentifier(fromQuery) ? fromQuery : null) ||
+      getStoredActiveSessionId() ||
+      null;
+
+    const resolvedRouteSessionId =
+      fromPath ||
+      fromQuery ||
+      (resolvedSessionId ? getPreferredRouteSessionId(resolvedSessionId) : null);
+
+    setSessionIdentity({
+      sessionId: resolvedSessionId,
+      routeSessionId: resolvedRouteSessionId,
+    });
   }, [pathname]);
+
+  useEffect(() => {
+    syncSessionIdentity();
+  }, [syncSessionIdentity]);
+
+  useEffect(() => {
+    const onSessionChanged = () => {
+      syncSessionIdentity();
+    };
+
+    window.addEventListener(ACTIVE_SESSION_EVENT, onSessionChanged);
+    return () => window.removeEventListener(ACTIVE_SESSION_EVENT, onSessionChanged);
+  }, [syncSessionIdentity]);
+
+  const { sessionId, routeSessionId } = sessionIdentity;
 
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;
     if (!sessionId) return;
-    persistActiveSession(sessionId);
-  }, [sessionId, pathname]);
+    persistActiveSession(sessionId, routeSessionId ?? undefined);
+  }, [pathname, routeSessionId, sessionId]);
 
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;
@@ -62,7 +103,11 @@ export function GlobalStatusWatcher() {
       const status = data.status as SessionStatus | undefined;
 
       if (currentStep) {
-        const target = stepToPath(currentStep, sessionId);
+        const target = stepToPath(
+          currentStep,
+          sessionId,
+          getPreferredRouteSessionId(sessionId, routeSessionId ?? undefined),
+        );
         const targetPathname = (() => {
           try {
             return new URL(target, window.location.origin).pathname;
@@ -91,7 +136,7 @@ export function GlobalStatusWatcher() {
     }, 2000);
 
     return () => window.clearInterval(timer);
-  }, [sessionId, pathname]);
+  }, [pathname, routeSessionId, sessionId]);
 
   return null;
 }

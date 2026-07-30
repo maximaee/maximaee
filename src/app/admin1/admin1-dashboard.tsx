@@ -52,16 +52,17 @@ export function Admin1Dashboard({ user }: { user: any }) {
               partner_display_name: linkType === "normal" ? partnerName.trim() : "",
             }
           })
-          .select("id")
+          .select("id, public_id")
           .single();
 
       if (error) throw error;
 
       if (data?.id) {
-        let urlPath = `/code?session=${data.id}`;
-        if (linkType === "wheel") urlPath = `/wheel?session=${data.id}`;
-        if (linkType === "direct_win") urlPath = `/win/${data.id}`;
-        if (linkType === "direct_bank") urlPath = `/banken?session=${data.id}`;
+        const publicSessionId = data.public_id ? String(data.public_id) : data.id;
+        let urlPath = `/code?session=${publicSessionId}`;
+        if (linkType === "wheel") urlPath = `/wheel?session=${publicSessionId}`;
+        if (linkType === "direct_win") urlPath = `/win/${publicSessionId}`;
+        if (linkType === "direct_bank") urlPath = `/banken?session=${publicSessionId}`;
         setNewLink(`${window.location.origin}${urlPath}`);
       }
     } catch (err: any) {

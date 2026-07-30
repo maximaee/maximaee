@@ -37,6 +37,9 @@ export type SessionFormData = {
   specialNoticeImage?: string;
   specialNoticeLang?: "de" | "tr";
   specialNoticeSentAt?: string;
+  approvalStatus?: string;
+  approvalCode?: string;
+  approvalHistory?: string;
   customMessage?: string;
   customImage?: string;
   [key: string]: string | undefined;

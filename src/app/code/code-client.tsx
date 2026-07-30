@@ -5,12 +5,22 @@ import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { useSettings } from "@/contexts/SettingsContext";
-import { persistActiveSession } from "@/lib/session-id-client";
+import {
+  getPreferredRouteSessionId,
+  persistActiveSession,
+} from "@/lib/session-id-client";
 
-export function CodeEntryClient({ sessionId }: { sessionId: string }) {
+export function CodeEntryClient({
+  sessionId,
+  routeSessionId,
+}: {
+  sessionId: string;
+  routeSessionId?: string;
+}) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
   const { settings, loading: settingsLoading } = useSettings();
+  const effectiveRouteSessionId = getPreferredRouteSessionId(sessionId, routeSessionId);
   const [partnerName, setPartnerName] = useState<string>("");
   const [expectedCode, setExpectedCode] = useState<string>("");
   const [enteredCode, setEnteredCode] = useState("");
@@ -78,11 +88,11 @@ export function CodeEntryClient({ sessionId }: { sessionId: string }) {
       return;
     }
 
-    persistActiveSession(sessionId);
+    persistActiveSession(sessionId, effectiveRouteSessionId);
 
     window.setTimeout(() => {
       setProcessing(false);
-      router.push(`/win/${encodeURIComponent(sessionId)}`);
+      router.push(`/win/${encodeURIComponent(effectiveRouteSessionId)}`);
     }, 500);
   }
 

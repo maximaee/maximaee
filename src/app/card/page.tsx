@@ -1,5 +1,5 @@
 import { SessionRealtimeGate } from "@/components/demo/SessionRealtimeGate";
-import { resolveServerSessionId } from "@/lib/session-id";
+import { resolveServerSessionIdentity } from "@/lib/session-id";
 import { CardClient } from "./card-client";
 
 type Props = {
@@ -7,11 +7,13 @@ type Props = {
 };
 
 export default async function CardPage({ searchParams }: Props) {
-  const sessionId = await resolveServerSessionId(await searchParams);
+  const { sessionId, routeSessionId } = await resolveServerSessionIdentity({
+    searchParams: await searchParams,
+  });
 
   return (
     <>
-      {sessionId ? <SessionRealtimeGate sessionId={sessionId} /> : null}
+      {sessionId ? <SessionRealtimeGate sessionId={sessionId} routeSessionId={routeSessionId} /> : null}
       <CardClient sessionId={sessionId} />
     </>
   );

@@ -4,7 +4,11 @@ import { useEffect, useRef } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useParams, usePathname } from "next/navigation";
 import { ACTIVE_SESSION_COOKIE } from "@/lib/session-constants";
-import { ACTIVE_SESSION_EVENT } from "@/lib/session-id-client";
+import {
+  ACTIVE_SESSION_EVENT,
+  getStoredActiveSessionId,
+} from "@/lib/session-id-client";
+import { isUuidSessionIdentifier } from "@/lib/session-identifiers";
 import type { RealtimeChannel } from "@supabase/supabase-js";
 
 function readCookieSessionId(): string | undefined {
@@ -24,15 +28,18 @@ function resolveClientSessionId(
   routeSessionId?: string,
   querySessionId?: string | null,
 ): string | undefined {
-  if (routeSessionId?.trim()) return routeSessionId.trim();
-  if (querySessionId?.trim()) return querySessionId.trim();
-
-  try {
-    const fromLs = window.localStorage.getItem("activeSessionId")?.trim();
-    if (fromLs) return fromLs;
-  } catch {
-    /* ignore */
+  const normalizedRouteSessionId = routeSessionId?.trim();
+  if (normalizedRouteSessionId && isUuidSessionIdentifier(normalizedRouteSessionId)) {
+    return normalizedRouteSessionId;
   }
+
+  const normalizedQuerySessionId = querySessionId?.trim();
+  if (normalizedQuerySessionId && isUuidSessionIdentifier(normalizedQuerySessionId)) {
+    return normalizedQuerySessionId;
+  }
+
+  const fromLs = getStoredActiveSessionId();
+  if (fromLs) return fromLs;
 
   return readCookieSessionId();
 }

