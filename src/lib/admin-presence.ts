@@ -5,6 +5,10 @@ export type VisitorPresencePayload = {
   role?: string;
 };
 
+export const VISITOR_PRESENCE_HEARTBEAT_MS = 15_000;
+export const VISITOR_PRESENCE_STALE_MS = 35_000;
+export const VISITOR_PRESENCE_TICK_MS = 5_000;
+
 export type ParsedVisitorPresence = {
   liveVisitorCount: number;
   onlineSessionIds: Set<string>;
@@ -61,8 +65,7 @@ export function isSessionLive(
 ): boolean {
   if (onlineSessionIds.has(sessionId)) return true;
   if (rowStatus === "online") {
-    if (lastSeenAt && Date.now() - lastSeenAt < 35_000) return true;
-    if (!lastSeenAt) return true;
+    if (lastSeenAt && Date.now() - lastSeenAt < VISITOR_PRESENCE_STALE_MS) return true;
   }
   return false;
 }

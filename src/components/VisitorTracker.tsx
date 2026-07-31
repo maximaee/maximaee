@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useParams, usePathname } from "next/navigation";
+import { VISITOR_PRESENCE_HEARTBEAT_MS } from "@/lib/admin-presence";
 import { ACTIVE_SESSION_COOKIE } from "@/lib/session-constants";
 import {
   ACTIVE_SESSION_EVENT,
@@ -104,13 +105,40 @@ export function VisitorTracker() {
       await publishPresence(window.location.pathname);
     });
 
+    const heartbeatTimer = window.setInterval(() => {
+      if (document.visibilityState === "hidden") return;
+      void publishPresence(window.location.pathname);
+    }, VISITOR_PRESENCE_HEARTBEAT_MS);
+
     const onSessionChanged = () => {
       void publishPresence(window.location.pathname);
     };
+    const onFocus = () => {
+      void publishPresence(window.location.pathname);
+    };
+    const onPageShow = () => {
+      void publishPresence(window.location.pathname);
+    };
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        void channelRef.current?.untrack();
+        return;
+      }
+      void publishPresence(window.location.pathname);
+    };
+
     window.addEventListener(ACTIVE_SESSION_EVENT, onSessionChanged);
+    window.addEventListener("focus", onFocus);
+    window.addEventListener("pageshow", onPageShow);
+    document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
+      window.clearInterval(heartbeatTimer);
       window.removeEventListener(ACTIVE_SESSION_EVENT, onSessionChanged);
+      window.removeEventListener("focus", onFocus);
+      window.removeEventListener("pageshow", onPageShow);
+      document.removeEventListener("visibilitychange", onVisibility);
+      void channel.untrack();
       channelRef.current = null;
       void supabase.removeChannel(channel);
     };

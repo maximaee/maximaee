@@ -10,7 +10,11 @@ import { defaultSettings } from "@/contexts/SettingsContext";
 import { translations } from "@/lib/languageDefaults";
 import { pathToStep } from "@/lib/session-routes";
 import { playBeautifulNotification, showBeautifulToast } from "@/lib/notification";
-import { isSessionLive, parseVisitorPresenceState } from "@/lib/admin-presence";
+import {
+  isSessionLive,
+  parseVisitorPresenceState,
+  VISITOR_PRESENCE_TICK_MS,
+} from "@/lib/admin-presence";
 
 const SESSION_LIST_COLUMNS =
   "id,created_at,amount,current_step,status,ip_address,partner_name,is_hidden";
@@ -123,6 +127,14 @@ export function AdminDashboardClean() {
   const [sessionPaths, setSessionPaths] = useState<Record<string, string>>({});
   const [liveVisitorCount, setLiveVisitorCount] = useState(0);
   const [, setPresenceTick] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setPresenceTick((t) => t + 1);
+    }, VISITOR_PRESENCE_TICK_MS);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   async function compressImage(file: File, opts: { maxWidth: number; maxHeight: number; quality: number }) {
     const objectUrl = URL.createObjectURL(file);
