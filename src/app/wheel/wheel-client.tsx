@@ -44,9 +44,9 @@ const PRIZES: readonly PrizeSegment[] = [
   { kind: "amount", text: "€2000", selectionIndex: 2, rotationIndex: 2, amount: 2000, popupLines: ["€ 2.000"] },
   { kind: "amount", text: "€2500", selectionIndex: 3, rotationIndex: 3, amount: 2500, popupLines: ["€ 2.500"] },
   { kind: "amount", text: "€3000", selectionIndex: 4, rotationIndex: 4, amount: 3000, popupLines: ["€ 3.000"] },
-  { kind: "amount", text: "€3600", selectionIndex: 5, rotationIndex: 7, amount: 3600, popupLines: ["€ 3.600"] },
-  { kind: "message", text: "Proovi uuesti", selectionIndex: 6, rotationIndex: 5, amount: null, popupLines: ["PROOVI", "UUUESTI"] },
-  { kind: "message", text: "Kahjuks ei võitnud", selectionIndex: 7, rotationIndex: 6, amount: null, popupLines: ["KAHJUKS", "EI", "VÕITNUD"] },
+  { kind: "amount", text: "€3600", selectionIndex: 5, rotationIndex: 5, amount: 3600, popupLines: ["€ 3.600"] },
+  { kind: "message", text: "Proovi uuesti", selectionIndex: 6, rotationIndex: 6, amount: null, popupLines: ["PROOVI", "UUUESTI"] },
+  { kind: "message", text: "Kahjuks ei võitnud", selectionIndex: 7, rotationIndex: 7, amount: null, popupLines: ["KAHJUKS", "EI", "VÕITNUD"] },
 ] as const;
 
 const WINNABLE_PRIZES = PRIZES.filter((prize) => prize.selectionIndex <= 5);
@@ -67,9 +67,19 @@ function getTargetRotation(currentRotation: number, rotationIndex: number) {
 }
 
 function getPrizeFromSession(session: SessionRecord | null) {
+  const storedRotationIndex = session?.form_data?.wheel_rotation_index;
+  if (typeof storedRotationIndex === "number") {
+    return PRIZES.find((prize) => prize.rotationIndex === storedRotationIndex) ?? null;
+  }
+
   const storedLabel = session?.form_data?.wheel_result_label;
   if (typeof storedLabel === "string") {
     return PRIZES.find((prize) => prize.text === storedLabel) ?? null;
+  }
+
+  const storedAmount = session?.form_data?.wheel_result_amount;
+  if (typeof storedAmount === "number" && storedAmount > 0) {
+    return PRIZES.find((prize) => prize.amount === storedAmount) ?? null;
   }
 
   if (typeof session?.amount === "number" && session.amount > 0) {
@@ -81,6 +91,16 @@ function getPrizeFromSession(session: SessionRecord | null) {
 
 function getRandomWinnablePrize() {
   return WINNABLE_PRIZES[Math.floor(Math.random() * WINNABLE_PRIZES.length)];
+}
+
+function getRotationIndexFromRotation(rotation: number) {
+  const normalizedRotation = normalizeAngle(rotation);
+  return Math.round(normalizeAngle(ANGLE_OFFSET - normalizedRotation) / 45) % PRIZES.length;
+}
+
+function getPrizeFromRotation(rotation: number) {
+  const landedRotationIndex = getRotationIndexFromRotation(rotation);
+  return PRIZES.find((prize) => prize.rotationIndex === landedRotationIndex) ?? null;
 }
 
 function logWheelEvent(eventName: "wheel_spin" | "wheel_win" | "popup_open" | "popup_close", payload?: Record<string, unknown>) {
@@ -361,7 +381,7 @@ export function WheelClient({
       return;
     }
 
-    const settledPrize = pendingPrizeRef.current;
+    const settledPrize = getPrizeFromRotation(rotationRef.current) ?? pendingPrizeRef.current;
     pendingPrizeRef.current = null;
     void finalizeSpin(settledPrize);
   };
