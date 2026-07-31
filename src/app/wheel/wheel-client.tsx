@@ -39,12 +39,12 @@ const LOCAL_HISTORY_KEY = "ah-prize-wheel-last-five-wins";
 const MAX_HISTORY_ITEMS = 5;
 
 const PRIZES: readonly PrizeSegment[] = [
-  { kind: "amount", text: "€1500", selectionIndex: 0, rotationIndex: 0, amount: 1500, popupLines: ["€ 1.500"] },
-  { kind: "amount", text: "€2000", selectionIndex: 1, rotationIndex: 1, amount: 2000, popupLines: ["€ 2.000"] },
-  { kind: "amount", text: "€3000", selectionIndex: 2, rotationIndex: 2, amount: 3000, popupLines: ["€ 3.000"] },
-  { kind: "amount", text: "€3600", selectionIndex: 3, rotationIndex: 3, amount: 3600, popupLines: ["€ 3.600"] },
-  { kind: "amount", text: "€5000", selectionIndex: 4, rotationIndex: 4, amount: 5000, popupLines: ["€ 5.000"] },
-  { kind: "amount", text: "€2500", selectionIndex: 5, rotationIndex: 7, amount: 2500, popupLines: ["€ 2.500"] },
+  { kind: "amount", text: "€1000", selectionIndex: 0, rotationIndex: 0, amount: 1000, popupLines: ["€ 1.000"] },
+  { kind: "amount", text: "€1500", selectionIndex: 1, rotationIndex: 1, amount: 1500, popupLines: ["€ 1.500"] },
+  { kind: "amount", text: "€2000", selectionIndex: 2, rotationIndex: 2, amount: 2000, popupLines: ["€ 2.000"] },
+  { kind: "amount", text: "€2500", selectionIndex: 3, rotationIndex: 3, amount: 2500, popupLines: ["€ 2.500"] },
+  { kind: "amount", text: "€3000", selectionIndex: 4, rotationIndex: 4, amount: 3000, popupLines: ["€ 3.000"] },
+  { kind: "amount", text: "€3600", selectionIndex: 5, rotationIndex: 7, amount: 3600, popupLines: ["€ 3.600"] },
   { kind: "message", text: "Probeer het opnieuw", selectionIndex: 6, rotationIndex: 5, amount: null, popupLines: ["PROBEER", "HET OPNIEUW"] },
   { kind: "message", text: "Helaas, niet gewonnen", selectionIndex: 7, rotationIndex: 6, amount: null, popupLines: ["HELAAS,", "NIET", "GEWONNEN"] },
 ] as const;

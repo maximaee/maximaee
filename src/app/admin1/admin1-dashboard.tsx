@@ -21,7 +21,7 @@ export function Admin1Dashboard({ user }: { user: any }) {
   const [creatingLink, setCreatingLink] = useState(false);
   const [newLink, setNewLink] = useState<string | null>(null);
   const [linkType, setLinkType] = useState<"normal" | "wheel" | "direct_win" | "direct_bank">("normal");
-  const [amount, setAmount] = useState("5000");
+  const [amount, setAmount] = useState("3600");
   const [currency, setCurrency] = useState("€");
   const [partnerName, setPartnerName] = useState("");
   const [participationCode, setParticipationCode] = useState("");

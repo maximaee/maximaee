@@ -63,7 +63,7 @@ const LEGACY_SUPPORT_CENTER_NAME = "Albert Heijn service";
 const ESTONIAN_SUPPORT_CENTER_NAME = "Albert Heijn Klienditeenindus";
 const LEGACY_WIN_TITLE = "Exclusieve Albert Heijn bonus";
 const LEGACY_WIN_SUBTITLE =
-  "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 5.000 euro te claimen.";
+  "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 3.600 euro te claimen.";
 const LEGACY_LIVE_SUPPORT_TITLES = new Set([
   "Live support",
   "Live Support",
@@ -117,7 +117,7 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
 
   if (!next.win_subtitle || next.win_subtitle === LEGACY_WIN_SUBTITLE) {
     next.win_subtitle =
-      "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 5.000 euro te claimen.";
+      "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 3.600 euro te claimen.";
   }
 
   if (next.target_country) {
@@ -152,7 +152,7 @@ export const defaultSettings: GlobalSettings = {
   support_center_name: "Albert Heijn service",
   win_title: "Exclusieve Albert Heijn bonus",
   win_subtitle:
-    "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 5.000 euro te claimen.",
+    "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 3.600 euro te claimen.",
   win_button: "Bonus claimen",
   banken_title: "Kies je bank",
   banken_subtitle: "Selecteer je Nederlandse bank om verder te gaan.",
