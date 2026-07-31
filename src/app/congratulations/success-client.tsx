@@ -79,7 +79,7 @@ export function CongratulationsClient({ sessionId = "" }: Props) {
           </svg>
         </div>
         <h2 className="text-2xl font-bold text-white mt-6 mb-2">Taotlus on lõpetatud</h2>
-        <p className="relative mt-2 text-base font-medium text-gray-300">
+        <p className="relative mt-3 text-[17px] font-semibold leading-7 text-gray-100 sm:text-lg">
           Palju õnne! Sinu taotlus on edukalt lõpetatud. Jätka oma partneri juhiste järgi.
         </p>
       </div>
