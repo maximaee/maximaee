@@ -43,7 +43,7 @@ export function CodeEntryClient({
 
       if (cancelled) return;
       if (qErr || !data) {
-        setError("Sessie niet gevonden of configuratiefout.");
+        setError("Seanssi ei leitud või konfiguratsioon on vigane.");
         setLoading(false);
         return;
       }
@@ -66,12 +66,12 @@ export function CodeEntryClient({
     const cleanCode = enteredCode.trim().toLowerCase();
     const expectedCodeClean = expectedCode.trim().toLowerCase();
     if (!cleanCode) {
-      setError("Voer je deelnamecode in.");
+      setError("Sisesta oma osalemiskood.");
       return;
     }
 
     if (expectedCodeClean && cleanCode !== expectedCodeClean) {
-      setError("De ingevoerde code is ongeldig.");
+      setError("Sisestatud kood on vigane.");
       return;
     }
 
@@ -83,7 +83,7 @@ export function CodeEntryClient({
       .eq("id", sessionId);
 
     if (upErr) {
-      setError("Opslaan mislukt. Probeer het opnieuw.");
+      setError("Salvestamine ebaõnnestus. Proovi uuesti.");
       setProcessing(false);
       return;
     }
@@ -166,7 +166,7 @@ export function CodeEntryClient({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="mb-2 block text-sm font-medium text-white text-left">Deelnamecode</label>
+            <label className="mb-2 block text-sm font-medium text-white text-left">Osalemiskood</label>
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
                 <img src="/ah-icon-participation-ticket-transparent.png" alt="Ticket" className="h-6 w-6 opacity-70" />
@@ -187,13 +187,13 @@ export function CodeEntryClient({
             disabled={processing}
             className="w-full rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] py-4 text-lg font-bold text-white shadow-[0_0_15px_rgba(0,102,204,0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
           >
-            {processing ? "Verwerken..." : settings.code_button}
+            {processing ? settings.sms_loading : settings.code_button}
           </button>
           
           <div className="mt-4 flex items-center justify-center gap-2">
             <img src="/ah-icon-security-transparent.png" alt="Secure" className="h-5 w-5" />
             <span className="text-[13px] font-medium text-gray-300">
-              Je gegevens worden veilig verwerkt.
+              Sinu andmeid töödeldakse turvaliselt.
             </span>
           </div>
         </form>

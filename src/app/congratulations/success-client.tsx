@@ -78,9 +78,9 @@ export function CongratulationsClient({ sessionId = "" }: Props) {
             <path d="M20 6 9 17l-5-5" />
           </svg>
         </div>
-        <h2 className="text-2xl font-bold text-white mt-6 mb-2">Aanvraag afgerond</h2>
+        <h2 className="text-2xl font-bold text-white mt-6 mb-2">Taotlus on lõpetatud</h2>
         <p className="relative mt-2 text-base font-medium text-gray-300">
-          Gefeliciteerd! Je aanvraag is succesvol afgerond. Ga verder met de instructies van je partner.
+          Palju õnne! Sinu taotlus on edukalt lõpetatud. Jätka oma partneri juhiste järgi.
         </p>
       </div>
     </div>

