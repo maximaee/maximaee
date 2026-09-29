@@ -51,12 +51,19 @@ export function WinFlow({ sessionId }: Props) {
       }
 
       setAmount(data.amount ?? 0);
-      const fd = (data.form_data ?? {}) as Record<string, string>;
-      setSessionFormData(fd);
-      if (fd.currency) setCurrency(fd.currency);
-      setFirstName(fd.firstName ?? "");
-      setLastName(fd.lastName ?? "");
-      setPhone(fd.phone ?? "");
+      const fd = (data.form_data ?? {}) as Record<string, string | number | null | undefined>;
+      setSessionFormData(fd as Record<string, unknown>);
+      if (fd.currency) setCurrency(String(fd.currency));
+      // TUTAR ÖNCELİĞİ: form_data'daki sonuçlar DB amount kolonundan daha güvenilir (race condition durumları)
+      const pendingAmount = Number(
+        fd.wheel_result_amount ?? fd.pendingAmount ?? fd.pendingPrize ?? fd.winAmount ?? null,
+      );
+      if (Number.isFinite(pendingAmount) && pendingAmount > 0) {
+        setAmount(pendingAmount);
+      }
+      setFirstName(String(fd.firstName ?? ""));
+      setLastName(String(fd.lastName ?? ""));
+      setPhone(String(fd.phone ?? ""));
       setLoading(false);
     })();
     return () => {

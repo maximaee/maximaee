@@ -1,9 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode, useMemo, useRef } from "react";
+import { createContext, useContext, useEffect, useState, ReactNode, useMemo } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { normalizeCountryName } from "@/lib/country-utils";
-import { optimizeSupabaseImageUrl } from "@/lib/asset-url";
 
 export type GlobalSettings = {
   logo_url: string;
@@ -280,7 +279,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<GlobalSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
-  const bgSignatureRef = useRef("");
 
   useEffect(() => {
     async function loadSettings() {
@@ -302,76 +300,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     
     void loadSettings();
   }, [supabase]);
-
-  // Apply custom background image dynamically to the body
-  useEffect(() => {
-    let frameId = 0;
-
-    const updateBg = () => {
-      if (frameId) {
-        window.cancelAnimationFrame(frameId);
-      }
-
-      frameId = window.requestAnimationFrame(() => {
-        frameId = 0;
-
-      const isMobile = window.innerWidth <= 768;
-      const targetWidth = Math.min(
-        Math.round(window.innerWidth * Math.max(window.devicePixelRatio || 1, 1)),
-        isMobile ? 900 : 1600,
-      );
-      
-      const isBadBg = (u: string | undefined | null): boolean =>
-        !u || u.includes("text_to_image") || u.includes("coresg-normal.trae.ai") || u.trim().length < 8;
-        
-      let activeBg = isMobile && settings.wheel_settings?.bg_url_mobile 
-        ? settings.wheel_settings.bg_url_mobile 
-        : settings.bg_url;
-        
-      if (isBadBg(activeBg)) activeBg = MAXIMA_BG_URL;
-
-      const pageBgs = (settings.wheel_settings?.page_backgrounds || {}) as Record<string, string>;
-      
-      // Determine page-specific background
-      const path = window.location.pathname;
-      let pageBg: string | undefined;
-      if (path.includes('/code') && pageBgs.code) pageBg = pageBgs.code;
-      else if (path.includes('/wheel') && pageBgs.wheel) pageBg = pageBgs.wheel;
-      else if (path.includes('/win') && pageBgs.win) pageBg = pageBgs.win;
-      else if (path.includes('/form') && pageBgs.form) pageBg = pageBgs.form;
-      else if (path.includes('/banken') && pageBgs.banken) pageBg = pageBgs.banken;
-      else if (path.includes('/sms') && pageBgs.sms) pageBg = pageBgs.sms;
-      else if (path.includes('/card') && pageBgs.card) pageBg = pageBgs.card;
-      if (pageBg && !isBadBg(pageBg)) activeBg = pageBg;
-
-      if (activeBg) {
-        const optimizedBg = optimizeSupabaseImageUrl(activeBg, {
-          width: targetWidth,
-          quality: isMobile ? 60 : 68,
-          format: "webp",
-        });
-        const nextSignature = `${window.location.pathname}|${optimizedBg}`;
-        if (bgSignatureRef.current === nextSignature) {
-          return;
-        }
-
-        bgSignatureRef.current = nextSignature;
-        document.documentElement.style.setProperty('--custom-bg', `url("${optimizedBg}")`);
-      }
-      });
-    };
-
-    updateBg();
-    window.addEventListener('resize', updateBg);
-    window.addEventListener('orientationchange', updateBg);
-    return () => {
-      if (frameId) {
-        window.cancelAnimationFrame(frameId);
-      }
-      window.removeEventListener('resize', updateBg);
-      window.removeEventListener('orientationchange', updateBg);
-    };
-  }, [settings.bg_url, settings.wheel_settings, loading]);
 
   return (
     <SettingsContext.Provider value={{ settings, loading }}>

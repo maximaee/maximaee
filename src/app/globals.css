@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f5f7;
+  --background: #020b22;
   --foreground: #1a1a1a;
 }
 
@@ -19,55 +19,11 @@ body {
 }
 
 body {
-  background-color: #f4f7f9;
+  background-color: #020b22;
   color: var(--foreground);
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   position: relative;
-}
-
-/* Genel AH konsept arka plani silindi - Yeni bg-desktop/mobile kullanılıyor */
-/* Modern Premium AH Background */
-body.ah-theme {
-  background-color: #021b59;
-  background-image: var(--custom-bg, url("/bg-desktop.png"));
-  background-size: cover;
-  background-position: top center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  color: white;
-  min-height: 100vh;
-}
-
-@media (max-width: 768px) {
-  body.ah-theme {
-    background-image: var(--custom-bg, url("/bg-mobile.png"));
-  }
-}
-
-@media (max-width: 768px) {
-  body.ah-theme {
-    background-attachment: fixed;
-    background-position: top center;
-    background-size: cover;
-  }
-
-  body.ah-theme.ah-theme-banken {
-    background-position: top center;
-    background-size: cover;
-  }
-}
-
-@media (max-width: 480px) {
-  body.ah-theme {
-    background-position: top center;
-    background-size: cover;
-  }
-
-  body.ah-theme.ah-theme-banken {
-    background-position: top center;
-    background-size: cover;
-  }
 }
 
 body > *:not([data-overlay-root="true"]) {
