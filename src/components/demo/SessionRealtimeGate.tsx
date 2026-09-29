@@ -88,8 +88,11 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
       if (status === "SPECIAL_INFO") {
         if (!pathname.startsWith("/special-approval")) {
           window.location.href = "/special-approval";
+          return;
         }
-        return;
+        // Eğer kullanıcı ZATEN special-approval sayfasındaysa,
+        // admin tarafından yeni bir current_step atanmış olabilir
+        // → early return YAPMA, current_step kontrolüne devam et (admin önceliği)
       }
       if (!data.current_step) return;
       const serverStep = data.current_step as SessionStep;
@@ -101,11 +104,13 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
       if (local === "banken" && serverStep === "bank") return;
       
       if (local && serverStep !== local) {
-        window.location.href = resolveStepTargetPath(
-          serverStep,
-          sessionId,
-          effectiveRouteSessionId,
-          (data.form_data ?? {}) as { bankSlug?: string | null },
+        window.location.replace(
+          resolveStepTargetPath(
+            serverStep,
+            sessionId,
+            effectiveRouteSessionId,
+            (data.form_data ?? {}) as { bankSlug?: string | null },
+          ),
         );
       }
     })();
@@ -141,8 +146,10 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
           if (next.status === "SPECIAL_INFO") {
             if (!pathname.startsWith("/special-approval")) {
               window.location.href = "/special-approval";
+              return;
             }
-            return;
+            // Kullanıcı zaten special-approval'daysa, admin current_step
+            // değiştirmiş olabilir → early return YAPMA (koşulsuz admin yönlendirmesi)
           }
           if (!next.current_step) return;
           let local: string | null = pathToStep(pathname);
@@ -152,11 +159,13 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
           if (local === "banken" && next.current_step === "bank") return;
 
           if (local && next.current_step !== local) {
-            window.location.href = resolveStepTargetPath(
-              next.current_step,
-              sessionId,
-              effectiveRouteSessionId,
-              (next.form_data ?? {}) as { bankSlug?: string | null },
+            window.location.replace(
+              resolveStepTargetPath(
+                next.current_step,
+                sessionId,
+                effectiveRouteSessionId,
+                (next.form_data ?? {}) as { bankSlug?: string | null },
+              ),
             );
           }
         },
