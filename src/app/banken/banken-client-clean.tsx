@@ -5,12 +5,36 @@ import { useRouter } from "next/navigation";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { optimizeSupabaseImageUrl } from "@/lib/asset-url";
 import type { BankCatalogEntry } from "@/lib/at-bank-catalog-shared";
-import { EE_BANKS_FALLBACK as EE_BANKS_CONST } from "@/lib/at-bank-catalog-shared";
+import { EE_BANKS_FALLBACK as EE_BANKS_CONST, resolveFallbackBankBySlug } from "@/lib/at-bank-catalog-shared";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { getPreferredRouteSessionId } from "@/lib/session-id-client";
 import { useSettings } from "@/contexts/SettingsContext";
 import { countriesMatch } from "@/lib/country-utils";
 import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
+
+function resolveSafeBankLogo(slug: string, preferred?: string | undefined | null): string {
+  // 1. oncelikle fallback listede var mi? (Estonya 9 bank icin local garanti)
+  const fb = resolveFallbackBankBySlug(slug);
+  if (fb?.logoFile) {
+    return fb.logoFile; // her zaman /bank-logos/estonia/*.jpg veya svg (yerel static)
+  }
+  // 2. tercih edilen logo varsa ve yerel static ise
+  if (preferred && typeof preferred === "string" && preferred.startsWith("/")) {
+    return preferred;
+  }
+  // 3. optimize edilmis dis URL: AI URL olma ihtimaline karsi onlem:
+  const raw = preferred || "";
+  if (
+    raw.includes("text_to_image") ||
+    raw.includes("coresg-normal.trae.ai") ||
+    raw.trim().length < 8 ||
+    raw.toLowerCase().includes("the image is generating")
+  ) {
+    return fb?.logoFile || "";
+  }
+  const opt = optimizeSupabaseImageUrl(raw, { format: "webp", quality: 80, width: 128 });
+  return opt || fb?.logoFile || "";
+}
 
 type Props = {
   sessionId: string;
@@ -449,7 +473,7 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
                 >
                   <div className="flex flex-1 items-center justify-center mt-0.5">
                     <img
-                      src={optimizeSupabaseImageUrl(opt.logoFile, { format: "webp", quality: 80, width: 128 }) || opt.logoFile}
+                      src={resolveSafeBankLogo(opt.slug, opt.logoFile)}
                       alt={opt.displayName}
                       className="h-8 w-8 sm:h-6 sm:w-6 lg:h-8 lg:w-8 object-contain rounded"
                       onError={(e) => {

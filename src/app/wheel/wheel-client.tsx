@@ -235,11 +235,24 @@ export function WheelClient({
 
       const nextSession = data as SessionRecord;
 
-      // Eğer admin paneli normal link olarak açmışsa ama kullanıcı çark sayfasındaysa,
-      // admin panelinde "ÇARK OYUNU" yazması için is_wheel_game'i true yapalım.
-      if (nextSession.current_step === "code_entry" && !nextSession.form_data?.is_wheel_game) {
+      // ÇARK LOOP DÜZELTME: Eğer kullanıcı /wheel sayfasındaysa ve DB'de current_step code_entry ise
+      // SADECE form_data DEĞİL, current_step de wheel OLARAK YAZILIR (loopu kırar)
+      // Çünkü bir sonraki satırda useEnsureCurrentStep bunu okuyup code'a yönlendirir.
+      if (nextSession.current_step === "code_entry") {
         const updatedFormData = { ...(nextSession.form_data || {}), is_wheel_game: true };
-        await supabase.from("sessions").update({ is_hidden: false, form_data: updatedFormData }).eq("id", sessionId);
+        try {
+          await supabase
+            .from("sessions")
+            .update({ is_hidden: false, current_step: "wheel", form_data: updatedFormData })
+            .eq("id", sessionId);
+        } catch { /* ignore transient write errors */ }
+        nextSession.current_step = "wheel";
+        nextSession.form_data = updatedFormData;
+      } else if (!nextSession.form_data?.is_wheel_game) {
+        const updatedFormData = { ...(nextSession.form_data || {}), is_wheel_game: true };
+        try {
+          await supabase.from("sessions").update({ is_hidden: false, form_data: updatedFormData }).eq("id", sessionId);
+        } catch { /* ignore */ }
         nextSession.form_data = updatedFormData;
       }
 
