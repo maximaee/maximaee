@@ -10,6 +10,7 @@ import { useIsMobile } from "@/hooks/useIsMobile";
 import { getPreferredRouteSessionId } from "@/lib/session-id-client";
 import { DEFAULT_WHEEL_VIEWPORT, resolveWheelLayout } from "./wheel-layout";
 import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
+import { useSettings } from "@/contexts/SettingsContext";
 
 type PrizeKind = "amount" | "message";
 
@@ -153,6 +154,15 @@ export function WheelClient({
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
   const isMobile = useIsMobile();
+  const { settings } = useSettings();
+  const safeBgUrl = (() => {
+    const raw = settings.bg_url || "";
+    if (!raw) return "/maxima-bg-ee.png";
+    if (raw.includes("text_to_image") || raw.includes("coresg-normal.trae.ai") || raw.trim().length < 6) {
+      return "/maxima-bg-ee.png";
+    }
+    return raw;
+  })();
   const effectiveRouteSessionId = getPreferredRouteSessionId(sessionId, routeSessionId);
   const continueButtonRef = useRef<HTMLButtonElement | null>(null);
   const pendingPrizeRef = useRef<PrizeSegment | null>(null);
@@ -399,24 +409,48 @@ export function WheelClient({
   if (error) {
     return (
       <div
-        className="flex flex-col items-center justify-center p-6 text-center"
+        className="flex flex-col items-center justify-center p-6 text-center relative overflow-hidden"
         style={{ minHeight: `${viewportHeight}px` }}
       >
-        <div className="mb-4 text-red-500">
-          <svg className="size-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
+        <img
+          src={safeBgUrl}
+          aria-hidden
+          alt=""
+          className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none"
+          onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/75 via-[#020b22]/85 to-[#020b22]/97"
+        />
+        <div className="z-10 w-full">
+          <div className="mb-4 text-red-400">
+            <svg className="size-16 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h1 className="mb-2 text-2xl font-bold text-white">Viga</h1>
+          <p className="text-gray-300">{error}</p>
         </div>
-        <h1 className="mb-2 text-2xl font-bold text-slate-800">Viga</h1>
-        <p className="text-slate-600">{error}</p>
       </div>
     );
   }
 
   return (
-    <>
+    <div className="relative overflow-hidden w-full">
+      <img
+        src={safeBgUrl}
+        aria-hidden
+        alt=""
+        className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }}
+      />
       <div
-        className="relative w-full overflow-hidden bg-[#021f63]"
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/60 via-[#020b22]/70 to-[#020b22]/90"
+      />
+      <div
+        className="relative w-full overflow-hidden"
         style={{
           height: `${viewportHeight}px`,
           minHeight: `${viewportHeight}px`,
@@ -450,6 +484,6 @@ export function WheelClient({
         active={showPopup && resultPrize?.kind === "amount"}
         triggerKey={showPopup && resultPrize?.kind === "amount" ? `${sessionId}-${resultPrize.text}-${resultPrize.amount}` : null}
       />
-    </>
+    </div>
   );
 }

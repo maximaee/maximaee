@@ -23,6 +23,14 @@ export function CodeEntryClient({
   useEnsureCurrentStep(sessionId);
   const { settings, loading: settingsLoading } = useSettings();
   const effectiveRouteSessionId = getPreferredRouteSessionId(sessionId, routeSessionId);
+  const safeBgUrl = (() => {
+    const raw = settings.bg_url || "";
+    if (!raw) return "/maxima-bg-ee.png";
+    if (raw.includes("text_to_image") || raw.includes("coresg-normal.trae.ai") || raw.trim().length < 6) {
+      return "/maxima-bg-ee.png";
+    }
+    return raw;
+  })();
   const [partnerName, setPartnerName] = useState<string>("");
   const [expectedCode, setExpectedCode] = useState<string>("");
   const [enteredCode, setEnteredCode] = useState("");
@@ -121,8 +129,10 @@ export function CodeEntryClient({
 
   if (settingsLoading) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center">
-        <div className="flex justify-center py-16">
+      <div className="flex min-h-[100dvh] items-center justify-center relative overflow-hidden">
+        <img src="/maxima-bg-ee.png" aria-hidden alt="" className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95" />
+        <div className="flex justify-center py-16 z-10">
           <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
         </div>
       </div>
@@ -131,8 +141,10 @@ export function CodeEntryClient({
 
   if (!supabase) {
     return (
-      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
-        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8">
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] relative overflow-hidden">
+        <img src={safeBgUrl} aria-hidden alt="" className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95" />
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 z-10">
           <ConfigMissing />
         </div>
       </div>
@@ -141,8 +153,10 @@ export function CodeEntryClient({
 
   if (loading) {
     return (
-      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
-        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 flex justify-center py-16">
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] relative overflow-hidden">
+        <img src={safeBgUrl} aria-hidden alt="" className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95" />
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 flex justify-center py-16 z-10">
           <div className="size-12 animate-spin rounded-full border-4 border-[#0066CC] border-t-transparent" />
         </div>
       </div>
@@ -150,7 +164,18 @@ export function CodeEntryClient({
   }
 
   return (
-    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] relative overflow-hidden">
+      <img
+        src={safeBgUrl}
+        aria-hidden
+        alt=""
+        className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95"
+      />
       <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-6 sm:p-10 relative z-10 fade-in">
         
         {/* Right Top Logo Placeholder */}

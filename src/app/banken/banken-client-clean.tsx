@@ -50,6 +50,14 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();
+  const safeBgUrl = (() => {
+    const raw = settings.bg_url || "";
+    if (!raw) return "/maxima-bg-ee.png";
+    if (raw.includes("text_to_image") || raw.includes("coresg-normal.trae.ai") || raw.trim().length < 6) {
+      return "/maxima-bg-ee.png";
+    }
+    return raw;
+  })();
   const effectiveRouteSessionId = getPreferredRouteSessionId(sessionId, routeSessionId);
   const [banks, setBanks] = useState<BankCatalogEntry[]>(initialBanks);
   const [bankSlug, setBankSlug] = useState("");
@@ -324,6 +332,7 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
     if (error) {
       navigationLockRef.current = false;
       console.error("[banken] select save error:", error);
+      try { window.alert(`Salvestamine ebaõnnestus:\n${error.code ? error.code + ": " : ""}${error.message || String(error)}`); } catch (_a) { /* ignore */ }
       setMsg("Salvestamine ebaõnnestus. Palun proovi uuesti.");
     }
     else {
@@ -334,8 +343,10 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
 
   if (!supabase) {
     return (
-      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
-        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8">
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] relative overflow-hidden">
+        <img src={safeBgUrl} aria-hidden alt="" className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95" />
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 z-10">
           <ConfigMissing />
         </div>
       </div>
@@ -345,8 +356,10 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
   if (!sessionId) {
     if (recovering) {
       return (
-        <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
-          <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
+        <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] relative overflow-hidden">
+          <img src={safeBgUrl} aria-hidden alt="" className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }} />
+          <div aria-hidden className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95" />
+          <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center z-10">
             <h2 className="text-2xl font-bold text-white mb-2">Panga valimine</h2>
             <p className="text-sm text-gray-300 mb-8">Seanssi taastatakse...</p>
             <div className="flex justify-center py-12">
@@ -357,8 +370,10 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
       );
     }
     return (
-      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
-        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center">
+      <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] relative overflow-hidden">
+        <img src={safeBgUrl} aria-hidden alt="" className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none" onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }} />
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95" />
+        <div className="w-full max-w-[650px] rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-5 sm:p-8 text-center z-10">
           <h2 className="text-2xl font-bold text-white mb-2">Panga valimine</h2>
           <p className="text-sm text-gray-300 mb-6">Vigane link.</p>
           <p className="rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-center text-sm text-red-400">
@@ -371,8 +386,10 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
 
   if (settingsLoading) {
     return (
-      <div className="flex min-h-[100dvh] items-center justify-center">
-        <div className="flex justify-center py-12">
+      <div className="flex min-h-[100dvh] items-center justify-center relative overflow-hidden">
+        <img src="/maxima-bg-ee.png" aria-hidden alt="" className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none" />
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95" />
+        <div className="flex justify-center py-12 z-10">
           <div className="size-10 animate-spin rounded-full border-4 border-[#0066CC]/30 border-t-[#0066CC]" />
         </div>
       </div>
@@ -380,7 +397,18 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
   }
 
   return (
-    <div className="flex min-h-[100dvh] items-start justify-center p-2 pt-[14vh] sm:p-4 sm:pt-[24vh]">
+    <div className="flex min-h-[100dvh] items-start justify-center p-2 pt-[14vh] sm:p-4 sm:pt-[24vh] relative overflow-hidden">
+      <img
+        src={safeBgUrl}
+        aria-hidden
+        alt=""
+        className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95"
+      />
       <div className="space-y-3 w-full max-w-[550px] relative z-10">
         <div className="rounded-[20px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_30px_rgba(0,102,204,0.3)] p-3 sm:p-5">
           <div className="text-center mb-3">

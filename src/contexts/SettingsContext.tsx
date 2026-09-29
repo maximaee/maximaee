@@ -132,7 +132,7 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
     next.logo_url = MAXIMA_LOGO_URL;
   }
 
-  if (!next.bg_url || next.bg_url === LEGACY_BG_URL) {
+  if (!next.bg_url || next.bg_url === LEGACY_BG_URL || next.bg_url.includes("text_to_image") || next.bg_url.includes("coresg-normal.trae.ai") || next.bg_url.length < 8) {
     next.bg_url = MAXIMA_BG_URL;
   }
 
