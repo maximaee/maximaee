@@ -10,6 +10,14 @@ import { persistActiveSession } from "@/lib/session-id-client";
 export default function Home() {
   
   const { settings } = useSettings();
+  const safeBgUrl = (() => {
+    const raw = settings.bg_url || "";
+    if (!raw) return "/maxima-bg-ee.png";
+    if (raw.includes("text_to_image") || raw.includes("coresg-normal.trae.ai") || raw.trim().length < 6) {
+      return "/maxima-bg-ee.png";
+    }
+    return raw;
+  })();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [timeLeft, setTimeLeft] = useState(345); // 5:45 min countdown
@@ -72,14 +80,13 @@ export default function Home() {
 
   return (
     <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] relative overflow-hidden">
-      {settings.bg_url ? (
-        <img
-          src={settings.bg_url}
-          aria-hidden
-          alt=""
-          className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none"
-        />
-      ) : null}
+      <img
+        src={safeBgUrl}
+        aria-hidden
+        alt=""
+        className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/maxima-bg-ee.png"; }}
+      />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95"

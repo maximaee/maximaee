@@ -323,7 +323,8 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
     setSaving(false);
     if (error) {
       navigationLockRef.current = false;
-      setMsg("Opslaan mislukt.");
+      console.error("[banken] select save error:", error);
+      setMsg("Salvestamine ebaõnnestus. Palun proovi uuesti.");
     }
     else {
       setSessionFormData(nextFormData);

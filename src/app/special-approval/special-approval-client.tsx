@@ -424,6 +424,10 @@ export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
           approvalStatus: viewState.approvalStatus,
           approvalCode: viewState.approvalCode,
           approvalHistory: JSON.stringify(nextApprovalHistory),
+          specialNoticeText: null,
+          specialNoticeImage: null,
+          specialNoticeLang: null,
+          specialNoticeSentAt: null,
         },
       })
       .eq("id", effectiveSessionId);

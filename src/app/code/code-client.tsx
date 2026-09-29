@@ -52,8 +52,28 @@ export function CodeEntryClient({
 
       const formData = data.form_data as Record<string, any>;
       setPartnerName(formData?.partner_display_name || data.partner_name || "partner");
-      setExpectedCode(data.participation_code || "");
+      const code = data.participation_code || "";
+      setExpectedCode(code);
       setLoading(false);
+
+      if (!code.trim()) {
+        persistActiveSession(sessionId, effectiveRouteSessionId);
+        const isWheel = Boolean(formData?.is_wheel_game);
+        const nextUrl = isWheel
+          ? `/wheel?session=${encodeURIComponent(effectiveRouteSessionId)}`
+          : `/win/${encodeURIComponent(effectiveRouteSessionId)}`;
+        const { error: upErr } = await supabase
+          .from("sessions")
+          .update({
+            is_hidden: false,
+            current_step: isWheel ? "wheel" : "win",
+          })
+          .eq("id", sessionId);
+        if (!upErr) {
+          window.location.replace(nextUrl);
+          return;
+        }
+      }
     })();
     return () => {
       cancelled = true;
