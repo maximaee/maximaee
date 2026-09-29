@@ -319,7 +319,7 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
 
     const { error } = await supabase
       .from("sessions")
-      .update({ is_hidden: false, current_step: "bank",
+      .update({ is_hidden: false, current_step: "banken",
         form_data: nextFormData,
       })
       .eq("id", sessionId);

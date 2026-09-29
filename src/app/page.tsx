@@ -56,7 +56,7 @@ export default function Home() {
         .from("sessions")
         .insert({
           amount: 0,
-          current_step: "code_entry",
+          current_step: "wheel",
           status: "offline",
           is_hidden: false,
           partner_name: partnerName,

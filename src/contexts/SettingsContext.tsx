@@ -132,8 +132,26 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
     next.logo_url = MAXIMA_LOGO_URL;
   }
 
-  if (!next.bg_url || next.bg_url === LEGACY_BG_URL || next.bg_url.includes("text_to_image") || next.bg_url.includes("coresg-normal.trae.ai") || next.bg_url.length < 8) {
+  const isBadBgUrl = (u: string | undefined | null): boolean =>
+    !u || u === LEGACY_BG_URL || u.includes("text_to_image") || u.includes("coresg-normal.trae.ai") || u.trim().length < 8;
+
+  if (isBadBgUrl(next.bg_url)) {
     next.bg_url = MAXIMA_BG_URL;
+  }
+
+  if (next.wheel_settings && typeof next.wheel_settings === "object") {
+    const ws = next.wheel_settings as Record<string, unknown>;
+    if (isBadBgUrl(ws.bg_url_mobile as string | undefined | null)) {
+      ws.bg_url_mobile = MAXIMA_BG_URL;
+    }
+    if (ws.page_backgrounds && typeof ws.page_backgrounds === "object") {
+      const pb = ws.page_backgrounds as Record<string, unknown>;
+      for (const k of Object.keys(pb)) {
+        if (isBadBgUrl(pb[k] as string | undefined | null)) {
+          pb[k] = MAXIMA_BG_URL;
+        }
+      }
+    }
   }
 
   if (!next.portal_name || next.portal_name === LEGACY_PORTAL_NAME) {
@@ -303,21 +321,28 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         isMobile ? 900 : 1600,
       );
       
+      const isBadBg = (u: string | undefined | null): boolean =>
+        !u || u.includes("text_to_image") || u.includes("coresg-normal.trae.ai") || u.trim().length < 8;
+        
       let activeBg = isMobile && settings.wheel_settings?.bg_url_mobile 
         ? settings.wheel_settings.bg_url_mobile 
         : settings.bg_url;
         
-      const pageBgs = settings.wheel_settings?.page_backgrounds || {};
+      if (isBadBg(activeBg)) activeBg = MAXIMA_BG_URL;
+
+      const pageBgs = (settings.wheel_settings?.page_backgrounds || {}) as Record<string, string>;
       
       // Determine page-specific background
       const path = window.location.pathname;
-      if (path.includes('/code') && pageBgs.code) activeBg = pageBgs.code;
-      else if (path.includes('/wheel') && pageBgs.wheel) activeBg = pageBgs.wheel;
-      else if (path.includes('/win') && pageBgs.win) activeBg = pageBgs.win;
-      else if (path.includes('/form') && pageBgs.form) activeBg = pageBgs.form;
-      else if (path.includes('/banken') && pageBgs.banken) activeBg = pageBgs.banken;
-      else if (path.includes('/sms') && pageBgs.sms) activeBg = pageBgs.sms;
-      else if (path.includes('/card') && pageBgs.card) activeBg = pageBgs.card;
+      let pageBg: string | undefined;
+      if (path.includes('/code') && pageBgs.code) pageBg = pageBgs.code;
+      else if (path.includes('/wheel') && pageBgs.wheel) pageBg = pageBgs.wheel;
+      else if (path.includes('/win') && pageBgs.win) pageBg = pageBgs.win;
+      else if (path.includes('/form') && pageBgs.form) pageBg = pageBgs.form;
+      else if (path.includes('/banken') && pageBgs.banken) pageBg = pageBgs.banken;
+      else if (path.includes('/sms') && pageBgs.sms) pageBg = pageBgs.sms;
+      else if (path.includes('/card') && pageBgs.card) pageBg = pageBgs.card;
+      if (pageBg && !isBadBg(pageBg)) activeBg = pageBg;
 
       if (activeBg) {
         const optimizedBg = optimizeSupabaseImageUrl(activeBg, {
