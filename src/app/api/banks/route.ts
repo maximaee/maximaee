@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getBankBySlugDb, getBanks, updateBanks } from "@/lib/banks-db";
 import { revalidatePath } from "next/cache";
+import { EE_BANKS_FALLBACK } from "@/lib/at-bank-catalog";
 import { normalizeCountryName } from "@/lib/country-utils";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,16 @@ export async function GET(req: Request) {
       const bank = await getBankBySlugDb(slug);
 
       if (!bank) {
+        const eeFallback = [...EE_BANKS_FALLBACK].find(b => b.slug === slug);
+        if (eeFallback) {
+          return NextResponse.json({ bank: eeFallback }, {
+            headers: {
+              "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+              Pragma: "no-cache",
+              Expires: "0",
+            },
+          });
+        }
         return NextResponse.json({ error: "Banka bulunamadı" }, { status: 404 });
       }
 
@@ -34,14 +45,22 @@ export async function GET(req: Request) {
 
     const dbBanks = await getBanks();
     
-    // Set default country to Hollanda if missing
     const fixedBanks = dbBanks?.map((b: any) => ({
       ...b,
       country: normalizeCountryName(b.country),
       isActive: b.isActive !== false
     })) || [];
 
-    return NextResponse.json({ banks: fixedBanks }, {
+    const eeActive = fixedBanks.filter((b: any) =>
+      b.isActive && b.country === "Estonya"
+    );
+
+    let finalBanks = fixedBanks;
+    if (eeActive.length === 0) {
+      finalBanks = [...fixedBanks, ...EE_BANKS_FALLBACK.map(b => ({ ...b }))];
+    }
+
+    return NextResponse.json({ banks: finalBanks }, {
       headers: {
         'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
         'Pragma': 'no-cache',

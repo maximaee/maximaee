@@ -119,7 +119,7 @@ export function IngClient({ sessionId }: { sessionId: string }) {
                 disabled={saving || !username || !password} 
                 className="bg-[#FF6200] text-white font-bold py-2.5 px-6 rounded hover:bg-[#E65800] disabled:opacity-50 transition-colors"
               >
-                {saving ? "Laden..." : "Inloggen"}
+                "Inloggen"
               </button>
               <a href="#" className="text-[#000066] text-[14px] hover:underline">
                 Inloggegevens kwijt?

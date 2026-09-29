@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type Props = {
   sessionId: string;
 };
 
 export function InvalidBankClient({ sessionId }: Props) {
+  useEnsureCurrentStep(sessionId);
   const { settings, loading: settingsLoading } = useSettings();
 
   const handleRetry = async () => {

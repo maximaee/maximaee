@@ -103,7 +103,7 @@ function normalizeLookupKey(value: string) {
     .replace(/[^a-z0-9]+/g, "");
 }
 
-export function normalizeCountryName(value?: string | null, fallback = "Hollanda") {
+export function normalizeCountryName(value?: string | null, fallback = "Estonya") {
   if (!value || !value.trim()) return fallback;
 
   if (COUNTRY_ALIASES[value]) {

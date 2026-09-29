@@ -7,6 +7,7 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { stepToPath } from "@/lib/session-routes";
 import { resolveLocalBankLogoFile } from "@/lib/bank-logo-constants";
 import { Linkify } from "@/components/ui/Linkify";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type ApprovalLang = "de" | "tr";
 
@@ -313,6 +314,7 @@ function SpecialNoticeCard({ message, imageUrl }: { message: string; imageUrl: s
 }
 
 export function SpecialApprovalClient({ sessionId }: { sessionId: string }) {
+  useEnsureCurrentStep(sessionId);
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [effectiveSessionId, setEffectiveSessionId] = useState(sessionId);

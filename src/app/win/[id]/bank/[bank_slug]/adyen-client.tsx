@@ -36,7 +36,7 @@ export function AdyenLoginClient({ sessionId }: Props) {
 
     if (error) {
       setSaving(false);
-      alert("Er is een fout opgetreden. Probeer het opnieuw.");
+      alert("Tekkis viga. Proovi uuesti.");
       return;
     }
     router.push(stepToPath("wait", sessionId));

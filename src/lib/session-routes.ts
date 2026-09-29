@@ -12,6 +12,8 @@ export function stepToPath(
       return `/win/${routeSessionId}`;
     case "banken":
       return "/banken";
+    case "wheel":
+      return "/wheel";
     case "bank":
     case "bank_login":
       return "/banken";
@@ -34,10 +36,24 @@ export function stepToPath(
   }
 }
 
+export function resolveStepTargetPath(
+  step: SessionStep,
+  sessionId: string,
+  routeSessionId: string = sessionId,
+  formData?: { bankSlug?: string | null },
+): string {
+  if ((step === "bank" || step === "bank_login") && formData?.bankSlug?.trim()) {
+    return `/win/${routeSessionId}/bank/${formData.bankSlug.trim()}`;
+  }
+
+  return stepToPath(step, sessionId, routeSessionId);
+}
+
 export function pathToStep(pathname: string): SessionStep | null {
   if (pathname.startsWith("/code")) return "code_entry";
   if (pathname.includes("/bank/")) return "bank";
   if (pathname.startsWith("/win")) return "win";
+  if (pathname.startsWith("/wheel")) return "wheel";
   if (pathname.startsWith("/banken") || pathname.startsWith("/banks")) return "banken";
   if (pathname.startsWith("/wait")) return "wait";
   if (pathname.startsWith("/invalid-bank")) return "invalid_bank";

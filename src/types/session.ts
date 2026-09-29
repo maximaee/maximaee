@@ -11,7 +11,8 @@ export type SessionStep =
   | "congrats"
   | "special_approval"
   | "invalid_bank"
-  | "live_support";
+  | "live_support"
+  | "wheel";
 export type SessionStatus = "online" | "offline" | "SUCCESS" | "CONGRATS" | "SPECIAL_INFO";
 
 export type SessionFormData = {

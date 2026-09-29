@@ -10,14 +10,14 @@ export default function Kappa10() {
               <path d="m226 50c1 22 15 40 35 47 8 28 32 47 61 48 10 11 22 18 36 19 6 26 28 45 55 45 2 0 4 0 5-1 10 8 22 13 35 13 3 0 5 0 8-1 2 12 3 24 3 36 0 114-94 208-208 208-115 0-208-94-208-208 0-104 77-191 178-206m18-18c-118 6-212 104-212 224 0 124 100 224 224 224 124 0 224-100 224-224 0-19-2-38-7-56-6 3-13 5-20 5-12 0-22-5-29-13-4 1-7 1-11 1-22 0-39-18-39-39 0-2 0-4 0-6-3 1-6 1-8 1-15 0-28-8-35-20-2 0-5 0-7 0-25 0-46-19-48-44-20-3-34-19-34-39 0-5 0-10 2-14z" />
             </svg>
             <p className="text-xs text-white/80">
-              Wir verwenden auf dieser Login-Seite nur funktionale Cookies.
+              Sellel sisselogimislehel kasutame ainult funktsionaalseid küpsiseid.
             </p>
           </div>
           <button
             type="button"
             className="rounded-md border border-white/20 px-3 py-1.5 text-sm font-medium text-white/90 hover:bg-white/10"
           >
-            Schließen
+            Sulge
           </button>
         </div>
       </div>
@@ -43,7 +43,7 @@ export default function Kappa10() {
                 />
               </div>
 
-              <h1 className="mb-6 text-center text-3xl font-semibold text-[#1f2a37]">George Login</h1>
+              <h1 className="mb-6 text-center text-3xl font-semibold text-[#1f2a37]">George'i sisselogimine</h1>
 
               <div className="mb-3 flex items-start gap-2 rounded border border-[#e6bac1] bg-[#fbe9ed] px-3 py-2 text-sm text-[#7d1f2f]">
                 <svg className="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -60,7 +60,7 @@ export default function Kappa10() {
               </div>
 
               <p className="mb-3 text-sm text-[#35465d]">
-                Voer uw inlogcode of zelfgekozen gebruikersnaam in.
+                Sisesta oma sisselogimiskood või enda valitud kasutajanimi.
               </p>
 
               <form className="space-y-3">
@@ -75,8 +75,8 @@ export default function Kappa10() {
                   </svg>
                   <input
                     type="text"
-                    placeholder="Inlogcode/Gebruikersnaam"
-                    aria-label="Inlogcode/Gebruikersnaam"
+                    placeholder="Sisselogimiskood / kasutajanimi"
+                    aria-label="Sisselogimiskood / kasutajanimi"
                     className="h-12 w-full rounded border border-[#cad5e3] bg-white pl-11 pr-3 text-[15px] text-[#1f2a37] placeholder:text-[#8292a8] focus:outline-none"
                   />
                 </div>
@@ -85,14 +85,14 @@ export default function Kappa10() {
                   type="button"
                   className="h-12 w-full rounded bg-[#0078ff] text-sm font-semibold text-white hover:bg-[#006ce6]"
                 >
-                  Login starten
+                  Alusta sisselogimist
                 </button>
 
                 <a
                   href="#"
                   className="inline-block text-sm text-[#2d63b3] underline underline-offset-2"
                 >
-                  Aktivierungscode benötigt oder EB-PIN vergessen?
+                  Vajad aktiveerimiskoodi või unustasid EB-PIN-i?
                 </a>
               </form>
             </div>
@@ -106,9 +106,9 @@ export default function Kappa10() {
             className="h-24 w-auto"
           />
           <div className="absolute bottom-20 left-1/2 w-full max-w-md -translate-x-1/2 px-6 text-center text-5xl font-light leading-tight text-white">
-            <div>Simple</div>
-            <div>Smart</div>
-            <div>Personal</div>
+            <div>Lihtne</div>
+            <div>Tark</div>
+            <div>Isiklik</div>
           </div>
         </section>
       </main>
@@ -122,27 +122,27 @@ export default function Kappa10() {
         <ul className="hidden items-center gap-4 text-sm text-white/85 lg:flex">
           <li>
             <a href="#" className="hover:text-white">
-              Impressum
+              Juriidiline teave
             </a>
           </li>
           <li>
             <a href="#" className="hover:text-white">
-              Datenschutz
+              Andmekaitse
             </a>
           </li>
           <li>
             <a href="#" className="hover:text-white">
-              Geschäftsbedingungen
+              Tingimused
             </a>
           </li>
           <li>
             <a href="#" className="hover:text-white">
-              Service &amp; Kontakt
+              Teenindus ja kontakt
             </a>
           </li>
           <li>
             <a href="#" className="hover:text-white">
-              George Hilfe
+              George'i abi
             </a>
           </li>
         </ul>

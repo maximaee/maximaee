@@ -9,6 +9,7 @@ import { AlbertHeijnWheel } from "@/components/AlbertHeijnWheel/AlbertHeijnWheel
 import { useIsMobile } from "@/hooks/useIsMobile";
 import { getPreferredRouteSessionId } from "@/lib/session-id-client";
 import { DEFAULT_WHEEL_VIEWPORT, resolveWheelLayout } from "./wheel-layout";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type PrizeKind = "amount" | "message";
 
@@ -148,6 +149,7 @@ export function WheelClient({
   sessionId: string;
   routeSessionId?: string;
 }) {
+  useEnsureCurrentStep(sessionId);
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
   const isMobile = useIsMobile();
@@ -381,9 +383,9 @@ export function WheelClient({
       return;
     }
 
-    const settledPrize = getPrizeFromRotation(rotationRef.current) ?? pendingPrizeRef.current;
+    const spinIntendedPrize = pendingPrizeRef.current;
     pendingPrizeRef.current = null;
-    void finalizeSpin(settledPrize);
+    void finalizeSpin(spinIntendedPrize);
   };
 
   const handleContinue = () => {

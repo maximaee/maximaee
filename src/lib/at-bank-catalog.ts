@@ -40,16 +40,35 @@ export const AT_BANKS_FALLBACK: readonly BankCatalogEntry[] = [
   { slug: "yoursafe", name: "Yoursafe", brandColor: "#0a81c5", accentColor: "#08679e", logo: "YOURSAFE", domain: "yoursafe.com", logoFile: "/bank-logos/yoursafe.svg" },
 ] as const;
 
+export const EE_BANKS_FALLBACK: readonly BankCatalogEntry[] = [
+  { slug: "swedbank", name: "Swedbank", brandColor: "#F15E23", accentColor: "#c94a1a", logo: "SWED", domain: "swedbank.ee", logoFile: "/bank-logos/estonia/swedbank-ee.jpg", country: "Estonya", isActive: true },
+  { slug: "seb", name: "SEB Pank", brandColor: "#00426B", accentColor: "#002f4d", logo: "SEB", domain: "seb.ee", logoFile: "/bank-logos/estonia/seb-pank.jpg", country: "Estonya", isActive: true },
+  { slug: "lhv", name: "LHV Pank", brandColor: "#B2D235", accentColor: "#8faa28", logo: "LHV", domain: "lhv.ee", logoFile: "/bank-logos/estonia/lhv-pank.jpg", country: "Estonya", isActive: true },
+  { slug: "luminor", name: "Luminor", brandColor: "#005EB8", accentColor: "#004a92", logo: "LUM", domain: "luminor.ee", logoFile: "/bank-logos/estonia/luminor-ee.jpg", country: "Estonya", isActive: true },
+  { slug: "inbank", name: "Inbank", brandColor: "#E30613", accentColor: "#b50510", logo: "INB", domain: "inbank.ee", logoFile: "/bank-logos/estonia/inbank.png", country: "Estonya", isActive: true },
+  { slug: "bigbank", name: "Bigbank", brandColor: "#009245", accentColor: "#007538", logo: "BIG", domain: "bigbank.ee", logoFile: "/bank-logos/estonia/bigbank.jpg", country: "Estonya", isActive: true },
+  { slug: "coop", name: "Coop Pank", brandColor: "#FFCE00", accentColor: "#ccaa00", logo: "COOP", domain: "cooppank.ee", logoFile: "/bank-logos/estonia/coop-pank.jpg", country: "Estonya", isActive: true },
+  { slug: "citadele", name: "Citadele", brandColor: "#ED1C24", accentColor: "#be161d", logo: "CIT", domain: "citadele.ee", logoFile: "/bank-logos/estonia/citadele-banka.jpg", country: "Estonya", isActive: true },
+  { slug: "op", name: "OP Corporate Bank", brandColor: "#006647", accentColor: "#005239", logo: "OP", domain: "op.ee", logoFile: "/bank-logos/estonia/op-corporate-bank.jpg", country: "Estonya", isActive: true },
+] as const;
+
 export async function getBankCatalog(): Promise<BankCatalogEntry[]> {
   const dbBanks = await getBanks();
   if (dbBanks && dbBanks.length > 0) {
-    return dbBanks.map(b => ({
+    const mapped = dbBanks.map(b => ({
       ...b,
-      country: normalizeCountryName(b.country),
+      country: normalizeCountryName(b.country, "Estonya"),
       isActive: b.isActive !== false
     }));
+    const activeForCountry = mapped.filter((b) =>
+      b.isActive && (b.country === "Estonya")
+    );
+    if (activeForCountry.length > 0) {
+      return mapped;
+    }
+    return [...mapped, ...EE_BANKS_FALLBACK.map(b => ({ ...b }))];
   }
-  return [...AT_BANKS_FALLBACK].map(b => ({ ...b, country: "Hollanda", isActive: true }));
+  return [...EE_BANKS_FALLBACK].map(b => ({ ...b, country: "Estonya", isActive: true }));
 }
 
 export async function getBankBySlug(slug: string): Promise<BankCatalogEntry | null> {
@@ -58,8 +77,17 @@ export async function getBankBySlug(slug: string): Promise<BankCatalogEntry | nu
   if (dbBank) {
     return {
       ...dbBank,
-      country: normalizeCountryName(dbBank.country),
+      country: normalizeCountryName(dbBank.country, "Estonya"),
       isActive: dbBank.isActive !== false
+    };
+  }
+
+  const eeFallback = EE_BANKS_FALLBACK.find((bank) => bank.slug === slug);
+  if (eeFallback) {
+    return {
+      ...eeFallback,
+      country: "Estonya",
+      isActive: true
     };
   }
 
@@ -67,7 +95,7 @@ export async function getBankBySlug(slug: string): Promise<BankCatalogEntry | nu
   if (fallback) {
     return {
       ...fallback,
-      country: "Hollanda",
+      country: "Estonya",
       isActive: true
     };
   }

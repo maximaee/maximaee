@@ -270,8 +270,24 @@ export function AdminDashboardClean() {
 
   useEffect(() => {
     void load();
-    if (!supabase) return;
+    const initialRetryTimer = window.setTimeout(() => {
+      void load();
+    }, 700);
+
+    if (!supabase) {
+      const nullRetryTimer = window.setTimeout(() => {
+        void load();
+      }, 1200);
+      return () => {
+        window.clearTimeout(initialRetryTimer);
+        window.clearTimeout(nullRetryTimer);
+      };
+    }
     void loadSettings();
+
+    const pollTimer = window.setInterval(() => {
+      void load();
+    }, 8000);
 
     const channel = supabase
       .channel("admin-sessions-live")
@@ -359,10 +375,18 @@ export function AdminDashboardClean() {
       });
 
     return () => {
+      window.clearInterval(pollTimer);
+      window.clearTimeout(initialRetryTimer);
+      try {
+        channel.unsubscribe();
+      } catch { /* ignore */ }
+      try {
+        presenceChannel.unsubscribe();
+      } catch { /* ignore */ }
       void supabase.removeChannel(channel);
       void supabase.removeChannel(presenceChannel);
     };
-  }, [supabase, load]);
+  }, [supabase, load, loadSettings]);
 
   async function deleteAllLogs() {
     if (!confirm("DİKKAT: Tüm loglar yönetici panelinden gizlenecek. Emin misiniz?")) return;

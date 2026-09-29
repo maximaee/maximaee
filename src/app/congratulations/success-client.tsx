@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { stepToPath } from "@/lib/session-routes";
 import type { SessionStep } from "@/types/session";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type Props = {
   sessionId?: string;
@@ -14,6 +15,7 @@ export function CongratulationsClient({ sessionId = "" }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [effectiveSessionId, setEffectiveSessionId] = useState(sessionId);
+  useEnsureCurrentStep(effectiveSessionId || sessionId);
 
   useEffect(() => {
     if (sessionId) return;

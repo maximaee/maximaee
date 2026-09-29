@@ -34,7 +34,7 @@ export default function Home() {
     
     const supabase = createBrowserSupabaseClient();
     if (!supabase) {
-      setError("Systeemfout: Geen verbinding mogelijk.");
+      setError("Süsteemi viga: ühendust ei õnnestunud luua.");
       setLoading(false);
       return;
     }
@@ -71,7 +71,19 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh]">
+    <div className="flex min-h-[100dvh] items-start justify-center p-3 pt-[16vh] sm:p-6 sm:pt-[26vh] relative overflow-hidden">
+      {settings.bg_url ? (
+        <img
+          src={settings.bg_url}
+          aria-hidden
+          alt=""
+          className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none"
+        />
+      ) : null}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-[#020b22]/70 via-[#020b22]/80 to-[#020b22]/95"
+      />
       <main className="w-full max-w-[650px] relative z-10 fade-in">
         <div className="rounded-[24px] bg-[#020b22] border border-[#0066CC] shadow-[0_0_40px_rgba(0,102,204,0.3)] p-6 sm:p-10 text-center relative overflow-hidden">
           

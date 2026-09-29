@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
 import { Linkify } from "@/components/ui/Linkify";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type ChatMessage = {
   id: string;
@@ -22,6 +23,7 @@ const EMPTY_CHAT_TEXT = "Sõnumeid pole. Kuidas saame teid aidata?";
 const CHAT_INPUT_PLACEHOLDER = "Kirjuta sõnum...";
 
 export function LiveSupportClient({ sessionId }: { sessionId: string }) {
+  useEnsureCurrentStep(sessionId);
   const { settings, loading: settingsLoading } = useSettings();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);

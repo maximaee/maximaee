@@ -149,7 +149,7 @@ export function VanLanschotKempenClient({ sessionId }: { sessionId: string }) {
                 disabled={saving || code.length !== 11} 
                 className="bg-[#007A73] text-white font-bold py-3 px-12 rounded hover:bg-[#00605a] disabled:opacity-30 disabled:bg-gray-400 disabled:text-gray-600 transition-colors"
               >
-                {saving ? "Laden..." : "Volgende"}
+                "Volgende"
               </button>
             </div>
           </div>

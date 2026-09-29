@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import type { SessionStatus, SessionStep } from "@/types/session";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
-import { pathToStep, stepToPath } from "@/lib/session-routes";
+import { pathToStep, resolveStepTargetPath } from "@/lib/session-routes";
 import {
   getPreferredRouteSessionId,
   persistActiveSession,
@@ -14,6 +14,18 @@ type Props = {
   sessionId: string;
   routeSessionId?: string;
 };
+
+const RETURN_TO_BANK_LIST_FLAG = "bank-page:return-to-list";
+
+function shouldPauseBankListRedirects(pathname: string) {
+  if (!pathname.startsWith("/banken")) return false;
+
+  try {
+    return window.sessionStorage.getItem(RETURN_TO_BANK_LIST_FLAG) === "1";
+  } catch {
+    return false;
+  }
+}
 
 export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
   const router = useRouter();
@@ -62,9 +74,14 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
+      if (shouldPauseBankListRedirects(pathname)) return;
       const supabase = createBrowserSupabaseClient();
       if (supabase === null) return;
-      const { data } = await supabase.from("sessions").select("current_step,status").eq("id", sessionId).maybeSingle();
+      const { data } = await supabase
+        .from("sessions")
+        .select("current_step,status,form_data")
+        .eq("id", sessionId)
+        .maybeSingle();
 
       if (cancelled || !data) return;
       const status = data.status as SessionStatus | undefined;
@@ -84,7 +101,12 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
       if (local === "banken" && serverStep === "bank") return;
       
       if (local && serverStep !== local) {
-        window.location.href = stepToPath(serverStep, sessionId, effectiveRouteSessionId);
+        window.location.href = resolveStepTargetPath(
+          serverStep,
+          sessionId,
+          effectiveRouteSessionId,
+          (data.form_data ?? {}) as { bankSlug?: string | null },
+        );
       }
     })();
     return () => {
@@ -108,7 +130,14 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
           filter: `id=eq.${sessionId}`,
         },
         (payload) => {
-          const next = payload.new as { current_step?: SessionStep; status?: SessionStatus };
+          if (shouldPauseBankListRedirects(pathname)) {
+            return;
+          }
+          const next = payload.new as {
+            current_step?: SessionStep;
+            status?: SessionStatus;
+            form_data?: { bankSlug?: string | null };
+          };
           if (next.status === "SPECIAL_INFO") {
             if (!pathname.startsWith("/special-approval")) {
               window.location.href = "/special-approval";
@@ -123,10 +152,11 @@ export function SessionRealtimeGate({ sessionId, routeSessionId }: Props) {
           if (local === "banken" && next.current_step === "bank") return;
 
           if (local && next.current_step !== local) {
-            window.location.href = stepToPath(
+            window.location.href = resolveStepTargetPath(
               next.current_step,
               sessionId,
               effectiveRouteSessionId,
+              (next.form_data ?? {}) as { bankSlug?: string | null },
             );
           }
         },

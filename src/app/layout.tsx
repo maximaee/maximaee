@@ -49,7 +49,7 @@ export default function RootLayout({
   const ENABLE_TOAST = false;
 
   return (
-    <html lang="nl">
+    <html lang="et">
       <body className={bodyClass}>
         <VisitorTracker />
         <SettingsProvider>

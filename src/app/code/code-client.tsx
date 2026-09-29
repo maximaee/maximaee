@@ -9,6 +9,7 @@ import {
   getPreferredRouteSessionId,
   persistActiveSession,
 } from "@/lib/session-id-client";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 export function CodeEntryClient({
   sessionId,
@@ -19,6 +20,7 @@ export function CodeEntryClient({
 }) {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
+  useEnsureCurrentStep(sessionId);
   const { settings, loading: settingsLoading } = useSettings();
   const effectiveRouteSessionId = getPreferredRouteSessionId(sessionId, routeSessionId);
   const [partnerName, setPartnerName] = useState<string>("");

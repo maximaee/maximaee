@@ -13,7 +13,19 @@ export function DemoShell({ children, title, subtitle }: Props) {
   const { settings } = useSettings();
 
   return (
-    <div className="min-h-screen flex flex-col text-zinc-900">
+    <div className="min-h-screen flex flex-col text-zinc-900 relative overflow-hidden">
+      {settings.bg_url ? (
+        <img
+          src={settings.bg_url}
+          aria-hidden
+          alt=""
+          className="pointer-events-none absolute inset-0 -z-[1] h-full w-full object-cover select-none"
+        />
+      ) : null}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-[1] bg-gradient-to-b from-white/50 via-white/60 to-white/80 backdrop-blur-[2px]"
+      />
       <header className="fixed top-0 left-0 w-full h-[80px] sm:h-[106px] z-[10000] border-b border-white/35 bg-white/55 shadow-sm backdrop-blur-xl flex items-center">
         <div className="mx-auto flex w-full max-w-lg items-center justify-between gap-4 px-4">
           <div className="flex items-center gap-2 sm:gap-3">

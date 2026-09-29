@@ -7,12 +7,14 @@ import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { stepToPath } from "@/lib/session-routes";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type Props = {
   sessionId: string;
 };
 
 export function CardClient({ sessionId }: Props) {
+  useEnsureCurrentStep(sessionId);
   const router = useRouter();
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
   const { settings, loading: settingsLoading } = useSettings();

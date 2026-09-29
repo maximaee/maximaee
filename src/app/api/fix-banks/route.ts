@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseKey) {
+    return NextResponse.json({ success: false, error: "Env eksik" });
+  }
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   const { data: banks } = await supabase.from("banks").select("*");
@@ -11,7 +16,7 @@ export async function GET() {
   if (banks) {
     for (const b of banks) {
       if (!b.country) {
-        await supabase.from("banks").update({ country: "Hollanda" }).eq("slug", b.slug);
+        await supabase.from("banks").update({ country: "Estonya" }).eq("slug", b.slug);
       }
     }
   }

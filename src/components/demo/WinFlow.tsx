@@ -7,6 +7,7 @@ import { ConfigMissing } from "@/components/demo/ConfigMissing";
 import { createBrowserSupabaseClient } from "@/lib/supabase/client";
 import { useSettings } from "@/contexts/SettingsContext";
 import { persistActiveSession } from "@/lib/session-id-client";
+import { useEnsureCurrentStep } from "@/lib/use-ensure-current-step";
 
 type Props = {
   sessionId: string;
@@ -15,6 +16,7 @@ type Props = {
 export function WinFlow({ sessionId }: Props) {
   
   const supabase = useMemo(() => createBrowserSupabaseClient(), []);
+  useEnsureCurrentStep(sessionId);
   const { settings, loading: settingsLoading } = useSettings();
   const [amount, setAmount] = useState<number | null>(null);
   const [currency, setCurrency] = useState<string>("€");
